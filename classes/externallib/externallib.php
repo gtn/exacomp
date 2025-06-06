@@ -7658,11 +7658,11 @@ class externallib extends base {
 
             static::block_excomp_get_example_details($example, $courseid, false);
 
-            if (!property_exists($example, "annotation")) {
+            if (!\block_exacomp\db_layer::property_exists($example, "annotation")) {
                 $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $example->id, 'courseid' => $courseid));
             }
 
-            if (!(property_exists($example, "teacher_evaluation") || property_exists($example, "student_evaluation"))) {
+            if (!(\block_exacomp\db_layer::property_exists($example, "teacher_evaluation") || \block_exacomp\db_layer::property_exists($example, "student_evaluation"))) {
                 $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $studentid, "courseid" => $courseid, "exampleid" => $example->id), "teacher_evaluation, student_evaluation");
                 $example->teacher_evaluation = $exampleEvaluation->teacher_evaluation;
                 $example->student_evaluation = $exampleEvaluation->student_evaluation;
@@ -12639,13 +12639,13 @@ class externallib extends base {
 
             // Adding annotationinformation    TODO: Again: What IF the user has the same subject in two different courses.. which courseid to take?
             // check if it is already there (done for "all" and "subject" so save computation time
-            if (!property_exists($example, "annotation")) {
+            if (!\block_exacomp\db_layer::property_exists($example, "annotation")) {
                 $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $example->id, 'courseid' => $courseid));
             }
 
             // Adding the evaluation information if it did not get queried before when getting the examples
             // right now this is the case if "topic" is selected. For "all" and "subject" the evaluation is queried before ==> faster
-            if (!(property_exists($example, "teacher_evaluation") || property_exists($example, "student_evaluation"))) {
+            if (!(\block_exacomp\db_layer::property_exists($example, "teacher_evaluation") || \block_exacomp\db_layer::property_exists($example, "student_evaluation"))) {
                 $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $userid, "courseid" => $example->courseid, "exampleid" => $example->id), "teacher_evaluation, student_evaluation");
                 $example->teacher_evaluation = $exampleEvaluation->teacher_evaluation;
                 $example->student_evaluation = $exampleEvaluation->student_evaluation;
@@ -15225,11 +15225,11 @@ class externallib extends base {
         if ($exampleAndItem->example) {
             $example = $exampleAndItem->example;
 
-            if (!property_exists($example, "annotation")) {
+            if (!\block_exacomp\db_layer::property_exists($example, "annotation")) {
                 $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $example->id, 'courseid' => $courseid));
             }
 
-            if (!(property_exists($example, "teacher_evaluation") || property_exists($example, "student_evaluation"))) {
+            if (!(\block_exacomp\db_layer::property_exists($example, "teacher_evaluation") || \block_exacomp\db_layer::property_exists($example, "student_evaluation"))) {
                 $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $studentid, "courseid" => $courseid, "exampleid" => $example->id), "teacher_evaluation, student_evaluation");
                 $example->teacher_evaluation = $exampleEvaluation->teacher_evaluation;
                 $example->student_evaluation = $exampleEvaluation->student_evaluation;
@@ -15433,11 +15433,11 @@ class externallib extends base {
         if ($exampleAndItem->example) {
             $example = $exampleAndItem->example;
 
-            if (!property_exists($example, "annotation")) {
+            if (!\block_exacomp\db_layer::property_exists($example, "annotation")) {
                 $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $example->id, 'courseid' => $courseid));
             }
 
-            if (!(property_exists($example, "teacher_evaluation") || property_exists($example, "student_evaluation"))) {
+            if (!(\block_exacomp\db_layer::property_exists($example, "teacher_evaluation") || \block_exacomp\db_layer::property_exists($example, "student_evaluation"))) {
                 $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $studentid, "courseid" => $courseid, "exampleid" => $example->id), "teacher_evaluation, student_evaluation");
                 $example->teacher_evaluation = $exampleEvaluation->teacher_evaluation;
                 $example->student_evaluation = $exampleEvaluation->student_evaluation;

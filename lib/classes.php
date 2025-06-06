@@ -63,6 +63,26 @@ class db_layer {
         return $reflection->newInstanceArgs($args);
     }
 
+    static function property_exists(object $obj, string $property): bool {
+        if ($obj instanceof db_record) {
+            return $obj->property_exists($property);
+            /*
+            if (property_exists($obj, $property)) {
+                return true;
+            }
+
+            $data = $obj->get_data();
+            if (array_key_exists($property, (array)$data)) {
+                return true;
+            }
+
+            return false;
+            */
+        } else {
+            return property_exists($obj, $property);
+        }
+    }
+
     function get_descriptors_for_topic(topic $topic) {
         $descriptors = $this->get_descriptor_records_for_topic($topic);
 
@@ -580,6 +600,8 @@ class db_record {
      */
     const SUBS = null;
 
+    protected array $_data = [];
+
     public function __construct($data = [], db_layer $dbLayer = null) {
         if ($dbLayer) {
             $this->setDbLayer($dbLayer);
@@ -604,8 +626,8 @@ class db_record {
     public function init() {
     }
 
-    public function get_data() { // TODO: the data array must be thought of!
-        $data = (object)[];
+    public function get_data(): object {
+        $data = (object)$this->_data;
         foreach ((new \ReflectionObject($this))->getProperties(\ReflectionProperty::IS_PUBLIC) as $prop) {
             $data->{$prop->getName()} = $prop->getValue($this);
         }
@@ -613,40 +635,41 @@ class db_record {
         return $data;
     }
 
-    public function toArray() {
+    public function toArray(): array {
         return (array)$this->get_data();
     }
 
     public function &__get($name) {
         static::check_property_name($name);
 
-        // if there is a getter, the getter will be called. This getter calls the fill_function if the property is not set yet ==> actually the else branch is never called
-        if (($method = 'get_' . $name) && method_exists($this, $method)) {
-            @$ret =& $this->$method(); // TODO: check out and understand... we get "Only variables should be assigned by reference". We pass a reference, but the reference is to the result of the method, so it should be fine.
+        if (array_key_exists($name, $this->_data)) {
+            return $this->_data[$name];
+        } elseif (($method = 'get_' . $name) && method_exists($this, $method)) {
+            $ret = $this->$method();
 
             // check if __get is recursively called at the same property
             /*
-            if (property_exists($this, $name)) {
+            if (\block_exacomp\db_layer::property_exists($this, $name)) {
                 // the property exists now -> error
                 throw new \coding_exception("property '$name' set on object!");
             }
             */
 
             return $ret;
-        } else if (($method = 'fill_' . $name) && method_exists($this, $method)) {
-            $this->$name = $this->$method();
+        } elseif (($method = 'fill_' . $name) && method_exists($this, $method)) {
+            $this->_data[$name] = $this->$method();
 
             // check if __get is recursively called at the same property
             /*
-            if (property_exists($this, $name)) {
+            if (\block_exacomp\db_layer::property_exists($this, $name)) {
                 // the property exists now -> error
                 throw new \coding_exception("property '$name' set on object!");
             }
             */
 
-            return $this->$name;
+            return $this->_data[$name];
         } else {
-            throw new \coding_exception("property not found " . get_class($this) . "::$name");
+            throw new \coding_exception("property not found or not initialized " . get_class($this) . "::$name");
         }
     }
 
@@ -658,6 +681,8 @@ class db_record {
         //	return true; // $this->__get($name) !== null;
         if (($method = 'fill_' . $name) && method_exists($this, $method)) {
             return true; // $this->__get($name) !== null;
+        } elseif (isset($this->_data[$name])) {
+            return true;
         } else {
             return false;
         }
@@ -673,21 +698,15 @@ class db_record {
 
             // check if __set is recursively called at the same property
             /*
-            if (property_exists($this, $name)) {
+            if (\block_exacomp\db_layer::property_exists($this, $name)) {
                 // the property exists now -> error
                 print_error('property set on object!');
             }
             */
-
+        } elseif (method_exists($this, 'get_' . $method)) {
+            throw new \coding_exception("set '$name' not allowed, because there is a get_$name function! ");
         } else {
-            if (method_exists($this, 'get_' . $method)) {
-                throw new \coding_exception("set '$name' not allowed, because there is a get_$name function! ");
-            }
-
-            $this->$name = $value; // TODO: write into a data array
-            // if ($name == 'niveau') {
-            //     $debugcode = 1;
-            // }
+            $this->_data[$name] = $value;
         }
     }
 
@@ -784,12 +803,24 @@ class db_record {
         $this->{static::SUBS} = $value;
     }
 
-    public function has_capability($cap) {
+    public function has_capability($cap): bool {
         return block_exacomp_has_item_capability($cap, $this);
     }
 
     public function require_capability($cap) {
         return block_exacomp_require_item_capability($cap, $this);
+    }
+
+    public function property_exists($property): bool {
+        if (property_exists($this, $property)) {
+            return true;
+        }
+
+        if (array_key_exists($property, $this->_data)) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -962,23 +993,8 @@ class subject extends db_record {
     public ?int $is_editable = null;
     public ?int $importstate = null;
 
-    // Properties that are not in the DB, but still used and calculated e.g. during rendering, will be added dynamically to an associative array
-
-
-    // getter for topics
-    public function &get_topics() { // TODO: understand the & operator in more detail. Without this, e.g. assign_competencies does not work at all.
-        // if they already exist and is not null, just return them
-        if (isset($this->topics)) {
-            return $this->topics;
-        }
-        // lazy loading
-        $this->fill_topics();
-        return $this->topics;
-    }
-
     protected function fill_topics() {
-        $this->topics = $this->dbLayer->get_topics_for_subject($this);
-        return $this->topics;
+        return $this->dbLayer->get_topics_for_subject($this);
     }
 
     /**
@@ -1066,24 +1082,13 @@ class topic extends db_record {
         */
     }
 
-    public function &get_descriptors() {
-        // if they already exist and is not null, just return them
-        if (isset($this->descriptors)) {
-            return $this->descriptors;
-        }
-        // lazy loading
-        $this->fill_descriptors();
-        return $this->descriptors;
-    }
-
     protected function fill_descriptors() {
-        $this->descriptors = $this->dbLayer->get_descriptors_for_topic($this);
-        return $this->descriptors;
+        return $this->dbLayer->get_descriptors_for_topic($this);
     }
 
     function get_subject() {
-        if (isset($this->subject)) {
-            return $this->subject;
+        if (isset($this->_data['subject'])) {
+            return $this->_data['subject'];
         } else {
             return \block_exacomp\subject::get($this->subjid);
         }
@@ -1162,19 +1167,6 @@ class descriptor extends db_record {
     function get_numbering($reloadTopic = false) {
         return block_exacomp_get_descriptor_numbering($this, $reloadTopic);
     }
-
-    /*
-    // TODO: check if this is still working as inteded for every case
-    function &get_numbering($reloadTopic = false) {
-        // return block_exacomp_get_descriptor_numbering($this, $reloadTopic);
-        if (isset($this->numbering) && !$reloadTopic) {
-            return $this->numbering;
-        } else {
-            $this->numbering = block_exacomp_get_descriptor_numbering($this, $reloadTopic);
-        }
-        return $this->numbering;
-    }
-    */
 
     function get_niveau() {
         return \block_exacomp\niveau::get($this->niveauid);
@@ -1268,72 +1260,27 @@ class descriptor extends db_record {
         $DB->delete_records_list(BLOCK_EXACOMP_DB_DESCCAT, 'id', $to_delete);
     }
 
-    public function &get_category_ids() {
-        // if they already exist and is not null, just return them
-        if (isset($this->category_ids)) {
-            return $this->category_ids;
-        }
-        // lazy loading
-        $this->fill_category_ids();
-        return $this->category_ids;
-    }
-
     protected function fill_category_ids() {
         global $DB;
-        $this->category_ids = $DB->get_records_menu(BLOCK_EXACOMP_DB_DESCCAT, array('descrid' => $this->id), null, 'catid, catid AS tmp');
-        return $this->category_ids;
-    }
 
-
-    public function &get_children() {
-        // if they already exist and is not null, just return them
-        // in the very first call, it is null and it will be filled. if there are no children, it will be an empty array, and return that empty array
-        if (isset($this->children)) {
-            return $this->children;
-        }
-        // lazy loading
-        $this->fill_children();
-        return $this->children;
+        return $DB->get_records_menu(BLOCK_EXACOMP_DB_DESCCAT, array('descrid' => $this->id), null, 'catid, catid AS tmp');
     }
 
     protected function fill_children() {
         if ($this->parentid) {
             // already is child
-            $this->children = [];
+            return [];
         } else {
-            $this->children = $this->dbLayer->get_child_descriptors($this);
+            return $this->dbLayer->get_child_descriptors($this);
         }
-        return $this->children;
-    }
-
-    public function &get_examples() {
-        // if they already exist and is not null, just return them
-        if (isset($this->examples)) {
-            return $this->examples;
-        }
-        // lazy loading
-        $this->fill_examples();
-        return $this->examples;
     }
 
     protected function fill_examples() {
-        $this->examples = $this->dbLayer->get_examples($this);
-        return $this->examples;
-    }
-
-    public function &get_categories() {
-        // if they already exist and is not null, just return them
-        if (isset($this->categories)) {
-            return $this->categories;
-        }
-        // lazy loading
-        $this->fill_categories();
-        return $this->categories;
+        return $this->dbLayer->get_examples($this);
     }
 
     protected function fill_categories() {
-        $this->categories = block_exacomp_get_categories_for_descriptor($this);
-        return $this->categories;
+        return block_exacomp_get_categories_for_descriptor($this);
     }
 
     function get_author() {

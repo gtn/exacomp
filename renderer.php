@@ -274,7 +274,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         foreach ($subjects as $subject) {
             $extra = '';
-            if ($this->is_edit_mode() && ($subject->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM || (property_exists($subject, "is_editable") && $subject->is_editable))) {
+            if ($this->is_edit_mode() && ($subject->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM || (\block_exacomp\db_layer::property_exists($subject, "is_editable") && $subject->is_editable))) {
                 $extra .= ' ' . html_writer::span($this->pix_icon("i/edit", block_exacomp_get_string("edit")), null, ['exa-type' => "iframe-popup", 'exa-url' => 'subject.php?courseid=' . $COURSE->id . '&id=' . $subject->id]);
                 $forwardUrl = g::$PAGE->url;
                 // if the Subject is only single and it will be deleted now - redirect to Settings page
@@ -322,7 +322,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             foreach ($subject->topics as $topic) {
                 if (block_exacomp_is_teacher() || block_exacomp_is_topic_visible($COURSE->id, $topic, g::$USER->id)) {
                     $extra = '';
-                    if ($this->is_edit_mode() && ($topic->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM || (property_exists($subject, "is_editable") && $subject->is_editable))) {
+                    if ($this->is_edit_mode() && ($topic->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM || (\block_exacomp\db_layer::property_exists($subject, "is_editable") && $subject->is_editable))) {
                         $extra .= ' ' . html_writer::span($this->pix_icon("i/edit", block_exacomp_get_string("edit")), null, [
                                 'exa-type' => "iframe-popup",
                                 'exa-url' => 'topic.php?courseid=' . $COURSE->id . '&id=' . $topic->id,
@@ -346,7 +346,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     )));
                 }
             }
-            if ($this->is_edit_mode() && ($subject->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM || (property_exists($subject, "is_editable") && $subject->is_editable))) {
+            if ($this->is_edit_mode() && ($subject->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM || (\block_exacomp\db_layer::property_exists($subject, "is_editable") && $subject->is_editable))) {
                 // only if editing and if subject was added by teacher
                 $content .= html_writer::tag('li', html_writer::link("topic.php?show=add&courseid={$COURSE->id}&subjectid={$subject->id}", "<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> " . block_exacomp_get_string('new_topic'), array(
                     'exa-type' => 'iframe-popup',
@@ -372,7 +372,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $subtitle = $selectedTopic ? $niveau->get_subtitle($selectedTopic->subjid) : null;
 
                 $extra = '';
-                if ($this->is_edit_mode() && ($niveau->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM || (is_object($selectedSubject) && property_exists($selectedSubject, "is_editable") && $selectedSubject->is_editable))) {
+                if ($this->is_edit_mode() && ($niveau->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM || (is_object($selectedSubject) && \block_exacomp\db_layer::property_exists($selectedSubject, "is_editable") && $selectedSubject->is_editable))) {
                     $deleteUrl = html_entity_decode(new block_exacomp\url('niveau.php', ['courseid' => $COURSE->id, 'id' => $niveau->id, 'action' => 'delete', 'sesskey' => sesskey(), 'forward' => g::$PAGE->url . '&editmode=1']));
                     // Niveau delete button
                     $extra .= '&nbsp;' . html_writer::span($this->pix_icon("i/delete", block_exacomp_get_string("delete")),
@@ -2630,7 +2630,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             $titleCell->text .= $this->visibility_icon_descriptor($visible, $descriptor->id);
                         }
                     }
-                    if ($editmode && ($custom_created_descriptors || (property_exists($data->subject, "is_editable") && $data->subject->is_editable))) {
+                    if ($editmode && ($custom_created_descriptors || (\block_exacomp\db_layer::property_exists($data->subject, "is_editable") && $data->subject->is_editable))) {
                         $titleCell->text .= html_writer::link('descriptor.php?courseid=' . $COURSE->id . '&id=' . $descriptor->id, $this->pix_icon("i/edit", block_exacomp_get_string("edit")),
                             array('exa-type' => 'iframe-popup', 'target' => '_blank'));
                         $titleCell->text .= html_writer::link("", $this->pix_icon("t/delete", block_exacomp_get_string("delete")),
@@ -6365,7 +6365,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $addtext = '';
                     switch (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_CROSSSUB, $crosssubj->courseid)) {
                         case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
-                            if (property_exists($grading, 'additionalinfo')) {
+                            if (\block_exacomp\db_layer::property_exists($grading, 'additionalinfo')) {
                                 $addtext = block_exacomp_format_eval_value($grading->additionalinfo);
                             } else {
                                 $addtext = block_exacomp_format_eval_value(null);
@@ -6413,7 +6413,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid)) {
                     $radar_graph_content = html_writer::tag('legend', block_exacomp_get_string('radargraphtitle'),
                         array('class' => 'competence_profile_insectitle'));
-                    $topics = block_exacomp_get_topics_for_radar_graph($courseid, $student->id, property_exists($subject, 'id') ? $subject->id : 0);
+                    $topics = block_exacomp_get_topics_for_radar_graph($courseid, $student->id, \block_exacomp\db_layer::property_exists($subject, 'id') ? $subject->id : 0);
                     if (count($topics) < 3 || count($topics) > 13) {
                         //print error
                         $img = html_writer::div(html_writer::tag("img", "", array("src" => $CFG->wwwroot . "/blocks/exacomp/pix/graph_notavailable.png")));
@@ -7055,7 +7055,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $row = new html_table_row();
             $row->attributes['class'] = 'comparison_topic';
             $cell = new html_table_cell();
-            $cell->text = property_exists($topic, 'numbering') ? $topic->numbering : '';
+            $cell->text = \block_exacomp\db_layer::property_exists($topic, 'numbering') ? $topic->numbering : '';
             $cell->attributes['class'] = 'col-numbering';
             $row->cells[] = $cell;
 
@@ -8189,7 +8189,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             // activity: done or not
             if ($withActivitiesResult) {
                 $content .= '<td valign="top">';
-                if (property_exists($example, 'finished')) {
+                if (\block_exacomp\db_layer::property_exists($example, 'finished')) {
                     if ($example->finished) {
                         if ($example->finished === 'not-defined') {
                             $content .= ''; // the activity has not defined conditions to be completed
