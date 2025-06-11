@@ -712,6 +712,7 @@ function block_exacomp_get_assessment_diffLevel_options($courseid = 0) {
     //return trim(get_config('exacomp', 'assessment_diffLevel_options'));
 }
 
+// TODO: maybe readd the static more performant solution, but with a check on which course is currently used?
 function block_exacomp_get_assessment_diffLevel_options_splitted($courseid = 0) {
     // this static value is faster BUT: it breaks course specific settings on e.g. the competence profile
     //    static $value;
@@ -730,11 +731,30 @@ function block_exacomp_get_assessment_verbose_options($getforlanguage = null, $c
     //    if ($value !== null && array_key_exists($getforlanguage, $value)) {
     //        return $value[$getforlanguage];
     //    }
+    // the getforlanguage key in the array was used to get the correct language string --> it was only needed when using the static value ==> removed it
+    $value = block_exacomp_get_translatable_parameter('assessment_verbose_options', $getforlanguage, $courseid);
+    // return '' instead of null, to prevent null errors
+    if ($value === null) {
+        $value = '';
+        // TODO: is it fine to return ''? Or should it be null. It will be used for example in explode()
+        // ==> null is a problem. But '' could introduce problems in other paces, as is looks like the user has entered an empty string instead of nothing yet. ==> check
+    }
+    return $value;
+    //return block_exacomp_get_translatable_parameter('assessment_verbose_options', $getforlanguage);
+}
+
+/*
+function block_exacomp_get_assessment_verbose_options($getforlanguage = null, $courseid = 0) {
+    //    static $value;
+    //    if ($value !== null && array_key_exists($getforlanguage, $value)) {
+    //        return $value[$getforlanguage];
+    //    }
     $value = array();
     $value[$getforlanguage] = block_exacomp_get_translatable_parameter('assessment_verbose_options', $getforlanguage, $courseid);
     return $value[$getforlanguage];
     //return block_exacomp_get_translatable_parameter('assessment_verbose_options', $getforlanguage);
 }
+*/
 
 function block_exacomp_get_assessment_verbose_options_short($getforlanguage = null, $courseid = 0) {
     //    static $value;
@@ -1335,6 +1355,10 @@ function block_exacomp_get_translatable_parameter($parameter = '', $getforlangua
     if ($language && is_array($configdata) && array_key_exists($language, $configdata) && $configdata[$language] != '') {
         return $configdata[$language];
     } else {
+        // returns a warning if the $configdata['de'] is not set and returns null ==> return null if it is not set or if it is null alltogether
+        if ($configdata === null || !is_array($configdata) || !array_key_exists('de', $configdata)) {
+            return null;
+        }
         return $configdata['de'];
     }
 }

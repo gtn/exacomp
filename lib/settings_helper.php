@@ -46,9 +46,16 @@ class block_exacomp_admin_setting_extraconfigtext extends admin_setting_configte
                 if (!isset($defaultVal)) {
                     $defaultVal = block_exacomp_get_string('settings_assessment_verbose_options_default');
                 }
-                $copyofget = trim($get);
+
+                if ($get === null) {
+                    $copyofget = ''; // trim(null) returned '', BUT is deprecated
+                } else {
+                    $copyofget = trim($get);
+                }
+
                 if ($copyofget == '') {
                     return $get; // get default or empty?
+                    // I would say: empty. Otherwise, it will not show up as a new setting when installing exacomp the first time
                 }
                 $get = json_decode($get, true);
                 if (json_last_error() && $copyofget != '') {
@@ -651,11 +658,18 @@ class block_exacomp_selfevaluation_configtable extends admin_setting { // admin_
     }
 
     public function get_setting() {
+        // TODO: assessment_SelfEval_verboses is not added to the $newsettings in adminlib.php when installing exacomp the first time, because instead standard settings are returned as if they were set ---> why?
         $result = array();
         foreach ($this->targets as $target) {
             foreach ($this->params as $param) {
                 $targetparam = 'assessment_selfEvalVerbose_' . $target . '_' . $param;
                 $value = $this->config_read($targetparam);
+
+                // if the value is null, write '' instead. Otherwise e.g. trim() does not like it, as it expects string, not null
+                // same for json_decode() - it returns null if the value is not set, but warns ==> set it to ''
+                if ($value === null) {
+                    $value = '';
+                }
 
                 $newvalue = null;
                 $copyofvalue = trim($value);
