@@ -548,6 +548,12 @@ $PAGE->set_pagelayout('embedded');
 
 $SESSION->wantsurl = $CFG->wwwroot . '/blocks/exacomp/applogin_diggr_plus.php?' . $_SERVER['QUERY_STRING'];
 
+$moodle_redirect_token = optional_param('moodle_redirect_token', '', PARAM_TEXT);
+if ($moodle_redirect_token) {
+    // store the moodle_redirect_token in session, this is needed so local_exademo knows, from which app the login request came.
+    $SESSION->block_exacomp_moodle_redirect_token = $moodle_redirect_token;
+}
+
 // für cors im iframe ist ein extra redirect mit manueller Benutzerbestätigung notwendig
 // sonst werden die cookies nicht geladen bzw. können auch keine neuen cookies gesetzt werden
 $extra_iframe_redirect = optional_param('extra_iframe_redirect', '', PARAM_TEXT);
