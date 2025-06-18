@@ -128,8 +128,7 @@ class block_exacomp_admin_setting_extraconfigtext extends admin_setting_configte
             }
             // add onChange listener: for 'assessment_grade_verbose_negative'
             foreach ($selector->query('//input[@id=\'id_s_exacomp_assessment_verbose_options\'][1]') as $e) {
-                $e->setAttribute('onChange', $e->getAttribute('onChange') .
-                        '; if (typeof reloadVerboseNegativeSelectbox === "function") {reloadVerboseNegativeSelectbox();};');
+                $e->setAttribute('onChange', $e->getAttribute('onChange') . '; if (typeof reloadVerboseNegativeSelectbox === "function") {reloadVerboseNegativeSelectbox();};');
                 //$script = $doc->createElement('script', 'reloadVerboseNegativeSelectbox();');
                 //$e->parentNode->appendChild($script);
             }
@@ -143,8 +142,7 @@ class block_exacomp_admin_setting_extraconfigtext extends admin_setting_configte
                 case 'assessment_verbose_options':
                     $doc = new DOMDocument();
                     // $output = mb_convert_encoding($output, 'HTML-ENTITIES', 'UTF-8');
-                    $output = htmlspecialchars_decode(iconv('UTF-8', 'ISO-8859-1', htmlentities($output, ENT_COMPAT, 'UTF-8')),
-                            ENT_QUOTES);
+                    $output = htmlspecialchars_decode(iconv('UTF-8', 'ISO-8859-1', htmlentities($output, ENT_COMPAT, 'UTF-8')), ENT_QUOTES);
                     //                        $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
                     $doc->loadHTML($output, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
                     $selector = new DOMXPath($doc);
@@ -275,8 +273,7 @@ class block_exacomp_link_to extends admin_setting {
     private $tagattributes = array();
     private $keptLabel = false;
 
-    public function __construct($name, $visiblename, $description, $defaultsetting, $link = '', $title = '', $linkparams = array(),
-            $tagattributes = array(), $keptLabel = false) {
+    public function __construct($name, $visiblename, $description, $defaultsetting, $link = '', $title = '', $linkparams = array(), $tagattributes = array(), $keptLabel = false) {
         $this->nosave = true;
         $this->link = $link;
         $this->linkparams = $linkparams;
@@ -297,13 +294,13 @@ class block_exacomp_link_to extends admin_setting {
     public function output_html($data, $query = '') {
         if ($this->link) {
             $link = html_writer::link(new moodle_url($this->link, $this->linkparams),
-                    $this->title, $this->tagattributes);
+                $this->title, $this->tagattributes);
         } else {
             return '';
         }
         //$output = parent::output_html($data, $query);
         $template = format_admin_setting($this, $this->visiblename, $link,
-                $this->description, true, '', '', $query);
+            $this->description, true, '', '', $query);
         // Hide some html for better view of this settings.
         $doc = new DOMDocument();
         // $template = mb_convert_encoding($template, 'HTML-ENTITIES', 'UTF-8'); // throws deprecation error
@@ -437,8 +434,7 @@ class block_exacomp_admin_setting_preconfiguration extends admin_setting_configs
         $selector = new DOMXPath($doc);
         foreach ($selector->query('//select') as $e) {
             $e->setAttribute("onChange", "setupPreconfiguration(this);");
-            $e->setAttribute('onChange', $e->getAttribute('onChange') .
-                    '; if (typeof reloadVerboseNegativeSelectbox === "function") {reloadVerboseNegativeSelectbox();};');
+            $e->setAttribute('onChange', $e->getAttribute('onChange') . '; if (typeof reloadVerboseNegativeSelectbox === "function") {reloadVerboseNegativeSelectbox();};');
         }
         $output = $doc->saveHTML($doc->documentElement);
         // Add JS code, generated from settings_preconfiguration.xml.
@@ -790,13 +786,10 @@ class block_exacomp_selfevaluation_configtable extends admin_setting { // admin_
             // $return .= $OUTPUT->pix_icon('t/collapsed', '', 'moodle', ['id' => 'editSelfEvalVerbosesIconOpen']);
             // $return .= $OUTPUT->pix_icon('t/dropdown', '', 'moodle', ['id' => 'editSelfEvalVerbosesIconClose', 'style' => 'display:none;']);
 
-            $return .= '<div id="editSelfEvalVerbosesIconOpen" border="0" style="display:inline-block;">' .
-                    $OUTPUT->pix_icon('t/collapsed', '', 'moodle') . '</div>';
-            $return .= '<div id="editSelfEvalVerbosesIconClose" border="0" style="display:none;">' .
-                    $OUTPUT->pix_icon('t/dropdown', '', 'moodle') . '</div>';
+            $return .= '<div id="editSelfEvalVerbosesIconOpen" border="0" style="display:inline-block;">' . $OUTPUT->pix_icon('t/collapsed', '', 'moodle') . '</div>';
+            $return .= '<div id="editSelfEvalVerbosesIconClose" border="0" style="display:none;">' . $OUTPUT->pix_icon('t/dropdown', '', 'moodle') . '</div>';
         } else {
-            $return .= '<img src="' . $CFG->wwwroot .
-                    '/pix/t/collapsed.png" id="editSelfEvalVerbosesIconOpen" border="0" style="display:none;"/>';
+            $return .= '<img src="' . $CFG->wwwroot . '/pix/t/collapsed.png" id="editSelfEvalVerbosesIconOpen" border="0" style="display:none;"/>';
             $return .= '<img src="' . $CFG->wwwroot . '/pix/t/dropdown.png" id="editSelfEvalVerbosesIconClose" border="0" />';
         }
         $return .= block_exacomp_get_string('settings_assessment_SelfEval_verboses_edit') . '</a>';
@@ -816,25 +809,23 @@ class block_exacomp_selfevaluation_configtable extends admin_setting { // admin_
                 $name = $this->get_full_name() . '[' . $target . '][' . $paramname . ']';
                 $haserror = '';
                 if (array_key_exists($target, $inputerrors)
-                        && array_key_exists($paramname, $inputerrors[$target])
-                        && $inputerrors[$target][$paramname]) {
+                    && array_key_exists($paramname, $inputerrors[$target])
+                    && $inputerrors[$target][$paramname]) {
                     $haserror .= ' error ';
                 }
                 $input = html_writer::empty_tag('input',
-                        array(
-                                'type' => 'text',
-                                'id' => $id,
-                                'name' => $name,
-                                'value' => $data[$target][$paramname],
-                                'size' => ($paramname == 'long' ? 45 : 12),
-                                'class' => 'form-control exacomp_forpreconfig' . $haserror,
-                        ));
+                    array(
+                        'type' => 'text',
+                        'id' => $id,
+                        'name' => $name,
+                        'value' => $data[$target][$paramname],
+                        'size' => ($paramname == 'long' ? 45 : 12),
+                        'class' => 'form-control exacomp_forpreconfig' . $haserror,
+                    ));
 
                 // add mesage about default (DE) value if the user uses not DE interface language
-                if ($this->lang != 'de' &&
-                        block_exacomp_get_assessment_selfEval_verboses($target, $paramname, 'de')) { // only for NON DE
-                    $message = block_exacomp_get_string('settings_default_de_value') .
-                            block_exacomp_get_assessment_selfEval_verboses($target, $paramname, 'de');
+                if ($this->lang != 'de' && block_exacomp_get_assessment_selfEval_verboses($target, $paramname, 'de')) { // only for NON DE
+                    $message = block_exacomp_get_string('settings_default_de_value') . block_exacomp_get_assessment_selfEval_verboses($target, $paramname, 'de');
                     $input .= '<span class="text-info small">' . $message . '</span>';
                 }
 
@@ -868,7 +859,7 @@ class block_exacomp_selfevaluation_configtable extends admin_setting { // admin_
 
         // Get standard settings parameters template.
         $template = format_admin_setting($this, $this->visiblename, $return,
-                $this->description, true, '', '', $query);
+            $this->description, true, '', '', $query);
 
         // Hide some html for better view of this settings.
         $doc = new DOMDocument();
@@ -987,13 +978,12 @@ class block_exacomp_assessment_configtable extends admin_setting {
                 $id = $this->get_id() . '_' . $target . '_scheme_' . $i;
                 $name = $this->get_full_name() . '[' . $target . '][scheme]';
                 $schemeradioattributes = array(
-                        'type' => 'radio',
-                        'id' => $id,
-                        'name' => $name,
-                        'value' => $i,
-                        'class' => 'exacomp_forpreconfig',
-                        'onClick' => ' if (!confirm(\'' . block_exacomp_get_string('settings_assessment_are_you_sure_to_change') .
-                                '\')) {return false};',
+                    'type' => 'radio',
+                    'id' => $id,
+                    'name' => $name,
+                    'value' => $i,
+                    'class' => 'exacomp_forpreconfig',
+                    'onClick' => ' if (!confirm(\'' . block_exacomp_get_string('settings_assessment_are_you_sure_to_change') . '\')) {return false};',
                 );
                 if ($data[$target]['scheme'] == $i) {
                     $schemeradioattributes['checked'] = 'checked';
@@ -1014,26 +1004,22 @@ class block_exacomp_assessment_configtable extends admin_setting {
                 // We need "0" for non-checked checkboxes before checkbox element.
                 $hiddeninput = html_writer::empty_tag('input', array('type' => 'hidden', 'name' => $name, 'value' => '0'));
                 $checkboxattributes = array(
-                        'id' => $id,
-                        'class' => 'exacomp_forpreconfig',
+                    'id' => $id,
+                    'class' => 'exacomp_forpreconfig',
                 );
                 if ($this->ispreconfig > 0) {
                     $checkboxattributes['style'] = 'opacity: 0.5;';
                     $checkboxattributes['onClick'] = 'return false;';
                     $checkboxattributes['onKeydown'] = 'return false;';
                 } else {
-                    $checkboxattributes['onClick'] =
-                            ' if (!confirm(\'' . block_exacomp_get_string('settings_assessment_are_you_sure_to_change') .
-                            '\')) {return false};';
-                    $checkboxattributes['onKeydown'] =
-                            ' if (!confirm(\'' . block_exacomp_get_string('settings_assessment_are_you_sure_to_change') .
-                            '\')) {return false};';
+                    $checkboxattributes['onClick'] = ' if (!confirm(\'' . block_exacomp_get_string('settings_assessment_are_you_sure_to_change') . '\')) {return false};';
+                    $checkboxattributes['onKeydown'] = ' if (!confirm(\'' . block_exacomp_get_string('settings_assessment_are_you_sure_to_change') . '\')) {return false};';
                 }
                 $checkbox = html_writer::checkbox($name,
-                        '1',
-                        $data[$target][$paramname],
-                        '',
-                        $checkboxattributes);
+                    '1',
+                    $data[$target][$paramname],
+                    '',
+                    $checkboxattributes);
                 $cell = new html_table_cell($hiddeninput . $checkbox);
                 $cell->attributes['align'] = 'center';
                 $row->cells[] = $cell;
@@ -1043,7 +1029,7 @@ class block_exacomp_assessment_configtable extends admin_setting {
         $return .= html_writer::table($table);
         // Get standard settings parameters template.
         $template = format_admin_setting($this, $this->visiblename, $return,
-                $this->description, true, '', '', $query);
+            $this->description, true, '', '', $query);
         // Hide some html for better view of this settings.
         $doc = new DOMDocument();
         // $template = mb_convert_encoding($template, 'HTML-ENTITIES', 'UTF-8');
