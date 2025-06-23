@@ -578,6 +578,7 @@ $moodle_redirect_token = required_param('moodle_redirect_token', PARAM_TEXT);
 
 $applogin = $DB->get_record('block_exacompapplogin', ['moodle_redirect_token' => $moodle_redirect_token]);
 if (!$applogin) {
+    unset($SESSION->wantsurl);
     throw new Error('token not found');
 }
 
