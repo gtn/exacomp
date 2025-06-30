@@ -976,3 +976,4 @@ $string['preselect_delete_subject_because_it_is_disabled'] = 'Vorausgewählt fü
 $string['preselect_delete_subject_because_it_was_not_imported_in_last_import'] = 'Vorausgewählt für Löschung, da dieses Fach auf Komet nicht mehr vorhanden ist, aber in dieser Moodle-Installation noch in Kursen verwendet wird, oder Bewertungen hat, oder Inhalte anderer Quellen beinhaltet.';
 $string['sync_all_grids_with_komet'] = 'Synchronisiere alle Raster mit Komet';
 $string['sync_all_grids_with_komet_description'] = 'Synchronisiere alle Raster mit Komet. Alle Raster, die in Komet nicht mehr vorhanden sind, werden gelöscht, es sei denn, sie sind bereits in Verwendung.';
+$string['no_examples_in_this_grid'] = 'In diesem Raster gibt es keine Lernmaterialien';
