@@ -667,7 +667,6 @@ var formunsaved = false;
     });
 
 
-    /*
     $(document).ready(function () {
       $('.selectallornone').on('click', function () {
         var val = $("input:checkbox").get(1).checked;
@@ -682,10 +681,10 @@ var formunsaved = false;
         });
       });
     });
-    */
+
 
     // 1. only select all checkboxes in the next rows until the next exahighlight row
-    $(document).on('click', '.selectallornone', function () {
+    $(document).on('click', '.selectallornone-edit_config', function () {
       var $parentRow = $(this).closest('.exahighlight'); // Get the parent row with the exahighlight class
       var $nextRows = $parentRow.nextUntil('.exahighlight'); // Get all rows until the next exahighlight
       var $checkboxes = $nextRows.find('input[type="checkbox"]'); // Find checkboxes in those rows

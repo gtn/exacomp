@@ -4851,7 +4851,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $celltwo->colspan = 1;
 
             $celltwo->text = html_writer::tag("a", block_exacomp_get_string('selectallornone', 'form'),
-                array("class" => "selectallornone"));
+                array("class" => "selectallornone-edit_config"));
 
             $row->cells[] = $cell;
             $row->cells[] = $celltwo;
