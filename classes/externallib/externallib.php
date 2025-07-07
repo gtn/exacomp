@@ -14333,64 +14333,71 @@ class externallib extends base {
      * @param string $url
      * @return array
      */
-    public static function get_url_preview($url) {
-        static::validate_parameters(static::get_url_preview_parameters(), array(
+    public static function get_url_preview(string $url): array {
+        [
             'url' => $url,
-        ));
+        ] = static::validate_parameters(static::get_url_preview_parameters(), [
+            'url' => $url,
+        ]);
 
         // disable errors on invalid html
         libxml_use_internal_errors(true);
 
-        $dom = new DOMDocument;
+        $client = new \core\http_client();
+        $dom = new \DOMDocument;
+
+        $errorResponse = [
+            'success' => false,
+            'title' => null,
+            'description' => null,
+            'imageurl' => null,
+        ];
+
         try {
-            //            $dom->loadHTMLFile('https://www.nachrichten.at/oberoesterreich/oberoesterreicher-knackt-lotto-jackpot;art4,3257353');
-            $dom->loadHTMLFile($url);
-
+            $content = $client->get($url)->getBody()->getContents();
+            $dom->loadHTML($content);
         } catch (Exception $e) {
+            return $errorResponse;
         }
 
-        if ($dom->documentElement) {
-
-            $title = null;
-            $imageUrl = null;
-            $description = null;
-
-            $metaElements = $dom->getElementsByTagName('meta');
-
-            foreach ($metaElements as $metaElement) {
-                $name = $metaElement->getAttribute("name") ?: $metaElement->getAttribute("property");
-                $content = $metaElement->getAttribute("content");
-
-                if ($name == "og:title") {
-                    $title = $content;
-                }
-
-                if ($name == "description" || $name == "og:description") {
-                    $description = $content;
-                }
-
-                if ($name == "og:image") {
-                    $imageUrl = $content;
-                }
-            }
-
-            if (empty($title)) {
-                $titleElements = $dom->getElementsByTagName('title');
-                $title = $titleElements->length ? utf8_decode($titleElements->item(0)->textContent) : null;
-            }
-            //
-            //            echo $title;
-            //            echo "\r\n" . $description;
-            //            echo "\r\n" . $imageUrl;
-
-            $return = array(
-                "title" => $title,
-                "description" => $description,
-                "imageurl" => $imageUrl,
-            );
-
-            return $return;
+        if (!$dom->documentElement) {
+            return $errorResponse;
         }
+
+        $title = null;
+        $imageUrl = null;
+        $description = null;
+
+        $metaElements = $dom->getElementsByTagName('meta');
+
+        foreach ($metaElements as $metaElement) {
+            $name = $metaElement->getAttribute("name") ?: $metaElement->getAttribute("property");
+            $content = $metaElement->getAttribute("content");
+
+            if ($name == "og:title") {
+                $title = $content;
+            }
+
+            if ($name == "description" || $name == "og:description") {
+                $description = $content;
+            }
+
+            if ($name == "og:image") {
+                $imageUrl = $content;
+            }
+        }
+
+        if (!$title) {
+            $titleElements = $dom->getElementsByTagName('title');
+            $title = $titleElements->length ? utf8_decode($titleElements->item(0)->textContent) : null;
+        }
+
+        return [
+            'success' => true,
+            'title' => $title,
+            'description' => $description,
+            'imageurl' => $imageUrl,
+        ];
     }
 
     /**
@@ -14399,11 +14406,12 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function get_url_preview_returns() {
-        return new external_single_structure(array(
-            "title" => new external_value(PARAM_TEXT, 'true if successful'),
-            "description" => new external_value(PARAM_TEXT, 'true if successful'),
-            "imageurl" => new external_value(PARAM_TEXT, 'true if successful'),
-        ));
+        return new external_single_structure([
+            'success' => new external_value(PARAM_BOOL),
+            'title' => new external_value(PARAM_TEXT),
+            'description' => new external_value(PARAM_TEXT),
+            'imageurl' => new external_value(PARAM_TEXT),
+        ]);
     }
 
     /**
