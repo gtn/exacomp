@@ -121,7 +121,7 @@ if ($formdata = $form->get_data()) {
     block_exaport_share_view_to_teachers($dbView->id, $courseid);
 
     // add item to view
-    $DB->insert_record('block_exaportviewblock', array('viewid' => $dbView->id, ' positionx' => 1, 'positiony' => 1, 'type' => 'item', 'itemid' => $itemid));
+    $DB->insert_record('block_exaportviewblock', array('viewid' => $dbView->id, 'positionx' => 1, 'positiony' => 1, 'type' => 'item', 'itemid' => $itemid));
 
     if (isset($formdata->file)) {
         $filename = $form->get_new_filename('file');
