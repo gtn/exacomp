@@ -15151,6 +15151,7 @@ class externallib extends base {
         return new external_function_parameters(array(
             'exampleid' => new external_value(PARAM_INT, ''),
             'courseid' => new external_value(PARAM_INT, ''),
+            'itemid' => new external_value(PARAM_INT, '', VALUE_DEFAULT, 0),
         ));
     }
 
@@ -15158,23 +15159,55 @@ class externallib extends base {
      * @ws-type-read
      * @return array of items
      */
-    public static function dakoraplus_get_example_and_item($exampleid, $courseid) {
+    public static function dakoraplus_get_example_and_item(int $exampleid, int $courseid, int $itemid) {
         global $USER, $DB;
 
-        static::validate_parameters(static::dakoraplus_get_example_and_item_parameters(), array(
+        [
             'exampleid' => $exampleid,
             'courseid' => $courseid,
-        ));
+            'itemid' => $itemid,
+        ] = static::validate_parameters(static::dakoraplus_get_example_and_item_parameters(), [
+            'exampleid' => $exampleid,
+            'courseid' => $courseid,
+            'itemid' => $itemid,
+        ]);
 
         $studentid = $USER->id;
 
-        $example = static::get_example_by_id($exampleid, $courseid);
+        if ($exampleid) {
+            if ($itemid) {
+                throw new \moodle_exception('itemid and exampleid are not supported');
+            }
+            $example = static::get_example_by_id($exampleid, $courseid);
 
-        $item = current(block_exacomp_get_items_for_competence($studentid, $example->id, BLOCK_EXACOMP_TYPE_EXAMPLE));
-        if (!$item) {
-            // hack daniel, freie materialien haben keine deskriptoren, darum liefert block_exacomp_get_items_for_competence keine werte
-            $item = static::get_example_item($studentid, $example->id);
+            $item = current(block_exacomp_get_items_for_competence($studentid, $example->id, BLOCK_EXACOMP_TYPE_EXAMPLE));
+            if (!$item) {
+                // hack daniel, freie materialien haben keine deskriptoren, darum liefert block_exacomp_get_items_for_competence keine werte
+                $item = static::get_example_item($studentid, $example->id);
+            }
+        } elseif ($itemid) {
+            $example = null;
+
+            $item = $DB->get_record_sql('SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue
+              FROM {block_exaportitem} i
+                JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON ie.itemid=i.id
+              WHERE i.id = :itemid
+                AND i.userid = :userid
+                AND i.courseid = :courseid
+                AND ie.competence_type = :comptype
+              ORDER BY ie.timecreated DESC', [
+                'itemid' => $itemid,
+                'userid' => $studentid,
+                'courseid' => $courseid,
+                'comptype' => BLOCK_EXACOMP_TYPE_TOPIC
+            ], MUST_EXIST);
+
+            // Info: the fields subjecttitle, topictitle, subjectid, topicid are not set in the item.
+            // so when loading only an item this is not available
+        } else {
+            throw new \moodle_exception('exampleid or itemid must be set');
         }
+
         if ($item) {
             static::block_exacomp_get_item_details($item, $studentid, static::wstoken());
         }
@@ -15242,6 +15275,9 @@ class externallib extends base {
                 $example->teacher_evaluation = $exampleEvaluation->teacher_evaluation;
                 $example->student_evaluation = $exampleEvaluation->student_evaluation;
             }
+        } else {
+            // remove example property is no example
+            unset($exampleAndItem->example);
         }
 
         $exampleAndItem->status = block_exacomp_get_human_readable_item_status($exampleAndItem->item ? $exampleAndItem->item->status : null);
