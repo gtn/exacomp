@@ -113,10 +113,7 @@ echo $output->header_v2('tab_teacher_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $page_identifier);
 /* CONTENT REGION */
 
-// skillsmanagemenet has a per course configuration, excaomp has a per moodle configuration (courseid = 0)
-$limit_courseid = block_exacomp_is_skillsmanagement() ? $courseid : 0;
-
-$schooltypes = block_exacomp_build_schooltype_tree_for_courseselection($limit_courseid, true);
+$schooltypes = block_exacomp_build_schooltype_tree_for_courseselection($courseid, true);
 
 $active_topics = block_exacomp_get_topics_by_subject($courseid, 0, true);
 
@@ -149,7 +146,7 @@ if (isset($SESSION->courseselection_filter)
     $schooltypes = $newSchooltypes;
 }
 
-echo $output->courseselection($schooltypes, $active_topics, $headertext);
+echo $output->courseselection($schooltypes, $active_topics, $headertext, $courseid);
 
 /* END CONTENT REGION */
 echo $output->footer();

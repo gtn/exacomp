@@ -2612,7 +2612,8 @@ class data_importer extends data {
 
         if ($dbItem = g::$DB->get_record($table, $where)) {
             $item->id = $dbItem->id;
-            //echo $item->id.'==='.self::$import_source_local_id."\r\n";
+            // do not change the courseid (not all tables have such field).
+            unset($item->courseid);
             if ($item->source == self::$import_source_local_id) {
                 // only update, if coming from same source as xml
                 g::$DB->update_record($table, $item);
@@ -3237,6 +3238,10 @@ class data_importer extends data {
         }
 
         $subject->importstate = BLOCK_EXACOMP_SUBJECT_NOT_MISSING_FROM_IMPORT; // since the subject is being imported, it is NOT missing from import
+
+        if (@$GLOBALS['teacher_imports_to_course']) {
+            $subject->courseid = $GLOBALS['teacher_imports_to_course'];
+        }
 
         self::insert_or_update_item(BLOCK_EXACOMP_DB_SUBJECTS, $subject);
         self::kompetenzraster_mark_item_used(BLOCK_EXACOMP_DB_SUBJECTS, $subject);

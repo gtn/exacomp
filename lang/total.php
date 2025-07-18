@@ -3439,6 +3439,14 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Von Lehrern erstellte Kompetenzen sind global verfüger. Die Kompetenzen sind damit auch in anderen Kursen mit dem gleichen Raster sichtbar.',
         'Competences created by a teacher are available globally. If the same grid is used in a different course, the competence will be visible.',
     ],
+    'settings_teacher_can_import_grid' => [
+        'Lehrkraft darf Kompetenzraster hochladen',
+        'Teachers have permission to upload competency grids',
+    ],
+    'settings_teacher_can_import_grid_description' => [
+        '',
+        '',
+    ],
     'settings_export_password' => [
         'Sicherung von Kompetenzrastern mit Passwort schützen (AES-256 Verschlüsselung)',
         'Passwort protection (AES-256 encryption) for competence grid export',
@@ -3542,6 +3550,10 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
     'tab_teacher_settings_course_assessment' => [
         'Kursspezifische Beurteilung',
         'Course assessment',
+    ],
+    'tab_teacher_settings_gridimport' => [
+        'Kompetenzraster Import',
+        'Grid import',
     ],
     'course_assessment_config_infotext' => [
         'Wählen Sie das gewünschte Beurteilungsschema aus.',

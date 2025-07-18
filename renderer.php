@@ -5159,7 +5159,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         return $output;
     }
 
-    public function courseselection($schooltypes, $active_topics, $headertext) {
+    public function courseselection($schooltypes, $active_topics, $headertext, $courseid = 0) {
         global $CFG, $DB, $PAGE, $COURSE;
 
         $header = html_writer::tag('p', $headertext) . html_writer::empty_tag('br');

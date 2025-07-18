@@ -1557,19 +1557,47 @@ function block_exacomp_get_schooltypes_by_course($courseid) {
  * -only subject according to selected schooltypes are returned
  *
  * @param int $courseid
+ * @param int $schooltypeid
+ * @param bool $strict_courselimited - true => ONLY from $courseid; false => if $courseid = 0 or from $courseid
+ *
+ * @return mixed
  */
-function block_exacomp_get_subjects_for_schooltype($courseid, $schooltypeid = 0) {
+function block_exacomp_get_subjects_for_schooltype($courseid, $schooltypeid = 0, $strict_courselimited = false) {
+
+    $whereand = [];
     $sql = 'SELECT s.*
                 FROM {' . BLOCK_EXACOMP_DB_SUBJECTS . '} s
 	                JOIN {' . BLOCK_EXACOMP_DB_MDLTYPES . '} type ON s.stid = type.stid
-                WHERE type.courseid = ? ';
+                ';
+    $sqlparams = [];
     // AND (s.disabled IS NULL OR s.disabled = 0) is needed conditions here, but we need to show hidden grids if here are already selected topics
 
-    if ($schooltypeid > 0) {
-        $sql .= ' AND type.stid = ? ';
+    if ($strict_courselimited) {
+        $whereand[] = ' type.courseid = ? ';
+        $sqlparams[] = $courseid;
     }
 
-    return \block_exacomp\subject::get_objects_sql($sql, [$courseid, $schooltypeid]);
+    if ($schooltypeid > 0) {
+        $whereand[] = ' type.stid = ? ';
+        $sqlparams[] = $schooltypeid;
+    }
+
+    if ($courseid) {
+        if ($strict_courselimited) {
+            $whereand[] = ' s.courseid = ? ';
+        } else {
+            $whereand[] = ' (s.courseid = 0 OR s.courseid = ?) ';
+        }
+        $sqlparams[] = $courseid;
+    }
+
+    if ($whereand) {
+        $sql .= ' WHERE '.implode(' AND ', $whereand);
+    }
+//    echo "<pre>debug:<strong>lib.php:1587</strong>\r\n"; print_r($courseid); echo '</pre>'; // !!!!!!!!!! delete it
+//    echo "<pre>debug:<strong>lib.php:1588</strong>\r\n"; print_r($strict_courselimited); echo '</pre>'; // !!!!!!!!!! delete it
+//echo "<pre>debug:<strong>lib.php:1587</strong>\r\n"; print_r($sql); echo '</pre>'; exit; // !!!!!!!!!! delete it
+    return \block_exacomp\subject::get_objects_sql($sql, $sqlparams);
 }
 
 /**
@@ -3251,6 +3279,10 @@ function block_exacomp_build_navigation_tabs_settings($courseid) {
     }
     // Grading submenu
     $settings_subtree[] = new tabobject('tab_teacher_settings_course_assessment', new moodle_url('/blocks/exacomp/edit_course_assessment.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_course_assessment"), null, true);
+    // Grid importing by Teacher
+    if (block_exacomp_can_teacher_import_grid()) {
+        $settings_subtree[] = new tabobject('tab_teacher_settings_gridimport', new moodle_url('/blocks/exacomp/import_teacher.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_gridimport"), null, true);
+    }
 
     return $settings_subtree;
 }
@@ -5703,12 +5735,17 @@ function block_exacomp_get_tipp_string($compid, $user, $scheme, $type, $comptype
  *
  * Gets tree with schooltype on highest level
  *
- * @param integer $limit_courseid
+ * @param integer $courseid
  * @param bool $onlyWithSubjects
  * @return array
  */
-function block_exacomp_build_schooltype_tree_for_courseselection($limit_courseid, $onlyWithSubjects = false) {
+function block_exacomp_build_schooltype_tree_for_courseselection($courseid, $onlyWithSubjects = false) {
     global $SESSION;
+
+    // skillsmanagemenet has a per course configuration, exacomp has a per moodle configuration (courseid = 0)
+    $limit_courseid = block_exacomp_is_skillsmanagement() ? $courseid : 0;
+    $strict_courselimit = true; // Only items from the course_id will be used
+
     $schooltypes = block_exacomp_get_schooltypes_by_course($limit_courseid);
 
     // filtering
@@ -5726,8 +5763,14 @@ function block_exacomp_build_schooltype_tree_for_courseselection($limit_courseid
         });
     }
 
+    // if it is not block_exacomp_is_skillsmanagement() - check subjects on imported by the teacher
+    if (!$limit_courseid && !get_config('exacomp', 'show_teacherdescriptors_global')) {
+        $limit_courseid = $courseid;
+        $strict_courselimit = false; // Will be used items for $limit_courseid and with courseid = 0
+    }
+
     foreach ($schooltypes as $k => $schooltype) {
-        $schooltype->subjects = block_exacomp_get_subjects_for_schooltype($limit_courseid, $schooltype->id);
+        $schooltype->subjects = block_exacomp_get_subjects_for_schooltype($limit_courseid, $schooltype->id, $strict_courselimit);
         if ($onlyWithSubjects && !$schooltype->subjects) {
             unset($schooltypes[$k]);
         }
@@ -14946,5 +14989,9 @@ function block_exacomp_delete_grids_missing_from_komet_import() {
     // in the end: normalize, so that topics and descriptors are also removed:
     \block_exacomp\data::normalize_database(); // TODO: run it here? Or wait for that task to run independantly?
     return true;
+}
+
+function block_exacomp_can_teacher_import_grid() {
+    return get_config('exacomp', 'teacher_can_import_grid');
 }
 
