@@ -47,7 +47,9 @@ $PAGE->set_url('/blocks/exacomp/import_teacher.php', array('courseid' => $course
 $PAGE->set_heading(block_exacomp_get_string('blocktitle'));
 $PAGE->set_title(block_exacomp_get_string($page_identifier));
 
-block_exacomp_require_teacher($context);
+if (!block_exacomp_is_teacher($courseid)) {
+    throw new block_exacomp_permission_exception('User is no teacher');
+}
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
