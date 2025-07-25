@@ -136,14 +136,24 @@ if (block_exacomp_can_teacher_import_grid()) {
                         case 'compareCategories':
                             if ($htmltext == '') {
                                 $step++;
-                                $img = 'compprof_rating_teacher_grey_' . $step . '_3.png'; // 3.img
+//                                $img = 'compprof_rating_teacher_grey_' . $step . '_3.png'; // 3.img
+                                $img = '';
                                 $htmltext = block_exacomp_get_string("import_category_mapping_needed");
                             }
                         case 'selectGrids':
                             if ($htmltext == '') {
                                 $step++;
-                                $img = 'compprof_rating_teacher_grey_' . $step . '_3.png'; // 2.img
+//                                $img = 'compprof_rating_teacher_grey_' . $step . '_3.png'; // 2.img
+                                $img = '';
                                 $htmltext = block_exacomp_get_string("import_selectgrids_needed");
+                            }
+                        case 'selectSchooltype':
+                            // Selects the schooltype for every imported grid
+                            if ($htmltext == '') {
+                                $step++;
+//                                $img = 'compprof_rating_teacher_grey_' . $step . '_3.png'; // 2.img
+                                $img = '';
+                                $htmltext = block_exacomp_get_string("import_selectschooltypes_needed");
                             }
                     }
                     $html = html_writer::empty_tag('img', array(

@@ -2089,8 +2089,10 @@ class data_importer extends data {
                         // work with GetPost, because additional form settings are not initialized yet
                         $newMapping = optional_param_array('changeTo', null, PARAM_RAW);
                         if ($newMapping) {
+                            // Save the new mapping
                             self::update_categorymapping_for_source($source_local_id, $newMapping, $simulate);
                         } else {
+                            // Check - do we need to use category mapping?
                             $difflevels = block_exacomp_get_assessment_diffLevel_options_splitted();
                             $categoryMapping = self::get_categorymapping_for_source($source_local_id,
                                 ($simulate || $schedulerId > 0 ? true : false));
@@ -2124,6 +2126,8 @@ class data_importer extends data {
                         } else if (!$allGridSelected && $newSelecting && count($newSelecting) > 0) {
                             // update selected grids only if not selected 'all subjects' checkbox
                             self::update_selectedgrids_for_source($source_local_id, $newSelecting, ($simulate || $schedulerId > 0 ? true : false));
+                            // reset 'select all' if selected different grids
+                            self::update_selectedgridsall_for_source($source_local_id, 0, ($simulate || $schedulerId > 0 ? true : false));
                         } else {
                             $selectedGrids = self::get_selectedgrids_for_source($source_local_id,
                                 ($simulate || $schedulerId > 0 ? ($schedulerId > 0 ? $schedulerId : true) : false));
@@ -2155,6 +2159,51 @@ class data_importer extends data {
                             }
                         }
                     }
+                case 'selectSchooltype':
+                    // Select school types to relate imported grids into them
+                    // check - do we need to have such custom mapping?
+                    // only for "teacher importings" (always!)
+                    if (self::isTheTeacherImporting()) {
+                        $newMapping = optional_param_array('changeTo', null, PARAM_RAW);
+                        if ($newMapping) {
+                            // save the new mapping
+                            self::update_schooltypemapping_for_source($source_local_id, $newMapping, $simulate);
+                        } else {
+
+                            $allGridsUsed = false;
+                            $selectedGrids = [];
+                            if (self::get_selectedallgrids_for_source($source_local_id, $schedulerId)) {
+                                // 'all grids' used, so use only the flag
+                                $allGridsUsed = true;
+                            } else {
+                                $selectedGrids = self::get_selectedgrids_for_source($source_local_id,
+                                    ($simulate || $schedulerId > 0 ? ($schedulerId > 0 ? $schedulerId : true) : false));
+                            }
+
+                            // we need to use only grids from current XML, but selected in prev step
+                            $gridsFromXML = array();
+                            foreach ($xml->edulevels->edulevel as $edulevel) {
+                                foreach ($edulevel->schooltypes->schooltype as $schooltype) {
+                                    foreach ($schooltype->subjects->subject as $subject) {
+                                        $subjectUid = intval($subject->attributes()->id);
+                                        if ($allGridsUsed || (isset($selectedGrids[$subjectUid]) && $selectedGrids[$subjectUid]) ) {
+                                            $gridsFromXML[$subjectUid] = $subject;
+                                        }
+                                    }
+                                }
+                            }
+
+                            // convert to id=>title
+                            $grids = [];
+                            foreach ($gridsFromXML as $gridId => $gridNode) {
+                                $grids[$gridId] = (string)$gridNode->title;
+                            }
+
+                            return array('result' => 'selectSchooltype', 'list' => $grids, 'sourceId' => $source_local_id);
+
+                        }
+                    }
+
                 //default:
                 //    return array('result' => 'goRealImporting');
             }
@@ -2681,6 +2730,37 @@ class data_importer extends data {
             $row = g::$DB->get_field(BLOCK_EXACOMP_DB_IMPORTTASKS, "category_mapping", $where);
         } else {
             $row = g::$DB->get_field(BLOCK_EXACOMP_DB_DATASOURCES, "category_mapping", $where);
+        }
+        $result = unserialize($row);
+        if (!is_array($result)) {
+            $result = false;
+        }
+        return $result;
+    }
+
+    private static function update_schooltypemapping_for_source($sourceId = null, $newMapping = array(), $forSchedulerTask = false) {
+        global $DB;
+        $currentMapping = self::get_schooltypemapping_for_source($sourceId, $forSchedulerTask);
+        if ($currentMapping) {
+            $newMapping = $newMapping + $currentMapping;
+        }
+        $data = serialize($newMapping);
+        if ($forSchedulerTask) { // fact it is not used for scheduler tasks????
+            $DB->execute("UPDATE {" . BLOCK_EXACOMP_DB_IMPORTTASKS . "} SET schooltype_mapping = ? WHERE id = ?", array($data, $sourceId));
+        } else {
+            $DB->execute("UPDATE {" . BLOCK_EXACOMP_DB_DATASOURCES . "} SET schooltype_mapping = ? WHERE id = ?", array($data, $sourceId));
+        }
+
+        return true;
+    }
+
+
+    public static function get_schooltypemapping_for_source($sourceId = null, $forSchedulerTask = false) {
+        $where = array('id' => $sourceId);
+        if ($forSchedulerTask) { // fact it is not used for scheduler tasks????
+            $row = g::$DB->get_field(BLOCK_EXACOMP_DB_IMPORTTASKS, "schooltype_mapping", $where);
+        } else {
+            $row = g::$DB->get_field(BLOCK_EXACOMP_DB_DATASOURCES, "schooltype_mapping", $where);
         }
         $result = unserialize($row);
         if (!is_array($result)) {
@@ -3236,6 +3316,14 @@ class data_importer extends data {
         } else {
             $subject->disabled = 0;
         }
+        
+        // if the importing is from the Teacher - use mapped schooltype, instead of original schooltype from xml
+        if (self::isTheTeacherImporting()) {
+            $mapped = self::get_schooltypemapping_for_source(self::$import_source_local_id);
+            if ($mapped && @$mapped[$subject->sourceid]) {
+                $subject->stid = $mapped[$subject->sourceid];
+            }
+        }
 
         $subject->importstate = BLOCK_EXACOMP_SUBJECT_NOT_MISSING_FROM_IMPORT; // since the subject is being imported, it is NOT missing from import
 
@@ -3618,6 +3706,42 @@ class data_importer extends data {
         }
 
         return $activityData;
+    }
+
+    /**
+     * check is this "teacher" importing?
+     */
+    public static function isTheTeacherImporting()
+    {
+        // check by called script import_teacher.php - TODO: is this enough?
+        $thescript = basename($_SERVER['SCRIPT_NAME']);
+
+        return $thescript == 'import_teacher.php';
+    }
+
+    public static function getSchoolTypesTreeForTeacherImporting() {
+        $levels = block_exacomp_get_edulevels();
+        $schooltypesToSelect = [];
+
+        $schooltypesEnabled = block_exacomp_get_schooltypes_by_course(0);
+
+        foreach ($levels as $level) {
+            $levelSchooltypes = block_exacomp_get_schooltypes($level->id);
+            foreach ($levelSchooltypes as $schoolType) {
+                // add only "enabled" school types
+                if (array_key_exists($schoolType->id, $schooltypesEnabled)) {
+                    if (!array_key_exists($level->id, $schooltypesToSelect)) {
+                        $schooltypesToSelect[$level->id] = [
+                            'leveltitle' => $level->title,
+                            'schooltypes' => [],
+                        ];
+                    }
+                    $schooltypesToSelect[$level->id]['schooltypes'][$schoolType->id] = $schoolType;
+                }
+            }
+        }
+
+        return $schooltypesToSelect;
     }
 
 }

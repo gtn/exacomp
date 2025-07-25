@@ -4340,6 +4340,18 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2025071800, 'exacomp');
     }
 
+    if ($oldversion < 2025072500) {
+        $table = new xmldb_table('block_exacompdatasources');
+        $field = new xmldb_field('schooltype_mapping');
+        $field->set_attributes(XMLDB_TYPE_TEXT, null, null, null, null, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        // Also here we can add the same field for the table block_exacompimporttasks, but - do we need it for the scheduler tasks?
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2025072500, 'exacomp');
+    }
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!

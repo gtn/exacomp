@@ -109,9 +109,6 @@ class generalxml_upload_form extends moodleform {
                     require_once(__DIR__ . '/import_selectgrid_checkbox.php');
                     MoodleQuickForm::registerElementType('import_selectgrid_checkbox', $CFG->dirroot . '/blocks/exacomp/classes/import_selectgrid_checkbox.php', 'block_exacomp_import_extraconfigcheckbox');
                     $currentAllGrids = block_exacomp\data_importer::get_selectedallgrids_for_source($data['sourceId'], $forSchedulerTask);
-                    //$mform->addElement('hidden', 'currentImportStep');
-                    //$mform->setType('currentImportStep', PARAM_TEXT);
-                    //$mform->setDefault('currentImportStep', 'selectGrids');
                     $mform->addElement('html', '<input type="hidden" name="currentImportStep" value="selectGrids">');
                     // if used preselected values - message
                     $currentSelected = block_exacomp\data_importer::get_selectedgrids_for_source($data['sourceId'], $forSchedulerTask);
@@ -167,6 +164,68 @@ class generalxml_upload_form extends moodleform {
                     }
                     $mform->addElement('html', '</ul>');
                     $mform->addElement('html', '</div');
+                    break;
+                case 'selectSchooltype':
+                    // input form for comparing grid <-> schooltype
+                    $mform->addElement('html', '<input type="hidden" name="currentImportStep" value="selectSchooltype">');
+
+                    $schooltypeMapping = data_importer::get_schooltypemapping_for_source($data['sourceId'], $forSchedulerTask);
+
+                    // get the only enabled school types
+                    $schoolTypesTree = data_importer::getSchoolTypesTreeForTeacherImporting();
+
+                    $schooltypesSelect = function($gridId, $current = null, $forAll = false) use ($schoolTypesTree) {
+                        $select = '<select name="changeTo['.$gridId.']" class="exacomp-schooltype-grid-mapper'.($forAll ? '-for-all' : '').'">';
+                        if ($forAll) {
+                            $select .= '<option value="0" >' . block_exacomp_get_string('import_schooltype_mapping_for_all') . '</option>';
+                        }
+                        foreach ($schoolTypesTree as $levelKey => $levelData) {
+                            $select .= '<optgroup label="' . htmlspecialchars($levelData['leveltitle']) . '">';
+                            foreach ($levelData['schooltypes'] as $schooltype) {
+                                $selected = '';
+                                if ($current == $schooltype->id) {
+                                    $selected = ' selected="selected" ';
+                                }
+                                $select .= '<option value="' . htmlspecialchars($schooltype->id) . '" '.$selected.'>' . htmlspecialchars($schooltype->title) . '</option>';
+                            }
+                            $select .= '</optgroup>';
+                        }
+                        $select .= '</select>';
+
+                        return $select;
+                    };
+
+                    // the table with imported grids and proposition to choose the school type
+                    $mform->addElement('html', '<table class="table">
+                                                <thead><tr>
+                                                    <td>' . block_exacomp_get_string("import_schooltype_mapping_column_grid") . '</td>
+                                                    <td></td>
+                                                    <td>' . block_exacomp_get_string("import_schooltype_mapping_column_schooltype") . '</td>
+                                                </tr></thead><tbody>');
+                    if ($data['list'] && count($data['list']) > 1) {
+                        $mform->addElement('html', '<tr>');
+                        $mform->addElement('html', '<td colspan="2"></td>');
+                        $mform->addElement('html', '<td>');
+                        // use for all selectbox:
+                        $mform->addElement('html', $schooltypesSelect(0, null, true));
+                        $mform->addElement('html', '</td>');
+                        $mform->addElement('html', '</tr>');
+                    }
+                    foreach ($data['list'] as $gridId => $gridTitle) {
+                        $mform->addElement('html', '<tr><td>'.$gridTitle.'</td>');
+                        $catId = intval($gridId);
+                        $mform->addElement('html', '<td>&nbsp;&nbsp;&nbsp;</td>');
+                        $mform->addElement('html', '<td>');
+                        $current = null;
+                        if ($schooltypeMapping && array_key_exists($gridId, $schooltypeMapping)) {
+                            $current = @$schooltypeMapping[$gridId];
+                        }
+                        $select = $schooltypesSelect($gridId, $current);
+                        $mform->addElement('html', $select);
+                        $mform->addElement('html', '</td>');
+                        $mform->addElement('html', '</tr>');
+                    }
+                    $mform->addElement('html', '</tbody></table>');
                     break;
             }
 
