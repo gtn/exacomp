@@ -2864,7 +2864,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Delete',
     ],
     'import_selectschooltypes_needed' => [
-        'You need to select the School type for every imported grid',
+        'Bitte ordnen sie den/die importierten Raster einem Schultyp zu.',
         'You need to select the School type for every imported grid',
     ],
     'import_schooltype_mapping_column_grid' => [
@@ -2872,11 +2872,11 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Grid',
     ],
     'import_schooltype_mapping_column_schooltype' => [
-        'relate to the Schooltype',
+        'Schultyp zuordnen',
         'relate to the Schooltype',
     ],
     'import_schooltype_mapping_for_all' => [
-        'use for all',
+        'diesen Schultyp allen importierten Rastern zuordnen',
         'use for all',
     ],
     'save' => [
