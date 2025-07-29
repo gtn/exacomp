@@ -247,7 +247,9 @@ class generalxml_upload_form extends moodleform {
                 $mform->setType('file', PARAM_INT);
                 $mform->setDefault('file', $currFileValue);
                 // destination_text
-                $mform->removeElement('destination_text');
+                if ($mform->elementExists('destination_text')) {
+                    $mform->removeElement('destination_text');
+                }
                 // course template
                 $templateElement = $mform->getElement('template');
                 $values = @$templateElement->_values;
