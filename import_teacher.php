@@ -113,21 +113,21 @@ if (block_exacomp_can_teacher_import_grid()) {
         if ($filecontent) { // Instead of $data = $mform->get_file_content('file')
             if ($importSuccess) {
                 if ($importSuccess === true) {
-                    $string = block_exacomp_get_string('next_step');
-                    $url = 'edit_config.php';
+                    // "success" message
+//                    $html = html_writer::div(block_exacomp_get_string("importsuccess"), 'alert alert-success');
+                    // A link to the topic selection
+                    $nextstepurl = new moodle_url('courseselection.php', array('courseid' => $courseid));
+                    $nextstepdata = (object)[
+                        'url' => $nextstepurl,
+                        'title' => block_exacomp_get_string('next_step_first_teacher_step'),
+                    ];
+                    $html = html_writer::empty_tag('img', [
+                            'src' => new moodle_url('/blocks/exacomp/pix/compprof_rating_teacher_grey_2_3.png'),
+                            'alt' => '']
+                        )
+                        . '&nbsp;' . block_exacomp_get_string('import_teacher_next_step', 'block_exacomp', $nextstepdata);
 
-                    $html = html_writer::div(block_exacomp_get_string("importsuccess"), 'alert alert-success');
-                    if ($isAdmin) {
-                        $html .= html_writer::empty_tag('img', array(
-                                'src' => new moodle_url('/blocks/exacomp/pix/one_admin.png'), 'alt' => '',
-                                'width' => '60px',
-                                'height' => '60px'))
-                            . html_writer::link(new moodle_url($url,
-                                array('courseid' => $courseid, 'fromimport' => 1)),
-                                $string);
-                    }
-
-                    echo $OUTPUT->box($html);
+                    echo $OUTPUT->box($html, 'alert alert-success');
                 } else if (is_array($importSuccess) && $importSuccess['result'] != 'goRealImporting') {
                     // no errors for now, but the user needs to configure importing
                     $htmltext = '';

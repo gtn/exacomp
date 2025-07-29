@@ -790,6 +790,7 @@ $string['import_selectschooltypes_needed'] = 'Bitte ordnen sie den/die importier
 $string['import_schooltype_mapping_column_grid'] = 'Raster';
 $string['import_schooltype_mapping_column_schooltype'] = 'Schultyp zuordnen';
 $string['import_schooltype_mapping_for_all'] = 'diesen Schultyp allen importierten Rastern zuordnen';
+$string['import_teacher_next_step'] = 'Der Import wurde abgeschlossen. <a href="{$a->url}" title="{$a->title}">Klicken sie hier um den Raster in ihrem Kurs zu aktivieren.</a>';
 $string['save'] = 'Speichern';
 $string['add_competence_insert_learning_progress'] = 'Um eine Kompetenz einfügen zu können, müssen Sie zuerst einen Lernfortschritt auswählen oder hinzufügen!';
 $string['delete_level_from_another_source'] = 'Importierter Kompetenzraster hat Inhalte einer anderen Quelle. Wenn hier gelöscht wird, wird auch von der anderen Quelle gelöscht! Nur löschen wenn Sie sicher sind!';

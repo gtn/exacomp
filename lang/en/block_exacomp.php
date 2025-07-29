@@ -782,6 +782,7 @@ $string['import_selectschooltypes_needed'] = 'You need to select the School type
 $string['import_schooltype_mapping_column_grid'] = 'Grid';
 $string['import_schooltype_mapping_column_schooltype'] = 'relate to the Schooltype';
 $string['import_schooltype_mapping_for_all'] = 'use for all';
+$string['import_teacher_next_step'] = 'The import has been completed. <a href="{$a->url}" title="{$a->title}">Click here to activate the grid in your course.</a>';
 $string['save'] = 'Save';
 $string['add_competence_insert_learning_progress'] = 'To insert a new competence, you must first select or add a difficulty level!';
 $string['delete_level_from_another_source'] = 'Content from another source. If you delete them here, they will be deleted from the other source as well! Only delete if you are sure!';

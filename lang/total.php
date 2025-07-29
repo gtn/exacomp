@@ -2879,6 +2879,10 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'diesen Schultyp allen importierten Rastern zuordnen',
         'use for all',
     ],
+    'import_teacher_next_step' => [
+        'Der Import wurde abgeschlossen. <a href="{$a->url}" title="{$a->title}">Klicken sie hier um den Raster in ihrem Kurs zu aktivieren.</a>',
+        'The import has been completed. <a href="{$a->url}" title="{$a->title}">Click here to activate the grid in your course.</a>',
+    ],
     'save' => [
         'Speichern',
         'Save',
