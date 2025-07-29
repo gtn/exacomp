@@ -37,8 +37,16 @@ class generalxml_upload_form extends moodleform {
         if ($importtype != 'scheduler') {
             $mform->addElement('filepicker', 'file', block_exacomp_get_string("file"), null);
             $mform->addRule('file', null, 'required', null, 'client');
-            $mform->addElement('static', 'destination_text', '', block_exacomp_get_string("dest_course"));
-            $mform->addElement('select', 'template', block_exacomp_get_string("choosecoursetemplate"), ['' => ''] + block_exacomp_get_course_names());
+            if (!data_importer::isTheTeacherImporting()) {
+                // Teacher importing has preselected course always (see below hidden input)
+                $mform->addElement('static', 'destination_text', '', block_exacomp_get_string("dest_course"));
+                $mform->addElement('select', 'template', block_exacomp_get_string("choosecoursetemplate"), ['' => ''] + block_exacomp_get_course_names());
+            }
+        }
+        if (data_importer::isTheTeacherImporting()) {
+            // Add current course into 'template' for imported moodle activities
+            $courseid = required_param('courseid', PARAM_INT);
+            $mform->addElement('hidden', 'template', $courseid);
         }
 
         $mform->addElement('text', 'password', block_exacomp_trans([
