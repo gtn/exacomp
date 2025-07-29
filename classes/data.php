@@ -3410,8 +3410,12 @@ class data_importer extends data {
             return $schooltype;
         }
 
-        self::insert_or_update_item(BLOCK_EXACOMP_DB_SCHOOLTYPES, $schooltype);
-        self::kompetenzraster_mark_item_used(BLOCK_EXACOMP_DB_SCHOOLTYPES, $schooltype);
+        // School types can not be added by teachers. The teacher must select already existing school type during grid importing
+        if (!self::isTheTeacherImporting()) {
+            self::insert_or_update_item(BLOCK_EXACOMP_DB_SCHOOLTYPES, $schooltype);
+            self::kompetenzraster_mark_item_used(BLOCK_EXACOMP_DB_SCHOOLTYPES, $schooltype);
+        }
+
         foreach ($xmlItem->subjects->subject as $subject) {
             $subject->stid = $schooltype->id;
             $subjectId = intval($subject->attributes()->id);
@@ -3481,8 +3485,11 @@ class data_importer extends data {
             return $edulevel;
         }
 
-        self::insert_or_update_item(BLOCK_EXACOMP_DB_EDULEVELS, $edulevel);
-        self::kompetenzraster_mark_item_used(BLOCK_EXACOMP_DB_EDULEVELS, $edulevel);
+        // Education levels can not be added by teachers. The teacher must select already existing school type during grid importing
+        if (!self::isTheTeacherImporting()) {
+            self::insert_or_update_item(BLOCK_EXACOMP_DB_EDULEVELS, $edulevel);
+            self::kompetenzraster_mark_item_used(BLOCK_EXACOMP_DB_EDULEVELS, $edulevel);
+        }
 
         foreach ($xmlItem->schooltypes->schooltype as $schooltype) {
             $schooltype->elid = $edulevel->id;
