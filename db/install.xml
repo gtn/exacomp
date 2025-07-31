@@ -79,6 +79,7 @@
         <FIELD NAME="class" TYPE="char" LENGTH="200" NOTNULL="false" SEQUENCE="false" COMMENT="class"/>
         <FIELD NAME="is_editable" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="can teacher edit grid from komet or not"/>
         <FIELD NAME="importstate" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0... for example when imported manually just recently or when it existed in the latest import task. 1... marked for deletion / did not exist in the latest import task. 2... import in progress. At the beginning of the import task it is set to 2 for all subjects. 3... missing from import but used."/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="If the user ismporting the grid - it will be related to the course" />
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -548,6 +549,7 @@
         <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="type" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="category_mapping" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="categories mapping"/>
+        <FIELD NAME="schooltype_mapping" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="school types mapping"/>
         <FIELD NAME="selected_grids" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="selected grids"/>
         <FIELD NAME="all_grids" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
       </FIELDS>

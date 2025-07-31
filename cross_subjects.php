@@ -496,7 +496,7 @@ if ($cross_subject) {
     } else {
         echo html_writer::div(
             block_exacomp_get_string('add_content_to_crosssub'),
-            "alert alert-warning");
+            "alert alert-warning crosssubjectalertwarning");
     }
 }
 

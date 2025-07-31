@@ -659,11 +659,13 @@ var formunsaved = false;
     });
 
     $(document).on('click', '.rg2 .selectallornone', function () {
+      debugger;
       $(this).trigger('rg2.open');
 
       var $children = get_children(this);
       $children.find(':checkbox').prop('checked', $children.find(':checkbox:not(:checked)').length > 0);
     });
+
 
     $(document).ready(function () {
       $('.selectallornone').on('click', function () {
@@ -680,12 +682,27 @@ var formunsaved = false;
       });
     });
 
-    $(document).on('click', '.schooltype', function(event){
+
+    // 1. only select all checkboxes in the next rows until the next exahighlight row
+    $(document).on('click', '.selectallornone-edit_config', function () {
+      var $parentRow = $(this).closest('.exahighlight'); // Get the parent row with the exahighlight class
+      var $nextRows = $parentRow.nextUntil('.exahighlight'); // Get all rows until the next exahighlight
+      var $checkboxes = $nextRows.find('input[type="checkbox"]'); // Find checkboxes in those rows
+
+      // Determine the current state of the first checkbox
+      var allChecked = $checkboxes.filter(':checked').length === $checkboxes.length;
+
+      // Toggle the checkboxes
+      $checkboxes.prop('checked', !allChecked); // nice onelineer instead of the .each loop
+    });
+
+
+    $(document).on('click', '.schooltype', function (event) {
       event.preventDefault();
       var i = $(this).children().get(0);
       var hidden = $(this).next().get(0);
       console.log(hidden);
-      if(i.classList.contains('fa-eye')){
+      if (i.classList.contains('fa-eye')) {
         i.classList.remove('fa-eye');
         i.classList.add('fa-eye-slash');
         hidden.value = 1;

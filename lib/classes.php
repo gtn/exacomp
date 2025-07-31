@@ -63,6 +63,26 @@ class db_layer {
         return $reflection->newInstanceArgs($args);
     }
 
+    static function property_exists(object $obj, string $property): bool {
+        if ($obj instanceof db_record) {
+            return $obj->property_exists($property);
+            /*
+            if (property_exists($obj, $property)) {
+                return true;
+            }
+
+            $data = $obj->get_data();
+            if (array_key_exists($property, (array)$data)) {
+                return true;
+            }
+
+            return false;
+            */
+        } else {
+            return property_exists($obj, $property);
+        }
+    }
+
     function get_descriptors_for_topic(topic $topic) {
         $descriptors = $this->get_descriptor_records_for_topic($topic);
 
@@ -580,6 +600,8 @@ class db_record {
      */
     const SUBS = null;
 
+    protected array $_data = [];
+
     public function __construct($data = [], db_layer $dbLayer = null) {
         if ($dbLayer) {
             $this->setDbLayer($dbLayer);
@@ -604,8 +626,8 @@ class db_record {
     public function init() {
     }
 
-    public function get_data() {
-        $data = (object)[];
+    public function get_data(): object {
+        $data = (object)$this->_data;
         foreach ((new \ReflectionObject($this))->getProperties(\ReflectionProperty::IS_PUBLIC) as $prop) {
             $data->{$prop->getName()} = $prop->getValue($this);
         }
@@ -613,39 +635,41 @@ class db_record {
         return $data;
     }
 
-    public function toArray() {
+    public function toArray(): array {
         return (array)$this->get_data();
     }
 
     public function &__get($name) {
         static::check_property_name($name);
 
-        if (($method = 'get_' . $name) && method_exists($this, $method)) {
-            @$ret =& $this->$method();
+        if (array_key_exists($name, $this->_data)) {
+            return $this->_data[$name];
+        } elseif (($method = 'get_' . $name) && method_exists($this, $method)) {
+            $ret = $this->$method();
 
             // check if __get is recursively called at the same property
             /*
-            if (property_exists($this, $name)) {
+            if (\block_exacomp\db_layer::property_exists($this, $name)) {
                 // the property exists now -> error
                 throw new \coding_exception("property '$name' set on object!");
             }
             */
 
             return $ret;
-        } else if (($method = 'fill_' . $name) && method_exists($this, $method)) {
-            $this->$name = $this->$method();
+        } elseif (($method = 'fill_' . $name) && method_exists($this, $method)) {
+            $this->_data[$name] = $this->$method();
 
             // check if __get is recursively called at the same property
             /*
-            if (property_exists($this, $name)) {
+            if (\block_exacomp\db_layer::property_exists($this, $name)) {
                 // the property exists now -> error
                 throw new \coding_exception("property '$name' set on object!");
             }
             */
 
-            return $this->$name;
+            return $this->_data[$name];
         } else {
-            throw new \coding_exception("property not found " . get_class($this) . "::$name");
+            throw new \coding_exception("property not found or not initialized " . get_class($this) . "::$name");
         }
     }
 
@@ -657,6 +681,8 @@ class db_record {
         //	return true; // $this->__get($name) !== null;
         if (($method = 'fill_' . $name) && method_exists($this, $method)) {
             return true; // $this->__get($name) !== null;
+        } elseif (isset($this->_data[$name])) {
+            return true;
         } else {
             return false;
         }
@@ -672,18 +698,15 @@ class db_record {
 
             // check if __set is recursively called at the same property
             /*
-            if (property_exists($this, $name)) {
+            if (\block_exacomp\db_layer::property_exists($this, $name)) {
                 // the property exists now -> error
                 print_error('property set on object!');
             }
             */
-
+        } elseif (method_exists($this, 'get_' . $method)) {
+            throw new \coding_exception("set '$name' not allowed, because there is a get_$name function! ");
         } else {
-            if (method_exists($this, 'get_' . $method)) {
-                throw new \coding_exception("set '$name' not allowed, because there is a get_$name function! ");
-            }
-
-            $this->$name = $value;
+            $this->_data[$name] = $value;
         }
     }
 
@@ -780,12 +803,24 @@ class db_record {
         $this->{static::SUBS} = $value;
     }
 
-    public function has_capability($cap) {
+    public function has_capability($cap): bool {
         return block_exacomp_has_item_capability($cap, $this);
     }
 
     public function require_capability($cap) {
         return block_exacomp_require_item_capability($cap, $this);
+    }
+
+    public function property_exists($property): bool {
+        if (property_exists($this, $property)) {
+            return true;
+        }
+
+        if (array_key_exists($property, $this->_data)) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -934,6 +969,30 @@ class subject extends db_record {
     const TYPE = BLOCK_EXACOMP_TYPE_SUBJECT;
     const SUBS = 'topics';
 
+    // simple fields. They are initialized as null, and can be set by e.g. $subject->title = 'My Subject'; later
+    // no __set and __get is called, as the fields already exist
+    // all fields that are set by functions like fill_xxxx need to be handled correctly.
+    // otherwise, the __get will not be called --> the field will not be set but just be null
+    public ?int $sorting = null;
+    public ?int $disabled = null;
+    public ?string $title = null;
+    public ?int $stid = null;
+    public ?int $sourceid;
+    public ?int $source = null; // default 1 from databse... but lets put it to null, so that we do not just set it without looking into the database
+    public ?string $titleshort = null;
+    public ?int $catid = null;
+    public ?string $description = null;
+    public ?string $infolink = null;
+    public ?int $epop = null;
+    public ?string $author = null;
+    public ?string $editor = null;
+    public ?int $isglobal = null;
+    public ?string $version = null;
+    public ?int $creatorid = null;
+    public ?string $class = null;
+    public ?int $is_editable = null;
+    public ?int $importstate = null;
+
     protected function fill_topics() {
         return $this->dbLayer->get_topics_for_subject($this);
     }
@@ -983,6 +1042,21 @@ class topic extends db_record {
     const TYPE = BLOCK_EXACOMP_TYPE_TOPIC;
     const SUBS = 'descriptors';
 
+    public ?int $sorting = null;
+    public ?string $title = null;
+    public ?int $subjid = null;
+    public ?int $sourceid = null;
+    public ?int $source = null;
+    public ?string $description = null;
+    public ?string $titleshort = null;
+    public ?string $numb = null;
+    public ?int $parentid = null;
+    public ?int $epop = null;
+    public ?int $span = null;
+    public ?int $creatorid = null;
+    public ?string $author = null;
+    public ?string $editor = null;
+
     // why not using lib.php block_exacomp_get_topic_numbering??
     // because it is faster this way (especially for export etc where whole competence tree is read)
     function get_numbering() {
@@ -1013,8 +1087,8 @@ class topic extends db_record {
     }
 
     function get_subject() {
-        if (isset($this->subject)) {
-            return $this->subject;
+        if (isset($this->_data['subject'])) {
+            return $this->_data['subject'];
         } else {
             return \block_exacomp\subject::get($this->subjid);
         }
@@ -1046,6 +1120,9 @@ class topic extends db_record {
 
 /**
  * @property example[] $examples
+ * @property children[] $children
+ * @property categories[] $categories
+ * @property category_ids[] $category_ids
  */
 class descriptor extends db_record {
     const TABLE = BLOCK_EXACOMP_DB_DESCRIPTORS;
@@ -1054,6 +1131,32 @@ class descriptor extends db_record {
 
     var $parent;
     var $topicid;
+
+    public string $title;
+    public ?int $crdate = null;
+    public ?int $skillid = null;
+    public ?int $niveauid = null;
+    public ?int $sorting = null;
+    public ?int $sourceid = null;
+    public ?int $source = null;
+    public ?string $exampletext = null;
+    public ?string $additionalinfo = null;
+    public ?int $profoundness = null;
+    public ?int $parentid = null;
+    public ?int $epop = null;
+    public ?string $requirement = null;
+    public ?string $benefit = null;
+    public ?string $knowledgecheck = null;
+    public ?int $catid = null;
+    public ?int $creatorid = null;
+    public ?string $author = null;
+    public ?string $editor = null;
+
+    // topic will be loaded into the dynamic data array. Interesting observation:
+    // $descriptors = descriptor::create_objects($descriptors, array( in line 156 uses topicid.
+    // descriptor::create_objects($descriptors, ['topic' => $topic], $this); in line 69 uses topic class.
+    // todo: this is unclear in the code. you don't know if it is a topic or a string... refactor to using topicid?
+
 
     function init() {
         if (!isset($this->parent)) {
@@ -1194,6 +1297,47 @@ class example extends db_record {
     const TYPE = BLOCK_EXACOMP_TYPE_EXAMPLE;
     const SUBS = false;
 
+    public ?int $sorting = null;
+    public ?string $title = null;
+    public ?string $task = null;
+    public ?string $solution = null;
+    public ?string $completefile = null;
+    public ?string $description = null;
+    public ?int $taxid = null;
+    public ?string $timeframe = null;
+    public ?string $tips = null;
+    public ?string $externalurl = null;
+    public ?string $externalsolution = null;
+    public ?string $externaltask = null;
+    public ?int $sourceid = null;
+    public ?int $source = null;
+    public ?string $titleshort = null;
+    public ?int $iseditable = null;
+    public ?int $creatorid = null;
+    public ?int $timestamp = null;
+    public ?int $parentid = null;
+    public ?string $restorelink = null;
+    public ?string $metalink = null;
+    public ?string $packagelink = null;
+    public ?int $epop = null;
+    public ?int $blocking_event = null;
+    public ?string $author = null;
+    public ?string $editor = null;
+    public ?int $ethema_ismain = null;
+    public ?int $ethema_issubcategory = null;
+    public ?int $ethema_parent = null;
+    public ?int $ethema_important = null;
+    public ?string $example_icon = null;
+    public ?int $is_teacherexample = null;
+    public ?string $schedule_marker = null;
+    public ?int $activityid = null;
+    public ?int $courseid = null;
+    public ?string $activitylink = null;
+    public ?string $activitytitle = null;
+    public ?string $author_origin = null;
+
+    // observation: ->descriptor, which will be loaded into the dynamic data array is sometimes stdClass, sometimes descriptor object
+
     function get_numbering() {
         if (!isset($this->descriptor)) {
             return null;
@@ -1276,6 +1420,14 @@ class example extends db_record {
 class niveau extends db_record {
     const TABLE = BLOCK_EXACOMP_DB_NIVEAUS;
 
+    public ?int $sorting = null;
+    public ?string $title = null;
+    public ?int $parentid = null;
+    public ?int $sourceid = null;
+    public ?int $source = null;
+    public ?int $span = null;
+    public ?int $numb = null;
+
     function get_subtitle($subjectid) {
         return g::$DB->get_field(BLOCK_EXACOMP_DB_SUBJECT_NIVEAU_MM, 'subtitle', ['subjectid' => $subjectid, 'niveauid' => $this->id]); // none for now
     }
@@ -1285,6 +1437,17 @@ class cross_subject extends db_record {
     const TABLE = BLOCK_EXACOMP_DB_CROSSSUBJECTS;
     const TYPE = BLOCK_EXACOMP_TYPE_CROSSSUB;
     const SUBS = false;
+
+    public ?string $title = null;
+    public ?int $sorting = null;
+    public ?int $sourceid = null;
+    public ?int $source = null;
+    public ?string $description = null;
+    public ?int $courseid = null;
+    public ?int $creatorid = null;
+    public ?int $shared = null;
+    public ?int $subjectid = null;
+    public ?string $groupcategory = null;
 
     function is_draft() {
         return !$this->courseid;

@@ -16,15 +16,35 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$messageproviders = array(
+$messageproviders = [
     // Notify teacher that a student has submitted an item
-    'submission' => array(),
+    'submission' => [
+        'defaults' => [
+            'pop-up' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
+        ],
+    ],
     // Teacher graded student's competencies
-    'grading' => array(),
+    'grading' => [
+        'defaults' => [
+            'pop-up' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
+        ],
+    ],
     // Student assessed some of his competencies
-    'self_assessment' => array(),
+    'self_assessment' => [
+        'defaults' => [
+            'pop-up' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
+        ],
+    ],
     // Teacher adds new example to weekly schedule
-    'weekly_schedule' => array(),
+    'weekly_schedule' => [
+        'defaults' => [
+            'pop-up' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
+        ],
+    ],
     // Teacher comments an example
-    'comment' => array(),
-);
+    'comment' => [
+        'defaults' => [
+            'pop-up' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
+        ],
+    ],
+];

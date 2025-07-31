@@ -177,3 +177,9 @@
 #block_exacomp div.edit_buttons_float_right {
     float: right;
 }
+
+#block_exacomp div.crosssubjectalertwarning {
+    clear: both;
+}
+
+

@@ -195,6 +195,9 @@ $settings->add(new admin_setting_configcheckbox('exacomp/disable_create_grid',
 $settings->add(new admin_setting_configcheckbox('exacomp/show_teacherdescriptors_global',
     block_exacomp_get_string('settings_show_teacherdescriptors_global'),
     block_exacomp_get_string('settings_show_teacherdescriptors_global_description'), 1));
+$settings->add(new admin_setting_configcheckbox('exacomp/teacher_can_import_grid',
+    block_exacomp_get_string('settings_teacher_can_import_grid'),
+    block_exacomp_get_string('settings_teacher_can_import_grid_description'), 0));
 
 
 // Apps-Einstellungen (configuration for apps).

@@ -2863,6 +2863,26 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Delete',
         'Delete',
     ],
+    'import_selectschooltypes_needed' => [
+        'Bitte ordnen sie den/die importierten Raster einem Schultyp zu.',
+        'You need to select the School type for every imported grid',
+    ],
+    'import_schooltype_mapping_column_grid' => [
+        'Raster',
+        'Grid',
+    ],
+    'import_schooltype_mapping_column_schooltype' => [
+        'Schultyp zuordnen',
+        'relate to the Schooltype',
+    ],
+    'import_schooltype_mapping_for_all' => [
+        'diesen Schultyp allen importierten Rastern zuordnen',
+        'use for all',
+    ],
+    'import_teacher_next_step' => [
+        'Der Import wurde abgeschlossen. <a href="{$a->url}" title="{$a->title}">Klicken sie hier um den Raster in ihrem Kurs zu aktivieren.</a>',
+        'The import has been completed. <a href="{$a->url}" title="{$a->title}">Click here to activate the grid in your course.</a>',
+    ],
     'save' => [
         'Speichern',
         'Save',
@@ -3439,6 +3459,14 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Von Lehrern erstellte Kompetenzen sind global verfüger. Die Kompetenzen sind damit auch in anderen Kursen mit dem gleichen Raster sichtbar.',
         'Competences created by a teacher are available globally. If the same grid is used in a different course, the competence will be visible.',
     ],
+    'settings_teacher_can_import_grid' => [
+        'Lehrkraft darf Kompetenzraster hochladen',
+        'Teachers have permission to upload competency grids',
+    ],
+    'settings_teacher_can_import_grid_description' => [
+        '',
+        '',
+    ],
     'settings_export_password' => [
         'Sicherung von Kompetenzrastern mit Passwort schützen (AES-256 Verschlüsselung)',
         'Passwort protection (AES-256 encryption) for competence grid export',
@@ -3543,6 +3571,10 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Kursspezifische Beurteilung',
         'Course assessment',
     ],
+    'tab_teacher_settings_gridimport' => [
+        'Kompetenzraster Import',
+        'Grid import',
+    ],
     'course_assessment_config_infotext' => [
         'Wählen Sie das gewünschte Beurteilungsschema aus.',
         'Choose an assessment scheme',
@@ -3630,5 +3662,9 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
     'sync_all_grids_with_komet_description' => [
         'Synchronisiere alle Raster mit Komet. Alle Raster, die in Komet nicht mehr vorhanden sind, werden gelöscht, es sei denn, sie sind bereits in Verwendung.',
         'Keep only the Komet grids and competencies. Delete everything else unless a grid or competency is already in use',
+    ],
+    'no_examples_in_this_grid' => [
+        'In diesem Raster gibt es keine Lernmaterialien',
+        'There are no examples in this grid',
     ],
 ];

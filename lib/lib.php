@@ -565,6 +565,7 @@ function block_exacomp_get_assessment_grade_verbose($getforlanguage = null, $cou
 function block_exacomp_value_is_negative_by_assessment($value, $level, $withEqual = true, $courseid = 0) {
     $limit = block_exacomp_get_assessment_negative_threshold($level, $courseid);
     $scheme = block_exacomp_additional_grading($level, $courseid);
+    $verboselowerisbetter = block_exacomp_get_config_assessment_verbose_lowerisbetter(); // This means that the lowest value of the verbose settings is the best (e.g. ":-)" which could be 0 )
     switch ($scheme) {
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
             return true; // TODO: always negative?
@@ -581,6 +582,28 @@ function block_exacomp_value_is_negative_by_assessment($value, $level, $withEqua
             }
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+            if ($verboselowerisbetter) {
+                if ($withEqual) {
+                    if ($value >= $limit) {
+                        return true;
+                    }
+                } else {
+                    if ($value > $limit) {
+                        return true;
+                    }
+                }
+            } else {
+                if ($withEqual) {
+                    if ($value <= $limit) {
+                        return true;
+                    }
+                } else {
+                    if ($value < $limit) {
+                        return true;
+                    }
+                }
+            }
+            break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
             if ($withEqual) {
                 if ($value <= $limit) {
@@ -689,6 +712,7 @@ function block_exacomp_get_assessment_diffLevel_options($courseid = 0) {
     //return trim(get_config('exacomp', 'assessment_diffLevel_options'));
 }
 
+// TODO: maybe readd the static more performant solution, but with a check on which course is currently used?
 function block_exacomp_get_assessment_diffLevel_options_splitted($courseid = 0) {
     // this static value is faster BUT: it breaks course specific settings on e.g. the competence profile
     //    static $value;
@@ -707,11 +731,30 @@ function block_exacomp_get_assessment_verbose_options($getforlanguage = null, $c
     //    if ($value !== null && array_key_exists($getforlanguage, $value)) {
     //        return $value[$getforlanguage];
     //    }
+    // the getforlanguage key in the array was used to get the correct language string --> it was only needed when using the static value ==> removed it
+    $value = block_exacomp_get_translatable_parameter('assessment_verbose_options', $getforlanguage, $courseid);
+    // return '' instead of null, to prevent null errors
+    if ($value === null) {
+        $value = '';
+        // TODO: is it fine to return ''? Or should it be null. It will be used for example in explode()
+        // ==> null is a problem. But '' could introduce problems in other paces, as is looks like the user has entered an empty string instead of nothing yet. ==> check
+    }
+    return $value;
+    //return block_exacomp_get_translatable_parameter('assessment_verbose_options', $getforlanguage);
+}
+
+/*
+function block_exacomp_get_assessment_verbose_options($getforlanguage = null, $courseid = 0) {
+    //    static $value;
+    //    if ($value !== null && array_key_exists($getforlanguage, $value)) {
+    //        return $value[$getforlanguage];
+    //    }
     $value = array();
     $value[$getforlanguage] = block_exacomp_get_translatable_parameter('assessment_verbose_options', $getforlanguage, $courseid);
     return $value[$getforlanguage];
     //return block_exacomp_get_translatable_parameter('assessment_verbose_options', $getforlanguage);
 }
+*/
 
 function block_exacomp_get_assessment_verbose_options_short($getforlanguage = null, $courseid = 0) {
     //    static $value;
@@ -1312,6 +1355,10 @@ function block_exacomp_get_translatable_parameter($parameter = '', $getforlangua
     if ($language && is_array($configdata) && array_key_exists($language, $configdata) && $configdata[$language] != '') {
         return $configdata[$language];
     } else {
+        // returns a warning if the $configdata['de'] is not set and returns null ==> return null if it is not set or if it is null alltogether
+        if ($configdata === null || !is_array($configdata) || !array_key_exists('de', $configdata)) {
+            return null;
+        }
         return $configdata['de'];
     }
 }
@@ -1510,19 +1557,47 @@ function block_exacomp_get_schooltypes_by_course($courseid) {
  * -only subject according to selected schooltypes are returned
  *
  * @param int $courseid
+ * @param int $schooltypeid
+ * @param bool $strict_courselimited - true => ONLY from $courseid; false => if $courseid = 0 or from $courseid
+ *
+ * @return mixed
  */
-function block_exacomp_get_subjects_for_schooltype($courseid, $schooltypeid = 0) {
+function block_exacomp_get_subjects_for_schooltype($courseid, $schooltypeid = 0, $strict_courselimited = false) {
+
+    $whereand = [];
     $sql = 'SELECT s.*
                 FROM {' . BLOCK_EXACOMP_DB_SUBJECTS . '} s
 	                JOIN {' . BLOCK_EXACOMP_DB_MDLTYPES . '} type ON s.stid = type.stid
-                WHERE type.courseid = ? ';
+                ';
+    $sqlparams = [];
     // AND (s.disabled IS NULL OR s.disabled = 0) is needed conditions here, but we need to show hidden grids if here are already selected topics
 
-    if ($schooltypeid > 0) {
-        $sql .= ' AND type.stid = ? ';
+    if ($strict_courselimited) {
+        $whereand[] = ' type.courseid = ? ';
+        $sqlparams[] = $courseid;
     }
 
-    return \block_exacomp\subject::get_objects_sql($sql, [$courseid, $schooltypeid]);
+    if ($schooltypeid > 0) {
+        $whereand[] = ' type.stid = ? ';
+        $sqlparams[] = $schooltypeid;
+    }
+
+    if ($courseid) {
+        if ($strict_courselimited) {
+            $whereand[] = ' s.courseid = ? ';
+        } else {
+            $whereand[] = ' (s.courseid = 0 OR s.courseid = ?) ';
+        }
+        $sqlparams[] = $courseid;
+    }
+
+    if ($whereand) {
+        $sql .= ' WHERE '.implode(' AND ', $whereand);
+    }
+//    echo "<pre>debug:<strong>lib.php:1587</strong>\r\n"; print_r($courseid); echo '</pre>'; // !!!!!!!!!! delete it
+//    echo "<pre>debug:<strong>lib.php:1588</strong>\r\n"; print_r($strict_courselimited); echo '</pre>'; // !!!!!!!!!! delete it
+//echo "<pre>debug:<strong>lib.php:1587</strong>\r\n"; print_r($sql); echo '</pre>'; exit; // !!!!!!!!!! delete it
+    return \block_exacomp\subject::get_objects_sql($sql, $sqlparams);
 }
 
 /**
@@ -1707,19 +1782,19 @@ function block_exacomp_sort_items(&$items, $sortings) {
 
                 switch ($sorting) {
                     case BLOCK_EXACOMP_IS_GLOBAL:
-                        if (!property_exists($a, $prefix . 'isglobal') || !property_exists($b, $prefix . 'isglobal')) {
+                        if (!\block_exacomp\db_layer::property_exists($a, $prefix . 'isglobal') || !\block_exacomp\db_layer::property_exists($b, $prefix . 'isglobal')) {
                             throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'isglobal');
                         }
                         return $a->{$prefix . 'isglobal'} < $b->{$prefix . 'isglobal'} ? -1 : 1;
                         break;
                     case BLOCK_EXACOMP_DB_SUBJECTS:
-                        if (!property_exists($a, $prefix . 'source') || !property_exists($b, $prefix . 'source')) {
+                        if (!\block_exacomp\db_layer::property_exists($a, $prefix . 'source') || !\block_exacomp\db_layer::property_exists($b, $prefix . 'source')) {
                             throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'source');
                         }
-                        if (!property_exists($a, $prefix . 'sorting') || !property_exists($b, $prefix . 'sorting')) {
+                        if (!\block_exacomp\db_layer::property_exists($a, $prefix . 'sorting') || !\block_exacomp\db_layer::property_exists($b, $prefix . 'sorting')) {
                             throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'sorting');
                         }
-                        if (!property_exists($a, $prefix . 'title') || !property_exists($b, $prefix . 'title')) {
+                        if (!\block_exacomp\db_layer::property_exists($a, $prefix . 'title') || !\block_exacomp\db_layer::property_exists($b, $prefix . 'title')) {
                             throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'title');
                         }
 
@@ -1744,13 +1819,13 @@ function block_exacomp_sort_items(&$items, $sortings) {
                         }
                         break;
                     case BLOCK_EXACOMP_DB_TOPICS:
-                        if (!property_exists($a, $prefix . 'sorting') || !property_exists($b, $prefix . 'sorting')) {
+                        if (!\block_exacomp\db_layer::property_exists($a, $prefix . 'sorting') || !\block_exacomp\db_layer::property_exists($b, $prefix . 'sorting')) {
                             throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'sorting');
                         }
-                        if (!property_exists($a, $prefix . 'numb') || !property_exists($b, $prefix . 'numb')) {
+                        if (!\block_exacomp\db_layer::property_exists($a, $prefix . 'numb') || !\block_exacomp\db_layer::property_exists($b, $prefix . 'numb')) {
                             throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'numb');
                         }
-                        if (!property_exists($a, $prefix . 'title') || !property_exists($b, $prefix . 'title')) {
+                        if (!\block_exacomp\db_layer::property_exists($a, $prefix . 'title') || !\block_exacomp\db_layer::property_exists($b, $prefix . 'title')) {
                             throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'title');
                         }
 
@@ -1773,14 +1848,14 @@ function block_exacomp_sort_items(&$items, $sortings) {
                         }
                         break;
                     case BLOCK_EXACOMP_DB_DESCRIPTORS:
-                        if (!property_exists($a, $prefix . 'sorting') || !property_exists($b, $prefix . 'sorting')) {
+                        if (!\block_exacomp\db_layer::property_exists($a, $prefix . 'sorting') || !\block_exacomp\db_layer::property_exists($b, $prefix . 'sorting')) {
                             throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'sorting');
                         }
-                        if (!property_exists($a, $prefix . 'title') || !property_exists($b, $prefix . 'title')) {
+                        if (!\block_exacomp\db_layer::property_exists($a, $prefix . 'title') || !\block_exacomp\db_layer::property_exists($b, $prefix . 'title')) {
                             throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'title');
                         }
 
-                        if (!property_exists($a, $prefix . 'source') || !property_exists($b, $prefix . 'source')) {
+                        if (!\block_exacomp\db_layer::property_exists($a, $prefix . 'source') || !\block_exacomp\db_layer::property_exists($b, $prefix . 'source')) {
                             debugging('block_exacomp_sort_items() descriptors need a source', DEBUG_DEVELOPER);
                         } else {
                             if ($a->{$prefix . 'source'} != $b->{$prefix . 'source'}) {
@@ -1806,13 +1881,13 @@ function block_exacomp_sort_items(&$items, $sortings) {
                         }
                         break;
                     case BLOCK_EXACOMP_DB_NIVEAUS:
-                        if (!property_exists($a, $prefix . 'numb') || !property_exists($b, $prefix . 'numb')) {
+                        if (!\block_exacomp\db_layer::property_exists($a, $prefix . 'numb') || !\block_exacomp\db_layer::property_exists($b, $prefix . 'numb')) {
                             throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'numb');
                         }
-                        if (!property_exists($a, $prefix . 'sorting') || !property_exists($b, $prefix . 'sorting')) {
+                        if (!\block_exacomp\db_layer::property_exists($a, $prefix . 'sorting') || !\block_exacomp\db_layer::property_exists($b, $prefix . 'sorting')) {
                             throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'sorting');
                         }
-                        if (!property_exists($a, $prefix . 'title') || !property_exists($b, $prefix . 'title')) {
+                        if (!\block_exacomp\db_layer::property_exists($a, $prefix . 'title') || !\block_exacomp\db_layer::property_exists($b, $prefix . 'title')) {
                             throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'title');
                         }
 
@@ -2687,7 +2762,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
             continue;
         }
 
-        if (!property_exists($topic, "used_niveaus")) {
+        if (!\block_exacomp\db_layer::property_exists($topic, "used_niveaus")) {
             $topic->used_niveaus = array();
         }
         if (!isset($topic->used_niveaus[$descriptor->niveauid])) {
@@ -2706,6 +2781,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
     $subjects = array();
 
     foreach ($allSubjects as $subject) {
+        // init topics as empty array, else reading the topics would call fill_topics() which would fill the topics with all topics of the course
         $subject->topics = [];
     }
 
@@ -2730,7 +2806,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 
         // add the used_niveaus of the topics of this subject to the subject.
         // the used_niveaus are needed for webservices e.g. diggrplus_get_all_subjects_for_course_as_tree() to not send the niveautitles with every single descriptor
-        if (!property_exists($subject, "used_niveaus")) {
+        if (!\block_exacomp\db_layer::property_exists($subject, "used_niveaus")) {
             $subject->used_niveaus = array();
         }
         foreach ($topic->used_niveaus as $niveauid => $niveautitle) {
@@ -2897,6 +2973,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 
     // add topics to subjects
     foreach ($courseSubjects as $subject) {
+        // initialize topics with empty array
         $subject->topics = [];
     }
 
@@ -3202,6 +3279,10 @@ function block_exacomp_build_navigation_tabs_settings($courseid) {
     }
     // Grading submenu
     $settings_subtree[] = new tabobject('tab_teacher_settings_course_assessment', new moodle_url('/blocks/exacomp/edit_course_assessment.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_course_assessment"), null, true);
+    // Grid importing by Teacher
+    if (block_exacomp_can_teacher_import_grid()) {
+        $settings_subtree[] = new tabobject('tab_teacher_settings_gridimport', new moodle_url('/blocks/exacomp/import_teacher.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_gridimport"), null, true);
+    }
 
     return $settings_subtree;
 }
@@ -5654,12 +5735,17 @@ function block_exacomp_get_tipp_string($compid, $user, $scheme, $type, $comptype
  *
  * Gets tree with schooltype on highest level
  *
- * @param integer $limit_courseid
+ * @param integer $courseid
  * @param bool $onlyWithSubjects
  * @return array
  */
-function block_exacomp_build_schooltype_tree_for_courseselection($limit_courseid, $onlyWithSubjects = false) {
+function block_exacomp_build_schooltype_tree_for_courseselection($courseid, $onlyWithSubjects = false) {
     global $SESSION;
+
+    // skillsmanagemenet has a per course configuration, exacomp has a per moodle configuration (courseid = 0)
+    $limit_courseid = block_exacomp_is_skillsmanagement() ? $courseid : 0;
+    $strict_courselimit = true; // Only items from the course_id will be used
+
     $schooltypes = block_exacomp_get_schooltypes_by_course($limit_courseid);
 
     // filtering
@@ -5677,8 +5763,14 @@ function block_exacomp_build_schooltype_tree_for_courseselection($limit_courseid
         });
     }
 
+    // if it is not block_exacomp_is_skillsmanagement() - check subjects on imported by the teacher
+    if (!$limit_courseid && !get_config('exacomp', 'show_teacherdescriptors_global')) {
+        $limit_courseid = $courseid;
+        $strict_courselimit = false; // Will be used items for $limit_courseid and with courseid = 0
+    }
+
     foreach ($schooltypes as $k => $schooltype) {
-        $schooltype->subjects = block_exacomp_get_subjects_for_schooltype($limit_courseid, $schooltype->id);
+        $schooltype->subjects = block_exacomp_get_subjects_for_schooltype($limit_courseid, $schooltype->id, $strict_courselimit);
         if ($onlyWithSubjects && !$schooltype->subjects) {
             unset($schooltypes[$k]);
         }
@@ -5743,7 +5835,7 @@ function block_exacomp_update_related_examples_visibilities($activities, $course
     // for every activity: check if it should be visible or not, and if it is on the schedule
     foreach ($activities as $activity) {
         // get availability (visibility) info
-        if (property_exists($activity, "examples")) {
+        if (\block_exacomp\db_layer::property_exists($activity, "examples")) {
             if ($cms_availability[$activity->activityid]->available && $cms_availability[$activity->activityid]->visible) {
                 foreach ($activity->examples as $example) {
                     g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY,
@@ -7978,7 +8070,13 @@ function block_exacomp_get_descriptor_numbering($descriptor, $reloadTopic = fals
             $niveaus = g::$DB->get_records(BLOCK_EXACOMP_DB_NIVEAUS);
             foreach ($topic->descriptors as $descriptor) {
                 if (isset($niveaus[$descriptor->niveauid])) {
-                    @$niveaus[$descriptor->niveauid]->descriptor_cnt++;
+                    // @$niveaus[$descriptor->niveauid]->descriptor_cnt++;
+                    // this would work, as it takes null, which is basically 0 and increases it by 1 the first time. To mitigate the warning: initialize it if it does not exist
+                    if (!isset($niveaus[$descriptor->niveauid]->descriptor_cnt)) {
+                        $niveaus[$descriptor->niveauid]->descriptor_cnt = 1;
+                    } else {
+                        $niveaus[$descriptor->niveauid]->descriptor_cnt++;
+                    }
                 }
             }
 
@@ -7991,7 +8089,12 @@ function block_exacomp_get_descriptor_numbering($descriptor, $reloadTopic = fals
                 } else if ($niveaus[$descriptor->niveauid]->descriptor_cnt > 1) {
                     // make niveaus with multiple descriptors in the format of "{$niveau->numb}-{$i}"
                     $descriptorMainNumber = $niveaus[$descriptor->niveauid]->numb;
-                    @$niveaus[$descriptor->niveauid]->descriptor_i++;
+                    // @$niveaus[$descriptor->niveauid]->descriptor_i++;
+                    if (!isset($niveaus[$descriptor->niveauid]->descriptor_i)) {
+                        $niveaus[$descriptor->niveauid]->descriptor_i = 1;
+                    } else {
+                        $niveaus[$descriptor->niveauid]->descriptor_i++;
+                    }
                     $descriptorNumber = $niveaus[$descriptor->niveauid]->numb . '-' . $niveaus[$descriptor->niveauid]->descriptor_i;
                 } else {
                     $descriptorMainNumber = $niveaus[$descriptor->niveauid]->numb;
@@ -9684,7 +9787,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
         }
 
         if ($record) {
-            if (property_exists($record, '@interal-original-data') && $realid = @$record->{'@interal-original-data'}->id) {
+            if (\block_exacomp\db_layer::property_exists($record, '@interal-original-data') && $realid = @$record->{'@interal-original-data'}->id) {
                 $record->id = $realid;
             }
             $record->gradingisold = 0;
@@ -9696,7 +9799,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
             $record->reviewerid = $reviewerid;
             $record->additionalinfo = $additionalinfo;
             $record->value = $value;
-            if (!property_exists($record, 'gradinghistory')) {
+            if (!\block_exacomp\db_layer::property_exists($record, 'gradinghistory')) {
                 $record->gradinghistory = '';
             }
             $record->gradinghistory .= $reviewerfirstname . " " . $reviewerlastname . " " . date("d.m.y G:i", $record->timestamp) . ": " . $value . "<br>";
@@ -10186,30 +10289,30 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 
     $table_content->subject_evalniveau =
         (($use_evalniveau) ?
-            ((property_exists($subject, 'id') && isset($user->subjects->niveau[$subject->id]))
+            ((\block_exacomp\db_layer::property_exists($subject, 'id') && isset($user->subjects->niveau[$subject->id]))
                 ? @$evaluationniveau_items[$user->subjects->niveau[$subject->id]] . ' ' : '')
             : '');
 
     $table_content->subject_evalniveauid = (($use_evalniveau) ?
-        ((property_exists($subject, 'id') && isset($user->subjects->niveau[$subject->id]))
+        ((\block_exacomp\db_layer::property_exists($subject, 'id') && isset($user->subjects->niveau[$subject->id]))
             ? $user->subjects->niveau[$subject->id] : -1)
         : 0);
 
     $table_content->subject_eval = ((block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_SUBJECT, $courseid) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) ?
-        ((property_exists($subject, 'id') && isset($user->subjects->teacher_additional_grading[$subject->id]))
+        ((\block_exacomp\db_layer::property_exists($subject, 'id') && isset($user->subjects->teacher_additional_grading[$subject->id]))
             ? $user->subjects->teacher_additional_grading[$subject->id] : '')
         : ((isset($user->subjects->teacher[$subject->id]))
             ? $user->subjects->teacher[$subject->id] : '')); //$scheme_items[$user->subjects->teacher[$subject->id]] wÃ¤re der String
 
-    $table_content->timestamp = (property_exists($subject, 'id') && isset($user->subjects->timestamp_teacher[$subject->id]))
+    $table_content->timestamp = (\block_exacomp\db_layer::property_exists($subject, 'id') && isset($user->subjects->timestamp_teacher[$subject->id]))
         ? $user->subjects->timestamp_teacher[$subject->id] : '';
 
-    $table_content->subject_title = property_exists($subject, 'title') ? $subject->title : '';
+    $table_content->subject_title = \block_exacomp\db_layer::property_exists($subject, 'title') ? $subject->title : '';
 
     foreach ($table_header as $key => $niveau) {
         $niveaukey = /*$niveau->numb.'-'.$niveau->sorting.'-'.*/
             $niveau->title;
-        //        $niveaukey = (property_exists($niveau, 'numb') ? $niveau->numb : 0).'-'.(property_exists($niveau, 'sorting') ? $niveau->sorting : 0).'-'.$niveau->title;
+        //        $niveaukey = (\block_exacomp\db_layer::property_exists($niveau, 'numb') ? $niveau->numb : 0).'-'.(\block_exacomp\db_layer::property_exists($niveau, 'sorting') ? $niveau->sorting : 0).'-'.$niveau->title;
         if (isset($niveau->span) && $niveau->span == 1) {
             unset($table_header[$key]);
         } else if ($niveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS) {
@@ -11220,13 +11323,7 @@ function block_exacomp_get_visible_own_and_child_examples_for_descriptor($course
         $example->state = block_exacomp_get_dakora_state_for_example($courseid, $example->id, $userid);
     }
 
-    usort($examples, function($a, $b) {
-        if ($a->state == $b->state) {
-            return $a->sorting > $b->sorting;
-        }
-
-        return $a->state < $b->state;
-    });
+    usort($examples, fn($a, $b) => ($b->state <=> $a->state) ?: ($a->sorting <=> $b->sorting));
 
     return $examples;
 }
@@ -11363,7 +11460,7 @@ function block_exacomp_build_example_parent_names($courseid, $exampleid, $exampl
     $sqlParams = [$courseid, $exampleid];
 
     // use another $sql if it is a virtual example - for old realtion to moodle activity - we know only id of descriptor or topic
-    if ($exampleObj && property_exists($exampleObj, 'isVirtualExample') && $exampleObj->isVirtualExample) {
+    if ($exampleObj && \block_exacomp\db_layer::property_exists($exampleObj, 'isVirtualExample') && $exampleObj->isVirtualExample) {
 
         $select = " s.id as subjid, s.title as subjecttitle, t.id as topicid, t.title as topictitle ";
         $where = " ct.courseid = ? ";
@@ -14892,5 +14989,9 @@ function block_exacomp_delete_grids_missing_from_komet_import() {
     // in the end: normalize, so that topics and descriptors are also removed:
     \block_exacomp\data::normalize_database(); // TODO: run it here? Or wait for that task to run independantly?
     return true;
+}
+
+function block_exacomp_can_teacher_import_grid() {
+    return get_config('exacomp', 'teacher_can_import_grid');
 }
 

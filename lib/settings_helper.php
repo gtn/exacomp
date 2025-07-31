@@ -46,9 +46,16 @@ class block_exacomp_admin_setting_extraconfigtext extends admin_setting_configte
                 if (!isset($defaultVal)) {
                     $defaultVal = block_exacomp_get_string('settings_assessment_verbose_options_default');
                 }
-                $copyofget = trim($get);
+
+                if ($get === null) {
+                    $copyofget = ''; // trim(null) returned '', BUT is deprecated
+                } else {
+                    $copyofget = trim($get);
+                }
+
                 if ($copyofget == '') {
                     return $get; // get default or empty?
+                    // I would say: empty. Otherwise, it will not show up as a new setting when installing exacomp the first time
                 }
                 $get = json_decode($get, true);
                 if (json_last_error() && $copyofget != '') {
@@ -108,7 +115,8 @@ class block_exacomp_admin_setting_extraconfigtext extends admin_setting_configte
             $ispreconfig = get_config('exacomp', 'assessment_preconfiguration');
             // Add needed element attributes for work with preconfiguration.
             $doc = new DOMDocument();
-            $output = mb_convert_encoding($output, 'HTML-ENTITIES', 'UTF-8');
+            // $output = mb_convert_encoding($output, 'HTML-ENTITIES', 'UTF-8');
+            $output = htmlspecialchars_decode(iconv('UTF-8', 'ISO-8859-1', htmlentities($output, ENT_COMPAT, 'UTF-8')), ENT_QUOTES);
             //                $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             $doc->loadHTML($output, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             $selector = new DOMXPath($doc);
@@ -133,7 +141,8 @@ class block_exacomp_admin_setting_extraconfigtext extends admin_setting_configte
                 case 'assessment_grade_verbose':
                 case 'assessment_verbose_options':
                     $doc = new DOMDocument();
-                    $output = mb_convert_encoding($output, 'HTML-ENTITIES', 'UTF-8');
+                    // $output = mb_convert_encoding($output, 'HTML-ENTITIES', 'UTF-8');
+                    $output = htmlspecialchars_decode(iconv('UTF-8', 'ISO-8859-1', htmlentities($output, ENT_COMPAT, 'UTF-8')), ENT_QUOTES);
                     //                        $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
                     $doc->loadHTML($output, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
                     $selector = new DOMXPath($doc);
@@ -294,7 +303,10 @@ class block_exacomp_link_to extends admin_setting {
             $this->description, true, '', '', $query);
         // Hide some html for better view of this settings.
         $doc = new DOMDocument();
-        $template = mb_convert_encoding($template, 'HTML-ENTITIES', 'UTF-8');
+        // $template = mb_convert_encoding($template, 'HTML-ENTITIES', 'UTF-8'); // throws deprecation error
+        // https://aruljohn.com/blog/php-deprecated-mbstring-htmlentities/
+        $template = htmlspecialchars_decode(iconv('UTF-8', 'ISO-8859-1', htmlentities($template, ENT_COMPAT, 'UTF-8')), ENT_QUOTES);
+
         //            $doc->loadHTML(utf8_decode($template), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $doc->loadHTML($template, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $selector = new DOMXPath($doc);
@@ -415,7 +427,8 @@ class block_exacomp_admin_setting_preconfiguration extends admin_setting_configs
         $output = parent::output_html($data, $query);
         // Add onChange on input element.
         $doc = new DOMDocument();
-        $output = mb_convert_encoding($output, 'HTML-ENTITIES', 'UTF-8');
+        // $output = mb_convert_encoding($output, 'HTML-ENTITIES', 'UTF-8');
+        $output = htmlspecialchars_decode(iconv('UTF-8', 'ISO-8859-1', htmlentities($output, ENT_COMPAT, 'UTF-8')), ENT_QUOTES);
         //            $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $doc->loadHTML($output, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $selector = new DOMXPath($doc);
@@ -645,11 +658,18 @@ class block_exacomp_selfevaluation_configtable extends admin_setting { // admin_
     }
 
     public function get_setting() {
+        // TODO: assessment_SelfEval_verboses is not added to the $newsettings in adminlib.php when installing exacomp the first time, because instead standard settings are returned as if they were set ---> why?
         $result = array();
         foreach ($this->targets as $target) {
             foreach ($this->params as $param) {
                 $targetparam = 'assessment_selfEvalVerbose_' . $target . '_' . $param;
                 $value = $this->config_read($targetparam);
+
+                // if the value is null, write '' instead. Otherwise e.g. trim() does not like it, as it expects string, not null
+                // same for json_decode() - it returns null if the value is not set, but warns ==> set it to ''
+                if ($value === null) {
+                    $value = '';
+                }
 
                 $newvalue = null;
                 $copyofvalue = trim($value);
@@ -734,7 +754,7 @@ class block_exacomp_selfevaluation_configtable extends admin_setting { // admin_
     }
 
     public function output_html($data, $query = '') {
-        global $CFG;
+        global $CFG, $OUTPUT;
         // get errors for marking
         $errors = admin_get_root()->errors;
         $inputerrors = array();
@@ -756,8 +776,18 @@ class block_exacomp_selfevaluation_configtable extends admin_setting { // admin_
         // if we have an error - disply the table
         if (!(count($inputerrors) > 0)) {
             @$table->attributes['style'] .= ' display: none; ';
-            $return .= '<img src="' . $CFG->wwwroot . '/pix/t/collapsed.png" id="editSelfEvalVerbosesIconOpen" border="0" />';
-            $return .= '<img src="' . $CFG->wwwroot . '/pix/t/dropdown.png" id="editSelfEvalVerbosesIconClose" border="0" style="display:none;"/>';
+            // $return .= '<img src="' . $CFG->wwwroot . '/pix/t/collapsed.png" id="editSelfEvalVerbosesIconOpen" border="0" />';
+            // $return .= '<img src="' . $CFG->wwwroot . '/pix/t/dropdown.png" id="editSelfEvalVerbosesIconClose" border="0" style="display:none;"/>';
+
+            // use pix instead of the img tags as the hardcoded url to png does not work with newer moodles (png are removed)
+            //  $extra .= ' ' . html_writer::span($this->pix_icon("i/edit", block_exacomp_get_string("edit")), null, ['exa-type' => "iframe-popup", 'exa-url' => 'subject.php?courseid=' . $COURSE->id . '&id=' . $subject->id]);
+            // $icon = new pix_icon($pix, $alt, $component, $attributes);
+            // the attributes in pix_icon don't always work as intended... only title and class are used, but I want to have an id for the onlick event
+            // $return .= $OUTPUT->pix_icon('t/collapsed', '', 'moodle', ['id' => 'editSelfEvalVerbosesIconOpen']);
+            // $return .= $OUTPUT->pix_icon('t/dropdown', '', 'moodle', ['id' => 'editSelfEvalVerbosesIconClose', 'style' => 'display:none;']);
+
+            $return .= '<div id="editSelfEvalVerbosesIconOpen" border="0" style="display:inline-block;">' . $OUTPUT->pix_icon('t/collapsed', '', 'moodle') . '</div>';
+            $return .= '<div id="editSelfEvalVerbosesIconClose" border="0" style="display:none;">' . $OUTPUT->pix_icon('t/dropdown', '', 'moodle') . '</div>';
         } else {
             $return .= '<img src="' . $CFG->wwwroot . '/pix/t/collapsed.png" id="editSelfEvalVerbosesIconOpen" border="0" style="display:none;"/>';
             $return .= '<img src="' . $CFG->wwwroot . '/pix/t/dropdown.png" id="editSelfEvalVerbosesIconClose" border="0" />';
@@ -833,7 +863,8 @@ class block_exacomp_selfevaluation_configtable extends admin_setting { // admin_
 
         // Hide some html for better view of this settings.
         $doc = new DOMDocument();
-        $template = mb_convert_encoding($template, 'HTML-ENTITIES', 'UTF-8');
+        // $template = mb_convert_encoding($template, 'HTML-ENTITIES', 'UTF-8');
+        $template = htmlspecialchars_decode(iconv('UTF-8', 'ISO-8859-1', htmlentities($template, ENT_COMPAT, 'UTF-8')), ENT_QUOTES);
         //            $doc->loadHTML(utf8_decode($template), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $doc->loadHTML($template, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $selector = new DOMXPath($doc);
@@ -1001,7 +1032,8 @@ class block_exacomp_assessment_configtable extends admin_setting {
             $this->description, true, '', '', $query);
         // Hide some html for better view of this settings.
         $doc = new DOMDocument();
-        $template = mb_convert_encoding($template, 'HTML-ENTITIES', 'UTF-8');
+        // $template = mb_convert_encoding($template, 'HTML-ENTITIES', 'UTF-8');
+        $template = htmlspecialchars_decode(iconv('UTF-8', 'ISO-8859-1', htmlentities($template, ENT_COMPAT, 'UTF-8')), ENT_QUOTES);
         //            $doc->loadHTML(utf8_decode($template), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $doc->loadHTML($template, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $selector = new DOMXPath($doc);

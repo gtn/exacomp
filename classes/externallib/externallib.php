@@ -2012,7 +2012,9 @@ class externallib extends base {
     public static function diggrplus_grade_descriptor($descriptorid, $grading, $courseid, $userid, $role, $subjectid) {
         global $DB, $USER;
 
-        if (empty ($descriptorid) || empty ($grading)) {
+        // Info: grading can be -1 (unset) or 0 (= positive), 1 or 2
+
+        if (empty($descriptorid)) {
             throw new invalid_parameter_exception ('Parameter can not be empty');
         }
 
@@ -7194,7 +7196,7 @@ class externallib extends base {
         return new external_function_parameters(array(
             'itemid' => new external_value(PARAM_INT, 'id of item'),
             'comment' => new external_value(PARAM_TEXT, 'comment text'),
-            'fileitemid' => new external_value(PARAM_TEXT, '', VALUE_DEFAULT, ''),
+            'fileitemid' => new external_value(PARAM_INT, '', VALUE_DEFAULT, 0),
         ));
     }
 
@@ -7237,7 +7239,7 @@ class externallib extends base {
         if ($fileitemid) {
             $context = context_user::instance($USER->id);
             $fs = get_file_storage();
-            $file = reset($fs->get_area_files($context->id, 'user', 'draft', $fileitemid, null, false));
+            $file = current($fs->get_area_files($context->id, 'user', 'draft', $fileitemid, null, false));
             if (!$file) {
                 throw new moodle_exception('file not found');
             }
@@ -7656,11 +7658,11 @@ class externallib extends base {
 
             static::block_excomp_get_example_details($example, $courseid, false);
 
-            if (!property_exists($example, "annotation")) {
+            if (!\block_exacomp\db_layer::property_exists($example, "annotation")) {
                 $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $example->id, 'courseid' => $courseid));
             }
 
-            if (!(property_exists($example, "teacher_evaluation") || property_exists($example, "student_evaluation"))) {
+            if (!(\block_exacomp\db_layer::property_exists($example, "teacher_evaluation") || \block_exacomp\db_layer::property_exists($example, "student_evaluation"))) {
                 $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $studentid, "courseid" => $courseid, "exampleid" => $example->id), "teacher_evaluation, student_evaluation");
                 $example->teacher_evaluation = $exampleEvaluation->teacher_evaluation;
                 $example->student_evaluation = $exampleEvaluation->student_evaluation;
@@ -8597,7 +8599,12 @@ class externallib extends base {
             //showallexamples filters out those, who have not creatorid => those who were imported
             $tree = block_exacomp_get_competence_tree($course->id, null, null, false, null, true, null, false, false, true, false, true);
             $students = \block_exacomp\permissions::get_course_students($course->id);
-            $student = $students[$userid]; // TODO: check if you are allowed to get this information. Student1 should not see results for student2
+            $student = $students[$userid] ?? null; // TODO: check if you are allowed to get this information. Student1 should not see results for student2
+            // bugfix: student is null here sometimes (daniel localhost)?!?
+            if (!$student) {
+                continue;
+            }
+
             block_exacomp_get_user_information_by_course($student, $course->id);
             foreach ($tree as $subject) {
                 $elem_sub = new stdClass ();
@@ -8647,14 +8654,16 @@ class externallib extends base {
                             $elem_desc->childdescriptors[] = $elem_child;
 
                             //check all examples of this descriptor. If every example has a solved item ==> mark competence as gained in the bar graph. Or if there is a specific positive grading.
-                            if ($elem_child->teacherevaluation) {
-                                //                                if(!block_exacomp_value_is_negative_by_assessment($elem_child->teacherevaluation, BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD)){
-                                //                                    $competencies_gained++;
-                                //                                }
-                                //TODO: this is only a quickfix because grading is not generic yet
+                            if ($elem_child->teacherevaluation !== null) {
+                                if (!block_exacomp_value_is_negative_by_assessment($elem_child->teacherevaluation, BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD)) {
+                                    $competencies_gained++;
+                                }
+                                // this WAS only a quickfix, since grading WAS not yet generic
+                                /*
                                 if ($elem_child->teacherevaluation > 0) {
                                     $competencies_gained++;
                                 }
+                                */
                             } else if ($child->examples) {
                                 $gained = true;
                                 foreach ($child->examples as $example) {
@@ -8681,15 +8690,17 @@ class externallib extends base {
                         }
                         $elem_topic->descriptors[] = $elem_desc;
 
-                        //check all examples of this descriptor. If every example has a solved item ==> mark competence as gained in the bar graph. Or if there is a specific positive grading.
-                        if ($elem_desc->teacherevaluation) {
-                            //                            if(!block_exacomp_value_is_negative_by_assessment($elem_desc->teacherevaluation, BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT)){
-                            //                                $competencies_gained++;
-                            //                            }
-                            //TODO: this is only a quickfix, since grading is not yet generic
+                        //Check if there is a positive grading.
+                        if ($elem_desc->teacherevaluation !== null) {
+                            if (!block_exacomp_value_is_negative_by_assessment($elem_desc->teacherevaluation, BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT)) {
+                                $competencies_gained++;
+                            }
+                            // this WAS only a quickfix, since grading WAS not yet generic
+                            /*
                             if ($elem_desc->teacherevaluation > 0) {
                                 $competencies_gained++;
                             }
+                            */
                         } else if ($descriptor->examples) {
                             $gained = true;
                             foreach ($descriptor->examples as $example) {
@@ -12628,13 +12639,13 @@ class externallib extends base {
 
             // Adding annotationinformation    TODO: Again: What IF the user has the same subject in two different courses.. which courseid to take?
             // check if it is already there (done for "all" and "subject" so save computation time
-            if (!property_exists($example, "annotation")) {
+            if (!\block_exacomp\db_layer::property_exists($example, "annotation")) {
                 $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $example->id, 'courseid' => $courseid));
             }
 
             // Adding the evaluation information if it did not get queried before when getting the examples
             // right now this is the case if "topic" is selected. For "all" and "subject" the evaluation is queried before ==> faster
-            if (!(property_exists($example, "teacher_evaluation") || property_exists($example, "student_evaluation"))) {
+            if (!(\block_exacomp\db_layer::property_exists($example, "teacher_evaluation") || \block_exacomp\db_layer::property_exists($example, "student_evaluation"))) {
                 $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $userid, "courseid" => $example->courseid, "exampleid" => $example->id), "teacher_evaluation, student_evaluation");
                 $example->teacher_evaluation = $exampleEvaluation->teacher_evaluation;
                 $example->student_evaluation = $exampleEvaluation->student_evaluation;
@@ -14322,64 +14333,71 @@ class externallib extends base {
      * @param string $url
      * @return array
      */
-    public static function get_url_preview($url) {
-        static::validate_parameters(static::get_url_preview_parameters(), array(
+    public static function get_url_preview(string $url): array {
+        [
             'url' => $url,
-        ));
+        ] = static::validate_parameters(static::get_url_preview_parameters(), [
+            'url' => $url,
+        ]);
 
         // disable errors on invalid html
         libxml_use_internal_errors(true);
 
-        $dom = new DOMDocument;
+        $client = new \core\http_client();
+        $dom = new \DOMDocument;
+
+        $errorResponse = [
+            'success' => false,
+            'title' => null,
+            'description' => null,
+            'imageurl' => null,
+        ];
+
         try {
-            //            $dom->loadHTMLFile('https://www.nachrichten.at/oberoesterreich/oberoesterreicher-knackt-lotto-jackpot;art4,3257353');
-            $dom->loadHTMLFile($url);
-
+            $content = $client->get($url)->getBody()->getContents();
+            $dom->loadHTML($content);
         } catch (Exception $e) {
+            return $errorResponse;
         }
 
-        if ($dom->documentElement) {
-
-            $title = null;
-            $imageUrl = null;
-            $description = null;
-
-            $metaElements = $dom->getElementsByTagName('meta');
-
-            foreach ($metaElements as $metaElement) {
-                $name = $metaElement->getAttribute("name") ?: $metaElement->getAttribute("property");
-                $content = $metaElement->getAttribute("content");
-
-                if ($name == "og:title") {
-                    $title = $content;
-                }
-
-                if ($name == "description" || $name == "og:description") {
-                    $description = $content;
-                }
-
-                if ($name == "og:image") {
-                    $imageUrl = $content;
-                }
-            }
-
-            if (empty($title)) {
-                $titleElements = $dom->getElementsByTagName('title');
-                $title = $titleElements->length ? utf8_decode($titleElements->item(0)->textContent) : null;
-            }
-            //
-            //            echo $title;
-            //            echo "\r\n" . $description;
-            //            echo "\r\n" . $imageUrl;
-
-            $return = array(
-                "title" => $title,
-                "description" => $description,
-                "imageurl" => $imageUrl,
-            );
-
-            return $return;
+        if (!$dom->documentElement) {
+            return $errorResponse;
         }
+
+        $title = null;
+        $imageUrl = null;
+        $description = null;
+
+        $metaElements = $dom->getElementsByTagName('meta');
+
+        foreach ($metaElements as $metaElement) {
+            $name = $metaElement->getAttribute("name") ?: $metaElement->getAttribute("property");
+            $content = $metaElement->getAttribute("content");
+
+            if ($name == "og:title") {
+                $title = $content;
+            }
+
+            if ($name == "description" || $name == "og:description") {
+                $description = $content;
+            }
+
+            if ($name == "og:image") {
+                $imageUrl = $content;
+            }
+        }
+
+        if (!$title) {
+            $titleElements = $dom->getElementsByTagName('title');
+            $title = $titleElements->length ? utf8_decode($titleElements->item(0)->textContent) : null;
+        }
+
+        return [
+            'success' => true,
+            'title' => $title,
+            'description' => $description,
+            'imageurl' => $imageUrl,
+        ];
     }
 
     /**
@@ -14388,11 +14406,12 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function get_url_preview_returns() {
-        return new external_single_structure(array(
-            "title" => new external_value(PARAM_TEXT, 'true if successful'),
-            "description" => new external_value(PARAM_TEXT, 'true if successful'),
-            "imageurl" => new external_value(PARAM_TEXT, 'true if successful'),
-        ));
+        return new external_single_structure([
+            'success' => new external_value(PARAM_BOOL),
+            'title' => new external_value(PARAM_TEXT),
+            'description' => new external_value(PARAM_TEXT),
+            'imageurl' => new external_value(PARAM_TEXT),
+        ]);
     }
 
     /**
@@ -15132,6 +15151,7 @@ class externallib extends base {
         return new external_function_parameters(array(
             'exampleid' => new external_value(PARAM_INT, ''),
             'courseid' => new external_value(PARAM_INT, ''),
+            'itemid' => new external_value(PARAM_INT, '', VALUE_DEFAULT, 0),
         ));
     }
 
@@ -15139,23 +15159,55 @@ class externallib extends base {
      * @ws-type-read
      * @return array of items
      */
-    public static function dakoraplus_get_example_and_item($exampleid, $courseid) {
+    public static function dakoraplus_get_example_and_item(int $exampleid, int $courseid, int $itemid) {
         global $USER, $DB;
 
-        static::validate_parameters(static::dakoraplus_get_example_and_item_parameters(), array(
+        [
             'exampleid' => $exampleid,
             'courseid' => $courseid,
-        ));
+            'itemid' => $itemid,
+        ] = static::validate_parameters(static::dakoraplus_get_example_and_item_parameters(), [
+            'exampleid' => $exampleid,
+            'courseid' => $courseid,
+            'itemid' => $itemid,
+        ]);
 
         $studentid = $USER->id;
 
-        $example = static::get_example_by_id($exampleid, $courseid);
+        if ($exampleid) {
+            if ($itemid) {
+                throw new \moodle_exception('itemid and exampleid are not supported');
+            }
+            $example = static::get_example_by_id($exampleid, $courseid);
 
-        $item = current(block_exacomp_get_items_for_competence($studentid, $example->id, BLOCK_EXACOMP_TYPE_EXAMPLE));
-        if (!$item) {
-            // hack daniel, freie materialien haben keine deskriptoren, darum liefert block_exacomp_get_items_for_competence keine werte
-            $item = static::get_example_item($studentid, $example->id);
+            $item = current(block_exacomp_get_items_for_competence($studentid, $example->id, BLOCK_EXACOMP_TYPE_EXAMPLE));
+            if (!$item) {
+                // hack daniel, freie materialien haben keine deskriptoren, darum liefert block_exacomp_get_items_for_competence keine werte
+                $item = static::get_example_item($studentid, $example->id);
+            }
+        } elseif ($itemid) {
+            $example = null;
+
+            $item = $DB->get_record_sql('SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue
+              FROM {block_exaportitem} i
+                JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON ie.itemid=i.id
+              WHERE i.id = :itemid
+                AND i.userid = :userid
+                AND i.courseid = :courseid
+                AND ie.competence_type = :comptype
+              ORDER BY ie.timecreated DESC', [
+                'itemid' => $itemid,
+                'userid' => $studentid,
+                'courseid' => $courseid,
+                'comptype' => BLOCK_EXACOMP_TYPE_TOPIC
+            ], MUST_EXIST);
+
+            // Info: the fields subjecttitle, topictitle, subjectid, topicid are not set in the item.
+            // so when loading only an item this is not available
+        } else {
+            throw new \moodle_exception('exampleid or itemid must be set');
         }
+
         if ($item) {
             static::block_exacomp_get_item_details($item, $studentid, static::wstoken());
         }
@@ -15214,15 +15266,18 @@ class externallib extends base {
         if ($exampleAndItem->example) {
             $example = $exampleAndItem->example;
 
-            if (!property_exists($example, "annotation")) {
+            if (!\block_exacomp\db_layer::property_exists($example, "annotation")) {
                 $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $example->id, 'courseid' => $courseid));
             }
 
-            if (!(property_exists($example, "teacher_evaluation") || property_exists($example, "student_evaluation"))) {
+            if (!(\block_exacomp\db_layer::property_exists($example, "teacher_evaluation") || \block_exacomp\db_layer::property_exists($example, "student_evaluation"))) {
                 $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $studentid, "courseid" => $courseid, "exampleid" => $example->id), "teacher_evaluation, student_evaluation");
                 $example->teacher_evaluation = $exampleEvaluation->teacher_evaluation;
                 $example->student_evaluation = $exampleEvaluation->student_evaluation;
             }
+        } else {
+            // remove example property is no example
+            unset($exampleAndItem->example);
         }
 
         $exampleAndItem->status = block_exacomp_get_human_readable_item_status($exampleAndItem->item ? $exampleAndItem->item->status : null);
@@ -15422,11 +15477,11 @@ class externallib extends base {
         if ($exampleAndItem->example) {
             $example = $exampleAndItem->example;
 
-            if (!property_exists($example, "annotation")) {
+            if (!\block_exacomp\db_layer::property_exists($example, "annotation")) {
                 $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $example->id, 'courseid' => $courseid));
             }
 
-            if (!(property_exists($example, "teacher_evaluation") || property_exists($example, "student_evaluation"))) {
+            if (!(\block_exacomp\db_layer::property_exists($example, "teacher_evaluation") || \block_exacomp\db_layer::property_exists($example, "student_evaluation"))) {
                 $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $studentid, "courseid" => $courseid, "exampleid" => $example->id), "teacher_evaluation, student_evaluation");
                 $example->teacher_evaluation = $exampleEvaluation->teacher_evaluation;
                 $example->student_evaluation = $exampleEvaluation->student_evaluation;

@@ -113,34 +113,43 @@ switch ($style) {
         //could be optimized together with block_exacomp_build_example_tree
         //non critical - only 1 additional query for whole loading process
         $examples = block_exacomp_get_examples_by_course($courseid);
-        // for order and additional condition
-        $examples = \block_exacomp\example::get_objects_sql("
+
+        // check if examples are empty. If so, show a message. Without this check, emptpy exmples would throw an error in the get_objects_sql function.
+        if (empty($examples)) {
+            $outputContent .= $output->notification(
+                block_exacomp_get_string('no_examples_in_this_grid'),
+                \core\output\notification::NOTIFY_WARNING
+            );
+        } else {
+            // for order and additional condition
+            $examples = \block_exacomp\example::get_objects_sql("
             SELECT DISTINCT e.*
                 FROM {" . BLOCK_EXACOMP_DB_EXAMPLES . "} e
                 WHERE e.id IN (" . implode(',', array_keys($examples)) . ") "
-            . (!$isTeacher ? " AND e.is_teacherexample = 0 " : "")
-        );
-        /*$examples = \block_exacomp\example::get_objects_sql("
-            SELECT DISTINCT e.*
-            FROM {" . BLOCK_EXACOMP_DB_COURSETOPICS . "} ct
-            JOIN {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} dt ON ct.topicid = dt.topicid
-            JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} de ON dt.descrid = de.descrid
-            JOIN {" . BLOCK_EXACOMP_DB_EXAMPLES . "} e ON e.id = de.exampid
-            WHERE ct.courseid = ?
-            " . (!$isTeacher ? " AND e.is_teacherexample = 0 " : "") . "
-            ORDER BY e.title
-        ", [$courseid]);*/
+                . (!$isTeacher ? " AND e.is_teacherexample = 0 " : "")
+            );
+            /*$examples = \block_exacomp\example::get_objects_sql("
+                SELECT DISTINCT e.*
+                FROM {" . BLOCK_EXACOMP_DB_COURSETOPICS . "} ct
+                JOIN {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} dt ON ct.topicid = dt.topicid
+                JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} de ON dt.descrid = de.descrid
+                JOIN {" . BLOCK_EXACOMP_DB_EXAMPLES . "} e ON e.id = de.exampid
+                WHERE ct.courseid = ?
+                " . (!$isTeacher ? " AND e.is_teacherexample = 0 " : "") . "
+                ORDER BY e.title
+            ", [$courseid]);*/
 
-        if (!$isTeacher) {
-            $examples = array_filter($examples, function($example) use ($courseid, $studentid) {
-                return block_exacomp_is_example_visible($courseid, $example, $studentid);
-            });
-        }
+            if (!$isTeacher) {
+                $examples = array_filter($examples, function($example) use ($courseid, $studentid) {
+                    return block_exacomp_is_example_visible($courseid, $example, $studentid);
+                });
+            }
 
-        if ($isPrintView) {
-            $html_tables[] = $output->example_based_list_tree($examples);
-        } else {
-            $outputContent .= $output->example_based_list_tree($examples);
+            if ($isPrintView) {
+                $html_tables[] = $output->example_based_list_tree($examples);
+            } else {
+                $outputContent .= $output->example_based_list_tree($examples);
+            }
         }
         break;
     case 2:
