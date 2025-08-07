@@ -1,3 +1,12 @@
+### v4.6.7 (2025080700) ###
+* bugfixes
+* webservice for diggr+, dakora+ CompentenceProfile, use all settings from exacomp
+* moodle 5 changes
+* changes due to php deprecation warnings
+* php8.2 refactoring
+* set message setting default=true
+* new feature: teacher / trainer can import grids in exacomp course settings tab
+
 ### v4.6.7 (2025051300) ###
 * fixed scaling in 3dchart to better reflect the data and to handle null values
 * added edulevel and schooltype to the deletion overview page
