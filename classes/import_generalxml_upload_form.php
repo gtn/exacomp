@@ -47,6 +47,8 @@ class generalxml_upload_form extends moodleform {
             // Add current course into 'template' for imported moodle activities
             $courseid = required_param('courseid', PARAM_INT);
             $mform->addElement('hidden', 'template', $courseid);
+            $mform->setType('template', PARAM_INT);
+            $mform->setDefault('template', $courseid);
         }
 
         $mform->addElement('text', 'password', block_exacomp_trans([

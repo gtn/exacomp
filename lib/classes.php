@@ -1141,7 +1141,7 @@ class descriptor extends db_record {
     public ?int $source = null;
     public ?string $exampletext = null;
     public ?string $additionalinfo = null;
-    public ?int $profoundness = null;
+    public ?int $profoundness = 0;
     public ?int $parentid = null;
     public ?int $epop = null;
     public ?string $requirement = null;
