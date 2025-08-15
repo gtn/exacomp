@@ -2645,6 +2645,12 @@ class data_importer extends data {
 
     private static function insert_or_update_item($table, $item) {
         $where = $item->source ? array('source' => $item->source, 'sourceid' => $item->sourceid) : array('id' => $item->id);
+        // If we need to specify the course:
+        if (@$item->courseid) {
+            $where['courseid'] = $item->courseid;
+        } else {
+            $where['courseid'] = 0; // for non-coursed records. In other case will be changed some wrong records
+        }
 
         // when exporting some niveaus had no title
         // when reimporting use empty title
@@ -2942,6 +2948,10 @@ class data_importer extends data {
         */
         $item->parentid = $parent;
 
+        if (@$GLOBALS['teacher_imports_to_course']) {
+            $item->courseid = $GLOBALS['teacher_imports_to_course'];
+        }
+
         self::insert_or_update_item(BLOCK_EXACOMP_DB_NIVEAUS, $item);
         self::kompetenzraster_mark_item_used(BLOCK_EXACOMP_DB_NIVEAUS, $item);
 
@@ -2977,6 +2987,10 @@ class data_importer extends data {
         // SZ: 29.11.2021. courseid value must be filled only if the example is activity
         if (!isset($item->activityid)) { // RW: isset instead of $item->activityid because this throws warnings in moodle
             $item->courseid = 0; // look also below about $item->courseid
+        }
+        // SZ: 15.08.2025. Added using courseid for Teacher imported grids.
+        if (@$GLOBALS['teacher_imports_to_course']) {
+            $item->courseid = $GLOBALS['teacher_imports_to_course'];
         }
         self::insert_or_update_item(BLOCK_EXACOMP_DB_EXAMPLES, $item);
         self::kompetenzraster_mark_item_used(BLOCK_EXACOMP_DB_EXAMPLES, $item);
@@ -3093,6 +3107,9 @@ class data_importer extends data {
         }
         if ($xmlItem->creator) {
             $descriptor->author = $xmlItem->creator->__toString();
+        }
+        if (@$GLOBALS['teacher_imports_to_course']) {
+            $descriptor->courseid = $GLOBALS['teacher_imports_to_course'];
         }
 
         self::insert_or_update_item(BLOCK_EXACOMP_DB_DESCRIPTORS, $descriptor);
@@ -3228,6 +3245,11 @@ class data_importer extends data {
         if ($xmlItem->creator) {
             $topic->author = $xmlItem->creator->__toString();
         }
+
+        if (@$GLOBALS['teacher_imports_to_course']) {
+            $topic->courseid = $GLOBALS['teacher_imports_to_course'];
+        }
+
         self::insert_or_update_item(BLOCK_EXACOMP_DB_TOPICS, $topic);
         self::kompetenzraster_mark_item_used(BLOCK_EXACOMP_DB_TOPICS, $topic);
 
@@ -3316,7 +3338,7 @@ class data_importer extends data {
         } else {
             $subject->disabled = 0;
         }
-        
+
         // if the importing is from the Teacher - use mapped schooltype, instead of original schooltype from xml
         if (self::isTheTeacherImporting()) {
             $mapped = self::get_schooltypemapping_for_source(self::$import_source_local_id);
@@ -3326,7 +3348,6 @@ class data_importer extends data {
         }
 
         $subject->importstate = BLOCK_EXACOMP_SUBJECT_NOT_MISSING_FROM_IMPORT; // since the subject is being imported, it is NOT missing from import
-
         if (@$GLOBALS['teacher_imports_to_course']) {
             $subject->courseid = $GLOBALS['teacher_imports_to_course'];
         }

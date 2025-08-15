@@ -116,7 +116,7 @@ if (block_exacomp_can_teacher_import_grid()) {
                     // "success" message
 //                    $html = html_writer::div(block_exacomp_get_string("importsuccess"), 'alert alert-success');
                     // A link to the topic selection
-                    $nextstepurl = new moodle_url('courseselection.php', array('courseid' => $courseid));
+                    $nextstepurl = new moodle_url('/blocks/exacomp/courseselection.php', array('courseid' => $courseid));
                     $nextstepdata = (object)[
                         'url' => $nextstepurl,
                         'title' => block_exacomp_get_string('next_step_first_teacher_step'),
