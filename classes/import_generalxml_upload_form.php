@@ -185,22 +185,37 @@ class generalxml_upload_form extends moodleform {
                     $schoolTypesTree = data_importer::getSchoolTypesTreeForTeacherImporting();
 
                     $schooltypesSelect = function($gridId, $current = null, $forAll = false) use ($schoolTypesTree) {
-                        $select = '<select name="changeTo['.$gridId.']" class="exacomp-schooltype-grid-mapper'.($forAll ? '-for-all' : '').'">';
-                        if ($forAll) {
-                            $select .= '<option value="0" >' . block_exacomp_get_string('import_schooltype_mapping_for_all') . '</option>';
-                        }
-                        foreach ($schoolTypesTree as $levelKey => $levelData) {
-                            $select .= '<optgroup label="' . htmlspecialchars($levelData['leveltitle']) . '">';
-                            foreach ($levelData['schooltypes'] as $schooltype) {
-                                $selected = '';
-                                if ($current == $schooltype->id) {
-                                    $selected = ' selected="selected" ';
+                        if ($current && !$forAll) {
+                            // Hidden element if the Grids is already related to some Schooltype
+                            $select = '<input type="hidden" name="changeTo[' . $gridId . ']" value="' . $current . '"/>';
+                            // Add selected Title
+                            $title = '';
+                            foreach ($schoolTypesTree as $levelData) {
+                                if (isset($levelData['schooltypes'][$current])) {
+                                    $title = $levelData['leveltitle'] . '<br> ' . $levelData['schooltypes'][$current]->title;
+                                    break;
                                 }
-                                $select .= '<option value="' . htmlspecialchars($schooltype->id) . '" '.$selected.'>' . htmlspecialchars($schooltype->title) . '</option>';
                             }
-                            $select .= '</optgroup>';
+                            $select .= '<span>' . $title . '</span>';
+                        } else {
+                            // Selectbox for choose Schooltype
+                            $select = '<select name="changeTo[' . $gridId . ']" class="exacomp-schooltype-grid-mapper' . ($forAll ? '-for-all' : '') . '">';
+                            if ($forAll) {
+                                $select .= '<option value="0" >' . block_exacomp_get_string('import_schooltype_mapping_for_all') . '</option>';
+                            }
+                            foreach ($schoolTypesTree as $levelKey => $levelData) {
+                                $select .= '<optgroup label="' . htmlspecialchars($levelData['leveltitle']) . '">';
+                                foreach ($levelData['schooltypes'] as $schooltype) {
+                                    $selected = '';
+                                    if ($current == $schooltype->id) {
+                                        $selected = ' selected="selected" ';
+                                    }
+                                    $select .= '<option value="' . htmlspecialchars($schooltype->id) . '" ' . $selected . '>' . htmlspecialchars($schooltype->title) . '</option>';
+                                }
+                                $select .= '</optgroup>';
+                            }
+                            $select .= '</select>';
                         }
-                        $select .= '</select>';
 
                         return $select;
                     };

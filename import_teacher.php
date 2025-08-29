@@ -88,7 +88,7 @@ try {
     $filecontent = ''; // Needed for next using, because $mform->get_file_content('file') can not work in the future
     if (block_exacomp_can_teacher_import_grid() && $importtype == 'normal' && $data = $mform->get_file_content('file')) {
         $filecontent = $data;
-        $GLOBALS['teacher_imports_to_course'] = $courseid; // used in data_importer later;
+        $GLOBALS['teacher_imports_to_course'] = $courseid; // Used in data_importer later;
         $importSuccess = block_exacomp\data_importer::do_import_string($data, $course_template, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $import_data->password, true);
     }
 

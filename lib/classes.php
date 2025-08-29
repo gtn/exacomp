@@ -992,6 +992,7 @@ class subject extends db_record {
     public ?string $class = null;
     public ?int $is_editable = null;
     public ?int $importstate = null;
+    public ?int $teacher_imported = 0;
 
     protected function fill_topics() {
         return $this->dbLayer->get_topics_for_subject($this);

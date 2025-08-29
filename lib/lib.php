@@ -1543,12 +1543,12 @@ function block_exacomp_get_all_subjects() {
 function block_exacomp_get_schooltypes_by_course($courseid) {
     global $DB;
 
-    return $DB->get_records_sql('
-			SELECT DISTINCT s.id, s.title, s.source, s.sourceid, s.sorting, s.disabled
-			FROM {' . BLOCK_EXACOMP_DB_SCHOOLTYPES . '} s
-			JOIN {' . BLOCK_EXACOMP_DB_MDLTYPES . '} m ON m.stid = s.id AND m.courseid = ?
-			ORDER BY s.sorting, s.title
-			', array($courseid));
+    $sql = 'SELECT DISTINCT s.id, s.title, s.source, s.sourceid, s.sorting, s.disabled
+			    FROM {' . BLOCK_EXACOMP_DB_SCHOOLTYPES . '} s
+			    JOIN {' . BLOCK_EXACOMP_DB_MDLTYPES . '} m ON m.stid = s.id AND (m.courseid = ? OR m.courseid = 0)
+			    ORDER BY s.sorting, s.title
+			';
+    return $DB->get_records_sql($sql, array($courseid));
 }
 
 /**
@@ -1594,9 +1594,7 @@ function block_exacomp_get_subjects_for_schooltype($courseid, $schooltypeid = 0,
     if ($whereand) {
         $sql .= ' WHERE '.implode(' AND ', $whereand);
     }
-//    echo "<pre>debug:<strong>lib.php:1587</strong>\r\n"; print_r($courseid); echo '</pre>'; // !!!!!!!!!! delete it
-//    echo "<pre>debug:<strong>lib.php:1588</strong>\r\n"; print_r($strict_courselimited); echo '</pre>'; // !!!!!!!!!! delete it
-//echo "<pre>debug:<strong>lib.php:1587</strong>\r\n"; print_r($sql); echo '</pre>'; exit; // !!!!!!!!!! delete it
+
     return \block_exacomp\subject::get_objects_sql($sql, $sqlparams);
 }
 
@@ -5770,7 +5768,19 @@ function block_exacomp_build_schooltype_tree_for_courseselection($courseid, $onl
     }
 
     foreach ($schooltypes as $k => $schooltype) {
-        $schooltype->subjects = block_exacomp_get_subjects_for_schooltype($limit_courseid, $schooltype->id, $strict_courselimit);
+        $subjects = block_exacomp_get_subjects_for_schooltype($limit_courseid, $schooltype->id, $strict_courselimit);
+        // Check subjects on enabled Topics for this course (if the subjects was imported by the Teacher).
+        if (get_config('exacomp', 'show_teacherdescriptors_global')) {
+            foreach ($subjects as $sK => $subject) {
+                if ((int)$subject->teacher_imported) {
+                    $topics = block_exacomp_get_topics_by_course($courseid, false, true);
+                    if (!count($topics)) {
+                        unset($subjects[$sK]);
+                    }
+                }
+            }
+        }
+        $schooltype->subjects = $subjects;
         if ($onlyWithSubjects && !$schooltype->subjects) {
             unset($schooltypes[$k]);
         }

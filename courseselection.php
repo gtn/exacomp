@@ -114,8 +114,8 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $
 /* CONTENT REGION */
 
 $schooltypes = block_exacomp_build_schooltype_tree_for_courseselection($courseid, true);
-
 $active_topics = block_exacomp_get_topics_by_subject($courseid, 0, true);
+// echo "<pre>debug:<strong>courseselection.php:118</strong>\r\n"; print_r($schooltypes); echo '</pre>'; // !!!!!!!!!! delete it
 
 // filtering by "only selected grids'
 if (isset($SESSION->courseselection_filter)

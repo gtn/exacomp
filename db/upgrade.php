@@ -4329,17 +4329,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2025012801, 'exacomp');
     }
 
-    if ($oldversion < 2025071800) {
-        // add 'courseid' field for subjects. used if the grid is imported by the teacher
-        $table = new xmldb_table('block_exacompsubjects');
-        $field = new xmldb_field('courseid', XMLDB_TYPE_INTEGER, '11', null, null, null, 0);
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-        // Exacomp savepoint reached.
-        upgrade_block_savepoint(true, 2025071800, 'exacomp');
-    }
-
     if ($oldversion < 2025072500) {
         $table = new xmldb_table('block_exacompdatasources');
         $field = new xmldb_field('schooltype_mapping');
@@ -4352,27 +4341,30 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2025072500, 'exacomp');
     }
 
-    if ($oldversion < 2025081501) {
-        // add 'courseid' field for topics. used if the grid is imported by the teacher
-        $table = new xmldb_table('block_exacomptopics');
-        $field = new xmldb_field('courseid', XMLDB_TYPE_INTEGER, '11', null, null, null, 0);
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
+    if ($oldversion < 2025082900) {
+        // remove 'courseid' fields
+        $tables = ['block_exacomptopics', 'block_exacompdescriptors', 'block_exacompniveaus'];
+        $field = new xmldb_field('courseid');
+        foreach ($tables as $tableName) {
+            $table = new xmldb_table($tableName);
+            if ($dbman->field_exists($table, $field)) {
+                $dbman->drop_field($table, $field);
+            }
         }
-        // add 'courseid' field for descriptors. used if the grid is imported by the teacher
-        $table = new xmldb_table('block_exacompdescriptors');
-        $field = new xmldb_field('courseid', XMLDB_TYPE_INTEGER, '11', null, null, null, 0);
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
+        // add 'teacher_imported' field to subjects table
+        $table = new xmldb_table('block_exacompsubjects');
+        $oldField = new xmldb_field('courseid', XMLDB_TYPE_INTEGER, '11', null, null, null, 0);
+        if ($dbman->field_exists($table, $oldField)) {
+            // rename from 'courseid' to 'teacher_imported'
+            $dbman->rename_field($table, $oldField, 'teacher_imported');
+        } else {
+            // add a new one
+            $newField = new xmldb_field('teacher_imported', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+            $dbman->add_field($table, $newField);
         }
-        // add 'courseid' field for niveaus. used if the grid is imported by the teacher
-        $table = new xmldb_table('block_exacompniveaus');
-        $field = new xmldb_field('courseid', XMLDB_TYPE_INTEGER, '11', null, null, null, 0);
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
+
         // Exacomp savepoint reached.
-        upgrade_block_savepoint(true, 2025081501, 'exacomp');
+        upgrade_block_savepoint(true, 2025082900, 'exacomp');
     }
 
     /*
