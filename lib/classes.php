@@ -1210,6 +1210,7 @@ class descriptor extends db_record {
         $descriptor->creatorid = g::$USER->id;
         $descriptor->author = fullname($USER);
         $descriptor->editor = fullname($USER);
+        $descriptor->profoundness = (@$descriptor->profoundness ?: 0); // postgres is more strict
         $descriptor->insert();
         //topic association
         $childdesctopic_mm = new \stdClass();
