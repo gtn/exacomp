@@ -330,4 +330,21 @@ class block_exacomp_observer {
     // }
 
 
+    /**
+     * Observer for \block_exacomp\event\competence_assigned event.
+     *
+     * @param \block_exacomp\event\competence_assigned $event
+     * @return void
+     */
+    public static function competence_assigned(\block_exacomp\event\competence_assigned $event) {
+        // TODO: when a competence is assigned, possibly badges should be awarded
+        $eventdata = $event->get_data();
+
+        $courseid = $eventdata['courseid'];
+        block_exacomp_award_badges($courseid); // TODO: this works, but is NOT efficient
+
+        return true;
+    }
+
+
 }
