@@ -1573,7 +1573,7 @@ function block_exacomp_get_subjects_for_schooltype($courseid, $schooltypeid = 0,
     if ($schooltypeid > 0) {
         $sql .= ' AND type.stid = ? ';
     }
-
+	
     return \block_exacomp\subject::get_objects_sql($sql, [$courseid, $schooltypeid]);
 }
 
@@ -5740,11 +5740,6 @@ function block_exacomp_build_schooltype_tree_for_courseselection($courseid, $onl
         });
     }
 
-    // if it is not block_exacomp_is_skillsmanagement() - check subjects on imported by the teacher
-    if (!$limit_courseid && !get_config('exacomp', 'show_teacherdescriptors_global')) {
-        $limit_courseid = $courseid;
-        $strict_courselimit = false; // Will be used items for $limit_courseid and with courseid = 0
-    }
 
     foreach ($schooltypes as $k => $schooltype) {
         $subjects = block_exacomp_get_subjects_for_schooltype($limit_courseid, $schooltype->id, $strict_courselimit);
