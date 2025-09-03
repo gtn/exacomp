@@ -1564,38 +1564,17 @@ function block_exacomp_get_schooltypes_by_course($courseid) {
  */
 function block_exacomp_get_subjects_for_schooltype($courseid, $schooltypeid = 0, $strict_courselimited = false) {
 
-    $whereand = [];
-    $sql = 'SELECT s.*
+     $sql = 'SELECT s.*
                 FROM {' . BLOCK_EXACOMP_DB_SUBJECTS . '} s
 	                JOIN {' . BLOCK_EXACOMP_DB_MDLTYPES . '} type ON s.stid = type.stid
-                ';
-    $sqlparams = [];
+                WHERE type.courseid = ? ';
     // AND (s.disabled IS NULL OR s.disabled = 0) is needed conditions here, but we need to show hidden grids if here are already selected topics
 
-    if ($strict_courselimited) {
-        $whereand[] = ' type.courseid = ? ';
-        $sqlparams[] = $courseid;
-    }
-
     if ($schooltypeid > 0) {
-        $whereand[] = ' type.stid = ? ';
-        $sqlparams[] = $schooltypeid;
+        $sql .= ' AND type.stid = ? ';
     }
 
-    if ($courseid) {
-        if ($strict_courselimited) {
-            $whereand[] = ' s.courseid = ? ';
-        } else {
-            $whereand[] = ' (s.courseid = 0 OR s.courseid = ?) ';
-        }
-        $sqlparams[] = $courseid;
-    }
-
-    if ($whereand) {
-        $sql .= ' WHERE '.implode(' AND ', $whereand);
-    }
-
-    return \block_exacomp\subject::get_objects_sql($sql, $sqlparams);
+    return \block_exacomp\subject::get_objects_sql($sql, [$courseid, $schooltypeid]);
 }
 
 /**
