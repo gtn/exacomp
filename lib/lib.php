@@ -5744,7 +5744,7 @@ function block_exacomp_build_schooltype_tree_for_courseselection($courseid, $onl
     foreach ($schooltypes as $k => $schooltype) {
         $subjects = block_exacomp_get_subjects_for_schooltype($limit_courseid, $schooltype->id, $strict_courselimit);
         // Check subjects on enabled Topics for this course (if the subjects was imported by the Teacher).
-        if (get_config('exacomp', 'show_teacherdescriptors_global')) {
+        if (!get_config('exacomp', 'show_teacherdescriptors_global')) {
             foreach ($subjects as $sK => $subject) {
                 if ((int)$subject->teacher_imported) {
                     $topics = block_exacomp_get_topics_by_course($courseid, false, true);
