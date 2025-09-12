@@ -332,16 +332,83 @@ class block_exacomp_observer {
 
     /**
      * Observer for \block_exacomp\event\competence_assigned event.
+     * Code is based on block_exacomp_award_badges, but slightly modified
      *
      * @param \block_exacomp\event\competence_assigned $event
      * @return void
      */
     public static function competence_assigned(\block_exacomp\event\competence_assigned $event) {
-        // TODO: when a competence is assigned, possibly badges should be awarded
+        global $DB, $USER;
+        return;
         $eventdata = $event->get_data();
-
         $courseid = $eventdata['courseid'];
-        block_exacomp_award_badges($courseid); // TODO: this works, but is NOT efficient
+        $userid = $eventdata['relateduserid'];
+        $compid = $eventdata['objectid'];
+
+        // Get all course badges with manual award criteria and active status
+        $badges = badges_get_badges(BADGE_TYPE_COURSE, $courseid);
+
+        foreach ($badges as $badge) {
+            if (!$badge->is_active() || !$badge->has_manual_award_criteria()) {
+                continue;
+            }
+
+            // Only consider badges that require this competence
+            $descriptors = $DB->get_records_sql('
+                SELECT d.*
+                FROM {' . BLOCK_EXACOMP_DB_DESCRIPTORS . '} d
+                JOIN {' . BLOCK_EXACOMP_DB_DESCBADGE . '} db ON d.id=db.descid AND db.badgeid=?
+                WHERE d.id=?
+            ', array($badge->id, $compid));
+
+            if (empty($descriptors)) {
+                continue;
+            }
+
+            // Only check for this user
+            if ($badge->is_issued($userid)) {
+                continue;
+            }
+
+            // Get user competences for this course
+            $user = $DB->get_record('user', array('id' => $userid));
+            if (!$user) {
+                continue;
+            }
+            $usercompetences_all = block_exacomp_get_user_competences_by_course($user, $courseid);
+            $usercompetences = $usercompetences_all->competencies->teacher;
+
+            // Check if user has all required competences for this badge TODO: does this required_descriptors part work?
+            $allFound = true;
+            $required_descriptors = $DB->get_records_sql('
+                SELECT d.*
+                FROM {' . BLOCK_EXACOMP_DB_DESCRIPTORS . '} d
+                JOIN {' . BLOCK_EXACOMP_DB_DESCBADGE . '} db ON d.id=db.descid AND db.badgeid=?
+            ', array($badge->id));
+            foreach ($required_descriptors as $descriptor) {
+                if (!isset($usercompetences[$descriptor->id])) {
+                    $allFound = false;
+                    break;
+                }
+            }
+            if (!$allFound) {
+                continue;
+            }
+
+            // Award badge
+            $acceptedroles = array_keys($badge->criteria[BADGE_CRITERIA_TYPE_MANUAL]->params);
+            if (process_manual_award($userid, $USER->id, $acceptedroles[0], $badge->id)) { // TODO: the $USER-id does not work. A student would award the badge to himself...
+                // TODO: maybe rething the whole awarding process... "awarded by a teacher" but actually awarded by the system
+                $data = new \stdClass();
+                $data->crit = $badge->criteria[BADGE_CRITERIA_TYPE_MANUAL];
+                $data->userid = $userid;
+                badges_award_handle_manual_criteria_review($data);
+            }
+
+            // Award badge: reworked
+            badges_helper::award_badge_to_user($badge, $userid, $USER->id);
+
+        }
 
         return true;
     }
