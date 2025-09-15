@@ -3667,4 +3667,8 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'In diesem Raster gibt es keine Lernmaterialien',
         'There are no examples in this grid',
     ],
+    'source_delete_info' => [
+        'Zu löschende Daten, die von <strong>"{$a}"</strong> importiert wurden, ',
+        'Data imported from <strong>"{$a}"</strong> to delete, ',
+    ],
 ];

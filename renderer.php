@@ -4190,10 +4190,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $ret = '<div>';
         foreach ($sources as $source) {
             $name = ($source->name ? $source->name : $source->source);
-            $ret .= $this->box("Zu löschende Daten, die von <strong>\"$name\"</strong> importiert wurden, " . html_writer::link(new moodle_url('/blocks/exacomp/source_delete.php',
-                    array('courseid' => $courseid, 'action' => 'preselect_subjects', 'source' => $source->id)),
+            $ret .= $this->box(
+                // "Zu löschende Daten, die von <strong>\"$name\"</strong> importiert wurden, " .
+                block_exacomp_get_string('source_delete_info', 'block_exacomp', $name) .
+                html_writer::link(
+                    new moodle_url('/blocks/exacomp/source_delete.php',
+                        array('courseid' => $courseid, 'action' => 'preselect_subjects', 'source' => $source->id)),
                     block_exacomp_get_string('display'),
-                    [/*'class' => 'btn btn-sm btn-link'*/]));
+                    [/*'class' => 'btn btn-sm btn-link'*/])
+            );
         }
         $ret .= '</div>';
 
