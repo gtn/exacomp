@@ -1647,9 +1647,9 @@ class global_config {
                 return $result;
             } else {
                 return $values + [
-                        3 => '😊', //not generic yet because not requested from customer
-                        2 => '😐',
-                        1 => '☹',
+                        3 => '&#x1F60A;', // 😊 //not generic yet because not requested from customer
+                        2 => '&#x1F610;', // 😐
+                        1 => '&#x1F641;', // 🙁
                     ];
             }
             //} // else use value scheme set in the course

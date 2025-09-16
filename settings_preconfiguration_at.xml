@@ -54,11 +54,11 @@
         <assessment_points_negativ>4</assessment_points_negativ>
         <assessment_grade_limit>6</assessment_grade_limit>
         <assessment_grade_negativ>5</assessment_grade_negativ>
-        <assessment_grade_verbose>😊,😐,☹</assessment_grade_verbose>
+        <assessment_grade_verbose>&#x1F60A;,&#x1F610;,&#x1F641;</assessment_grade_verbose>
         <assessment_diffLevel_options>G,M,E,Z</assessment_diffLevel_options>
-        <assessment_verbose_options>😊,😐,☹</assessment_verbose_options>
+        <assessment_verbose_options>&#x1F60A;,&#x1F610;,&#x1F641;</assessment_verbose_options>
         <assessment_verbose_negative>2</assessment_verbose_negative>
-        <assessment_verbose_options_short>😊,😐,☹</assessment_verbose_options_short>
+        <assessment_verbose_options_short>&#x1F60A;,&#x1F610;,&#x1F641;</assessment_verbose_options_short>
         <assessment_verbose_lowerisbetter>1</assessment_verbose_lowerisbetter>
     </configOption>
 	<configOption id="5">
@@ -85,11 +85,11 @@
         <assessment_points_negativ>4</assessment_points_negativ>
         <assessment_grade_limit>6</assessment_grade_limit>
         <assessment_grade_negativ>5</assessment_grade_negativ>
-        <assessment_grade_verbose>😊,😐,☹</assessment_grade_verbose>
+        <assessment_grade_verbose>&#x1F60A;,&#x1F610;,&#x1F641;</assessment_grade_verbose>
         <assessment_diffLevel_options>A,B,C</assessment_diffLevel_options>
-        <assessment_verbose_options>😊,😐,☹</assessment_verbose_options>
+        <assessment_verbose_options>&#x1F60A;,&#x1F610;,&#x1F641;</assessment_verbose_options>
         <assessment_verbose_negative>2</assessment_verbose_negative>
-        <assessment_verbose_options_short>😊,😐,☹</assessment_verbose_options_short>
+        <assessment_verbose_options_short>&#x1F60A;,&#x1F610;,&#x1F641;</assessment_verbose_options_short>
         <assessment_verbose_lowerisbetter>1</assessment_verbose_lowerisbetter>
     </configOption>
 </settingsPreconfiguration>

@@ -435,11 +435,11 @@ class reports extends base {
                     if ($id === null) {
                         return;
                     } elseif ($id == BLOCK_EXACOMP_GRADING_POSTIVE) {
-                        return '😊';
+                        return '&#x1F60A;'; // 😊
                     } elseif ($id == BLOCK_EXACOMP_GRADING_SOSO) {
-                        return '😐';
+                        return '&#x1F610;'; // 😐
                     } elseif ($id == BLOCK_EXACOMP_GRADING_NEGATIVE) {
-                        return '☹';
+                        return '&#x1F641;'; // 🙁
                     }
                 };
 
