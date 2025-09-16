@@ -296,14 +296,14 @@ class block_exacomp extends block_list {
 
             if ($isTeacherOrStudent && $ready_for_use) {
                 //Kompetenzüberblick
-                $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/competencegrid.svg' . '" class="icon" alt="" />';
+                $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/competencegrid.svg' . '" width="16" height="16" class="icon" alt="" />';
                 $this->content->items[] = '<a title="' . block_exacomp_get_string('tab_competence_overview') . '" ' .
                     ' href="' . $CFG->wwwroot . '/blocks/exacomp/assign_competencies.php?courseid=' . $courseid . '">' .
                     $icon . block_exacomp_get_string('tab_competence_overview') . '</a>';
 
                 if ($isTeacher || block_exacomp_get_cross_subjects_by_course($courseid, $USER->id)) {
                     // Cross subjects: always for teacher and for students if it there are cross subjects
-                    $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/subjects.svg' . '" class="icon" alt="" />';
+                    $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/subjects.svg' . '" width="16" height="16" class="icon" alt="" />';
                     $this->content->items[] = '<a title="' . block_exacomp_get_string('tab_cross_subjects') . '" ' .
                         ' href="' . $CFG->wwwroot . '/blocks/exacomp/cross_subjects_overview.php?courseid=' . $courseid . '">' .
                         $icon . block_exacomp_get_string('tab_cross_subjects') . '</a>';
@@ -311,7 +311,7 @@ class block_exacomp extends block_list {
 
                 if (!$courseSettings->nostudents) {
                     //Kompetenzprofil
-                    $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/competenceprofile.svg' . '" class="icon" alt="" />';
+                    $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/competenceprofile.svg' . '" width="16" height="16" class="icon" alt="" />';
                     $this->content->items[] = '<a title="' . block_exacomp_get_string('tab_competence_profile') . '" ' .
                         ' href="' . $CFG->wwwroot . '/blocks/exacomp/competence_profile.php?courseid=' . $courseid . '">' .
                         $icon . block_exacomp_get_string('tab_competence_profile') . '</a>';
@@ -319,7 +319,7 @@ class block_exacomp extends block_list {
 
                 if (!$courseSettings->nostudents) {
                     //Beispiel-Aufgaben
-                    $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/learningmaterials.svg' . '" class="icon" alt="" />';
+                    $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/learningmaterials.svg' . '" width="16" height="16" class="icon" alt="" />';
                     $this->content->items[] = '<a title="' . block_exacomp_get_string('tab_examples') . '" ' .
                         ' href="' . $CFG->wwwroot . '/blocks/exacomp/view_examples.php?courseid=' . $courseid . '">' .
                         $icon . block_exacomp_get_string('tab_examples') . '</a>';
@@ -331,20 +331,20 @@ class block_exacomp extends block_list {
 
                 if (!$courseSettings->nostudents) {
                     //Wochenplan
-                    $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/wochenplan.svg' . '" class="icon" alt="" />';
+                    $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/wochenplan.svg' . '" width="16" height="16" class="icon" alt="" />';
                     $this->content->items[] = '<a title="' . block_exacomp_get_string('tab_weekly_schedule') . '" ' .
                         ' href="' . $CFG->wwwroot . '/blocks/exacomp/weekly_schedule.php?courseid=' . $courseid . '">' .
                         $icon . block_exacomp_get_string('tab_weekly_schedule') . '</a>';
                 }
                 //Gruppenbericht
-                $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/groupreports.svg' . '" class="icon" alt="" />';
+                $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/groupreports.svg' . '" width="16" height="16" class="icon" alt="" />';
                 $this->content->items[] = '<a title="' . block_exacomp_get_string('reports') . '" ' .
                     ' href="' . $CFG->wwwroot . '/blocks/exacomp/group_reports.php?courseid=' . $courseid . '">' .
                     $icon . block_exacomp_get_string('reports') . '</a>';
 
                 if ($isTeacher && !$courseSettings->nostudents) {
                     if ($courseSettings->useprofoundness) {
-                        $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/basicextendedskills.svg' . '" class="icon" alt="" />';
+                        $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/basicextendedskills.svg' . '" width="16" height="16" class="icon" alt="" />';
                         $this->content->items[] = '<a title="' . block_exacomp_get_string('tab_profoundness') . '" ' .
                             ' href="' . $CFG->wwwroot . '/blocks/exacomp/profoundness.php?courseid=' . $courseid . '">' .
                             $icon . block_exacomp_get_string('tab_profoundness') . '</a>';
@@ -360,21 +360,21 @@ class block_exacomp extends block_list {
 
             if ($isTeacher) {
                 //Einstellungen
-                $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/Course settings.svg' . '" class="icon" alt="" />';
+                $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/Course settings.svg' . '" width="16" height="16" class="icon" alt="" />';
                 $this->content->items[] = '<a title="' . block_exacomp_get_string('tab_teacher_settings') . '" ' .
                     ' href="' . $CFG->wwwroot . '/blocks/exacomp/edit_course.php?courseid=' . $courseid . '">' .
                     $icon . block_exacomp_get_string('tab_teacher_settings') . '</a>';
 
                 if (!$ready_for_use) {
                     if (!block_exacomp_is_disabled_create_grid()) {
-                        $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/basicextendedskills.svg' . '" class="icon" alt="" />';
+                        $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/basicextendedskills.svg' . '" width="16" height="16" class="icon" alt="" />';
                         $this->content->items[] = '<a title="' . block_exacomp_get_string('tab_teacher_settings_new_subject') . '" ' .
                             ' href="' . $CFG->wwwroot . '/blocks/exacomp/subject.php?courseid=' . $courseid . '&embedded=false' . '">' .
                             $icon . block_exacomp_get_string('tab_teacher_settings_new_subject') . '</a>';
                     }
                 }
                 if (get_config('exacomp', 'external_trainer_assign')) {
-                    $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/externaltrainer.svg' . '" class="icon" alt="" />';
+                    $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/externaltrainer.svg' . '" width="16" height="16" class="icon" alt="" />';
                     $this->content->items[] = '<a title="' . block_exacomp_get_string('block_exacomp_external_trainer_assign') . '" ' .
                         ' href="' . $CFG->wwwroot . '/blocks/exacomp/externaltrainers.php?courseid=' . $courseid . '&sesskey=' . sesskey() . '">' .
                         $icon . block_exacomp_get_string('block_exacomp_external_trainer_assign') . '</a>';
@@ -390,7 +390,7 @@ class block_exacomp extends block_list {
             if ($isTeacher) {
                 if (!$ready_for_use) {
                     if (!block_exacomp_is_disabled_create_grid()) {
-                        $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/basicextendedskills.svg' . '" class="icon" alt="" />';
+                        $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/basicextendedskills.svg' . '" width="16" height="16" class="icon" alt="" />';
                         $this->content->items[] = '<a title="' . block_exacomp_get_string('tab_teacher_settings_new_subject') . '" ' .
                             ' href="' . $CFG->wwwroot . '/blocks/exacomp/subject.php?courseid=' . $courseid . '&embedded=false' . '">' .
                             $icon . block_exacomp_get_string('tab_teacher_settings_new_subject') . '</a>';
@@ -409,14 +409,14 @@ class block_exacomp extends block_list {
             //Admin sieht immer Modulkonfiguration
             //Wenn Import schon erledigt, weiterleitung zu edit_config, ansonsten import.
             if ($has_data) {
-                $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/websitesettings.svg' . '" class="icon" alt="" />';
+                $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/websitesettings.svg' . '" width="16" height="16" class="icon" alt="" />';
                 $this->content->items[] = '<a title="' . block_exacomp_get_string('tab_admin_settings') . '" ' .
                     ' href="' . $CFG->wwwroot . '/blocks/exacomp/edit_config.php?courseid=' . $courseid . '">' .
                     $icon . block_exacomp_get_string('tab_admin_settings') . '</a>';
             }
 
             // always show import/export
-            $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/importexport.svg' . '" class="icon" alt="" />';
+            $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/importexport.svg' . '" width="16" height="16" class="icon" alt="" />';
             $this->content->items[] = '<a title="' . block_exacomp_get_string('tab_admin_import') . '" ' .
                 ' href="' . $CFG->wwwroot . '/blocks/exacomp/import.php?courseid=' . $courseid . '">' .
                 $icon . block_exacomp_get_string('tab_admin_import') . '</a>';
@@ -424,7 +424,7 @@ class block_exacomp extends block_list {
         // link to dakora_url
         $dakoraUrl = trim(get_config('exacomp', 'dakora_url'));
         if ($dakoraUrl) {
-            $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/dakora2.svg' . '" class="icon" alt="" />';
+            $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/dakora2.svg' . '" width="16" height="16" class="icon" alt="" />';
 
             $dakoraUrl = $CFG->wwwroot . '/blocks/exacomp/applogin.php?action=dakora_sso&sesskey=' . sesskey();
             $this->content->items[] = '<a target="_blank" title="' . block_exacomp_get_string('tab_admin_import') . '" ' .
