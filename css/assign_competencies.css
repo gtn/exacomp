@@ -183,7 +183,7 @@
 
 
 #assign-competencies select {
-    padding: 0;
+    NOpadding: 0;
     margin: 0;
     width: auto;
     font-size: 1.1em;
