@@ -237,7 +237,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $print = true;
             }
         }
-        $content = $this->button_box($print, $right_content) . $content;
+         $content = '<div class="exacomp-header-edit">'
+         . $this->button_box($print, $right_content)
+         . $content
+         . '</div>';
 
         return $content;
     }
@@ -8587,7 +8590,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     }
 
     function daterangepicker() {
-        return html_writer::tag('input', '', array('size' => '27', 'id' => 'daterangepicker', 'title' => block_exacomp_get_string("choosedaterange")))
+        return html_writer::tag('input', '', array('size' => '27', 'id' => 'daterangepicker', 'class' => 'form-control form-control-daterangepicker mx-2', 'title' => block_exacomp_get_string("choosedaterange")))
             . ' ' . html_writer::tag('button', block_exacomp_get_string('cleardaterange'), array('id' => 'clear-range', 'class' => 'btn btn-default'));
     }
 
