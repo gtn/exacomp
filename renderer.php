@@ -171,9 +171,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
     public function overview_dropdowns($type, $students, $selectedStudent = -1, $isTeacher = false, $isEditingTeacher = true, $groups = null) {
         global $COURSE, $USER;
 
+
         $content = "";
         $right_content = "";
         if ($isTeacher) {
+
             if ($this->is_edit_mode()) {
                 // display a hidden field? not needed, because the form never gets submitted (it's ajax)
                 // $content .= html_writer::empty_tag('input', array('type'=>'text', 'name'=>'exacomp_competence_grid_select_student', 'value'=>$selectedStudent));
@@ -204,7 +206,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             if ($students) {
                 $url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid' => $COURSE->id, 'creatorid' => $USER->id));
                 $right_content .= html_writer::tag('button',
-                    html_writer::empty_tag('img', ['src' => new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png')]),
+                    html_writer::tag('i', '', ['class' => 'fas fa-share']),
                     array(
                         'id' => 'pre_planning_storage_submit',
                         'name' => 'pre_planning_storage_submit',
@@ -237,10 +239,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $print = true;
             }
         }
-         $content = '<div class="exacomp-header-edit">'
+        $content = '<div class="exacomp-header-edit">'
          . $this->button_box($print, $right_content)
          . $content
          . '</div>';
+
+
 
         return $content;
     }
@@ -1516,13 +1520,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                             $titleCell->text .= $this->schedule_icon($example->id, ($studentid) ? $studentid : BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $courseid);
                                             // add to pre-planning
                                             $titleCell->text .= html_writer::link("#",
-                                                html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'),
-                                                    'title' => block_exacomp_get_string('pre_planning_storage_example_button'))),
-                                                array('class' => 'add-to-preplanning',
-                                                    'exa-type' => 'add-example-to-schedule',
-                                                    'exampleid' => $example->id,
-                                                    'studentid' => 0,
-                                                    'courseid' => $courseid));
+                                               html_writer::tag('i', '', ['class' => 'fas fa-share']),
+                                                   [
+                                                       'title'     => block_exacomp_get_string('pre_planning_storage_example_button'),
+                                                       'class'     => 'add-to-preplanning',
+                                                       'exa-type'  => 'add-example-to-schedule',
+                                                       'exampleid' => $example->id,
+                                                       'studentid' => 0,
+                                                       'courseid'  => $courseid
+                                                   ]
+                                               );
                                         }
                                     }
                                     $titleCell->text .= $this->competence_association_icon($example->id, $courseid, $editmode);
@@ -3210,14 +3217,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                                 ($studentid) ? $studentid : BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $data->courseid);
                                             // pre-planning button
                                             $titleCell->text .= html_writer::link("#",
-                                                html_writer::empty_tag('img',
-                                                    array('src' => new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'),
-                                                        'title' => block_exacomp_get_string('pre_planning_storage_example_button'))),
-                                                array('class' => 'add-to-preplanning',
-                                                    'exa-type' => 'add-example-to-schedule',
-                                                    'exampleid' => $example->id,
-                                                    'studentid' => 0,
-                                                    'courseid' => $data->courseid));
+                                                html_writer::tag('i', '', ['class' => 'fas fa-share']),
+                                                       [
+                                                           'title'     => block_exacomp_get_string('pre_planning_storage_example_button'),
+                                                           'class'     => 'add-to-preplanning',
+                                                           'exa-type'  => 'add-example-to-schedule',
+                                                           'exampleid' => $example->id,
+                                                           'studentid' => 0,
+                                                           'courseid'  => $courseid
+                                                       ]
+                                                   );
 
                                         }
                                     }
@@ -3950,13 +3959,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                             $titleCell->text .= $this->schedule_icon($example->id, ($studentid) ? $studentid : BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $courseid);
 
                                             $titleCell->text .= html_writer::link("#",
-                                                html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'),
-                                                    'title' => block_exacomp_get_string('pre_planning_storage_example_button'))),
-                                                array('class' => 'add-to-preplanning',
-                                                    'exa-type' => 'add-example-to-schedule',
-                                                    'exampleid' => $example->id,
-                                                    'studentid' => 0,
-                                                    'courseid' => $courseid));
+                                                html_writer::tag('i', '', ['class' => 'fas fa-share']),
+                                                       [
+                                                           'title'     => block_exacomp_get_string('pre_planning_storage_example_button'),
+                                                           'class'     => 'add-to-preplanning',
+                                                           'exa-type'  => 'add-example-to-schedule',
+                                                           'exampleid' => $example->id,
+                                                           'studentid' => 0,
+                                                           'courseid'  => $courseid
+                                                       ]
+                                                   );
                                         }
                                     }
                                     // 			                        $titleCell->text .= $this->competence_association_icon($example->id, $courseid, $editmode);
@@ -4198,7 +4210,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 block_exacomp_get_string('source_delete_info', 'block_exacomp', $name) .
                 html_writer::link(
                     new moodle_url('/blocks/exacomp/source_delete.php',
-                        array('courseid' => $courseid, 'action' => 'preselect_subjects', 'source' => $source->id)),
+                    array('courseid' => $courseid, 'action' => 'preselect_subjects', 'source' => $source->id)),
                     block_exacomp_get_string('display'),
                     [/*'class' => 'btn btn-sm btn-link'*/])
             );
@@ -7459,10 +7471,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $content = '';
         if ($print) {
             $content .= html_writer::link('#',
-                html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/view_print.png'), 'alt' => 'print')),
+                html_writer::tag('i', '', ['class' => 'fas fa-print']),
                 [
                     'title' => block_exacomp_get_string('print'),
-                    'class' => 'print',
+                    'class' => 'print btn btn-default',
                     'onclick' => (strlen($print) > 2 ? $print : 'window.print();') . '; return false;',
                 ]);
         }
@@ -7591,16 +7603,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $left_content .= $this->daterangepicker();
 
             // print button
-            $right_content .= html_writer::link('#',
-                html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/view_print.png'), 'alt' => 'print')),
-                [
-                    'title' => block_exacomp_get_string('print'),
-                    'class' => 'print',
-                    'onclick' => 'window.open(location.href+\'&print=1\'); return false;',
-                ]);
+           $right_content .= html_writer::link('#',
+                html_writer::tag('i', '', ['class' => 'fas fa-print']),
+
+               [
+                   'title'   => block_exacomp_get_string('print'),
+                   'class'   => 'print btn btn-default',
+                   'onclick' => "window.open(location.href+'&print=1'); return false;",
+               ]
+           );
             $url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid' => $COURSE->id, 'creatorid' => $USER->id));
             $right_content .= html_writer::tag('button',
-                html_writer::empty_tag('img', ['src' => new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png')]),
+                html_writer::tag('i', '', ['class' => 'fas fa-share']),
                 array(
                     'id' => 'pre_planning_storage_submit',
                     'name' => 'pre_planning_storage_submit',
@@ -7617,10 +7631,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         if (!block_exacomp_is_teacher()) { // add print button for student
             $right_content .= html_writer::link('#',
-                html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/view_print.png'), 'alt' => 'print')),
+                html_writer::tag('i', '', ['class' => 'fas fa-print']),
                 [
                     'title' => block_exacomp_get_string('print'),
-                    'class' => 'print',
+                    'class' => 'print btn btn-default',
                     'onclick' => 'window.open(location.href+\'&print=1\'); return false;',
                 ]);
         }
