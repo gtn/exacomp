@@ -240,10 +240,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
             }
         }
         $content = '<div class="exacomp-header-edit">'
-         . $this->button_box($print, $right_content)
-         . $content
-         . '</div>';
-
+            . $this->button_box($print, $right_content)
+            . $content
+            . '</div>';
 
 
         return $content;
@@ -1520,16 +1519,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                             $titleCell->text .= $this->schedule_icon($example->id, ($studentid) ? $studentid : BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $courseid);
                                             // add to pre-planning
                                             $titleCell->text .= html_writer::link("#",
-                                               html_writer::tag('i', '', ['class' => 'fas fa-share']),
-                                                   [
-                                                       'title'     => block_exacomp_get_string('pre_planning_storage_example_button'),
-                                                       'class'     => 'add-to-preplanning',
-                                                       'exa-type'  => 'add-example-to-schedule',
-                                                       'exampleid' => $example->id,
-                                                       'studentid' => 0,
-                                                       'courseid'  => $courseid
-                                                   ]
-                                               );
+                                                html_writer::tag('i', '', ['class' => 'fas fa-share']),
+                                                [
+                                                    'title' => block_exacomp_get_string('pre_planning_storage_example_button'),
+                                                    'class' => 'add-to-preplanning',
+                                                    'exa-type' => 'add-example-to-schedule',
+                                                    'exampleid' => $example->id,
+                                                    'studentid' => 0,
+                                                    'courseid' => $courseid,
+                                                ]
+                                            );
                                         }
                                     }
                                     $titleCell->text .= $this->competence_association_icon($example->id, $courseid, $editmode);
@@ -2479,14 +2478,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                     $cell = new html_table_cell();
                     $cell->attributes['class'] = 'rg2-indent';
-                    $cell->text = html_writer::empty_tag('input',
-                        array('exa-type' => 'new-descriptor', 'class' => 'addCompetence', 'type' => 'text', 'placeholder' => block_exacomp_trans(['de:Neue Kompetenz', 'en:New competence']), 'topicid' => $topic->id,
-                            'niveauid' => $niveauid));
                     if ($niveauid) {
+                        $cell->text = html_writer::empty_tag('input',
+                            array('exa-type' => 'new-descriptor', 'class' => 'addCompetence', 'type' => 'text', 'placeholder' => block_exacomp_trans(['de:Neue Kompetenz', 'en:New competence']), 'topicid' => $topic->id,
+                                'niveauid' => $niveauid));
                         $cell->text .= html_writer::empty_tag('input', array('exa-type' => 'new-descriptor', 'type' => 'button', 'value' => block_exacomp_get_string('add')));
                     } else {
-                        $cell->text .= html_writer::empty_tag('input',
-                            array('type' => 'button', 'value' => block_exacomp_get_string('add'), 'onclick' => 'alert(' . json_encode(block_exacomp_get_string('add_competence_insert_learning_progress')) . ')'));
+                        $cell->text = self::editmode_legend_info();
+                        // $cell->text .= html_writer::empty_tag('input',
+                        //     array('type' => 'button', 'value' => block_exacomp_get_string('add'), 'onclick' => 'alert(' . json_encode(block_exacomp_get_string('add_competence_insert_learning_progress')) . ')'));
                     }
                     $own_additionRow->cells[] = $cell;
                     $own_additionRow->cells[] = new html_table_cell();
@@ -3218,15 +3218,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                             // pre-planning button
                                             $titleCell->text .= html_writer::link("#",
                                                 html_writer::tag('i', '', ['class' => 'fas fa-share']),
-                                                       [
-                                                           'title'     => block_exacomp_get_string('pre_planning_storage_example_button'),
-                                                           'class'     => 'add-to-preplanning',
-                                                           'exa-type'  => 'add-example-to-schedule',
-                                                           'exampleid' => $example->id,
-                                                           'studentid' => 0,
-                                                           'courseid'  => $courseid
-                                                       ]
-                                                   );
+                                                [
+                                                    'title' => block_exacomp_get_string('pre_planning_storage_example_button'),
+                                                    'class' => 'add-to-preplanning',
+                                                    'exa-type' => 'add-example-to-schedule',
+                                                    'exampleid' => $example->id,
+                                                    'studentid' => 0,
+                                                    'courseid' => $courseid,
+                                                ]
+                                            );
 
                                         }
                                     }
@@ -3960,15 +3960,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                                             $titleCell->text .= html_writer::link("#",
                                                 html_writer::tag('i', '', ['class' => 'fas fa-share']),
-                                                       [
-                                                           'title'     => block_exacomp_get_string('pre_planning_storage_example_button'),
-                                                           'class'     => 'add-to-preplanning',
-                                                           'exa-type'  => 'add-example-to-schedule',
-                                                           'exampleid' => $example->id,
-                                                           'studentid' => 0,
-                                                           'courseid'  => $courseid
-                                                       ]
-                                                   );
+                                                [
+                                                    'title' => block_exacomp_get_string('pre_planning_storage_example_button'),
+                                                    'class' => 'add-to-preplanning',
+                                                    'exa-type' => 'add-example-to-schedule',
+                                                    'exampleid' => $example->id,
+                                                    'studentid' => 0,
+                                                    'courseid' => $courseid,
+                                                ]
+                                            );
                                         }
                                     }
                                     // 			                        $titleCell->text .= $this->competence_association_icon($example->id, $courseid, $editmode);
@@ -4206,11 +4206,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
         foreach ($sources as $source) {
             $name = ($source->name ? $source->name : $source->source);
             $ret .= $this->box(
-                // "Zu löschende Daten, die von <strong>\"$name\"</strong> importiert wurden, " .
+            // "Zu löschende Daten, die von <strong>\"$name\"</strong> importiert wurden, " .
                 block_exacomp_get_string('source_delete_info', 'block_exacomp', $name) .
                 html_writer::link(
                     new moodle_url('/blocks/exacomp/source_delete.php',
-                    array('courseid' => $courseid, 'action' => 'preselect_subjects', 'source' => $source->id)),
+                        array('courseid' => $courseid, 'action' => 'preselect_subjects', 'source' => $source->id)),
                     block_exacomp_get_string('display'),
                     [/*'class' => 'btn btn-sm btn-link'*/])
             );
@@ -4628,7 +4628,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         return $evaluation;
     }
 
-    public function overview_legend($teacher) {
+    public function overview_legend($teacher, $editmode = false) {
         $legend = "";
 
         $legend .= html_writer::tag("img", "", array("src" => "pix/list_12x11.png", "alt" => block_exacomp_get_string('legend_activities')));
@@ -4648,6 +4648,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
         }
 
         return html_writer::div($legend, 'legend');
+    }
+
+    public function editmode_legend_info() {
+        // add bold text with info about editmode
+        $info = "<b>";
+        $info .= block_exacomp_get_string('add_competence_insert_learning_progress');
+        $info .= "</b>";
+        return html_writer::div($info, 'legend_editmode_info');
     }
 
     /**
@@ -7603,15 +7611,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $left_content .= $this->daterangepicker();
 
             // print button
-           $right_content .= html_writer::link('#',
+            $right_content .= html_writer::link('#',
                 html_writer::tag('i', '', ['class' => 'fas fa-print']),
 
-               [
-                   'title'   => block_exacomp_get_string('print'),
-                   'class'   => 'print btn btn-default',
-                   'onclick' => "window.open(location.href+'&print=1'); return false;",
-               ]
-           );
+                [
+                    'title' => block_exacomp_get_string('print'),
+                    'class' => 'print btn btn-default',
+                    'onclick' => "window.open(location.href+'&print=1'); return false;",
+                ]
+            );
             $url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid' => $COURSE->id, 'creatorid' => $USER->id));
             $right_content .= html_writer::tag('button',
                 html_writer::tag('i', '', ['class' => 'fas fa-share']),
