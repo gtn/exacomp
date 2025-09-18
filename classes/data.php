@@ -2729,7 +2729,8 @@ class data_importer extends data {
         } else {
             $row = g::$DB->get_field(BLOCK_EXACOMP_DB_DATASOURCES, "category_mapping", $where);
         }
-        $result = unserialize($row);
+        // $result = unserialize($row); Passing null to parameter #1 ($data) of type string is deprecated
+        $result = $row ? unserialize($row) : false;
         if (!is_array($result)) {
             $result = false;
         }
@@ -2760,7 +2761,8 @@ class data_importer extends data {
         } else {
             $row = g::$DB->get_field(BLOCK_EXACOMP_DB_DATASOURCES, "schooltype_mapping", $where);
         }
-        $result = unserialize($row);
+        // $result = unserialize($row); Passing null to parameter #1 ($data) of type string is deprecated
+        $result = $row ? unserialize($row) : false;
         if (!is_array($result)) {
             $result = false;
         }
@@ -2796,7 +2798,8 @@ class data_importer extends data {
             $where = array('id' => $sourceId);
             $row = g::$DB->get_field(BLOCK_EXACOMP_DB_DATASOURCES, "selected_grids", $where);
         }
-        $result = unserialize($row);
+        // $result = unserialize($row); Passing null to parameter #1 ($data) of type string is deprecated
+        $result = $row ? unserialize($row) : false;
         if (!is_array($result)) {
             $result = false;
         }

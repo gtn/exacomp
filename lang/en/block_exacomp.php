@@ -975,3 +975,4 @@ $string['preselect_delete_subject_because_it_was_not_imported_in_last_import'] =
 $string['sync_all_grids_with_komet'] = 'Sync all grids with Komet';
 $string['sync_all_grids_with_komet_description'] = 'Keep only the Komet grids and competencies. Delete everything else unless a grid or competency is already in use';
 $string['no_examples_in_this_grid'] = 'There are no examples in this grid';
+$string['source_delete_info'] = 'Data imported from <strong>"{$a}"</strong> to delete, ';

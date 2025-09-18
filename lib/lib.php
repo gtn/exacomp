@@ -9349,50 +9349,64 @@ function block_exacomp_get_studentid() {
  * @param unknown $userid
  */
 function block_exacomp_get_message_icon($userid) {
-    global $DB, $CFG, $COURSE;
-
-    if ($userid != BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
-        require_once($CFG->dirroot . '/message/lib.php');
-
-        $userto = $DB->get_record('user', array('id' => $userid));
-
-        if (!$userto) {
-            return;
-        }
-
-        if (function_exists('message_messenger_requirejs')) {
-            // before moodle 3.3
-            message_messenger_requirejs();
-            $url = new moodle_url('message/index.php', array('id' => $userto->id));
-            $attributes = message_messenger_sendmessage_link_params($userto);
-
-            return html_writer::link($url, html_writer::tag('button', html_writer::img(new moodle_url('/blocks/exacomp/pix/envelope.png'), block_exacomp_get_string('message', 'message'), array('title' => fullname($userto)))), $attributes);
-        } else {
-            $url = new moodle_url('/message/index.php', array('id' => $userto->id));
-            $attributes = ['target' => '_blank', 'title' => fullname($userto)];
-
-            return html_writer::link($url, html_writer::img(new moodle_url('/blocks/exacomp/pix/envelope.png'), block_exacomp_get_string('message', 'message')), $attributes);
-            $anchortagcontents = '<img class="iconsmall" src="' . $OUTPUT->pix_url('t/message') . '" alt="' . get_string('messageselectadd') . '" />';
-            $anchorurl = new moodle_url('/message/index.php', array('id' => $user->id));
-            $anchortag = html_writer::link($anchorurl, $anchortagcontents,
-                array('title' => get_string('messageselectadd')));
-
-            $this->content->text .= '<div class="message">' . $anchortag . '</div>';
-        }
-    } else {
-        $attributes = array(
-            'exa-type' => 'iframe-popup',
-            'href' => new moodle_url('message_to_course.php', array('courseid' => $COURSE->id)),
-            'exa-width' => '340px',
-            'exa-height' => '340px',
-            'class' => 'btn btn-default',
-        );
-
-        return html_writer::tag('button',
-            html_writer::img(new moodle_url('/blocks/exacomp/pix/envelope.png'), block_exacomp_get_string('message', 'message'), array('title' => block_exacomp_get_string('messagetocourse'))),
-            $attributes);
-    }
-}
+     global $DB, $CFG, $COURSE;
+ 
+     if ($userid != BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
+         require_once($CFG->dirroot . '/message/lib.php');
+ 
+         $userto = $DB->get_record('user', ['id' => $userid]);
+ 
+         if (!$userto) {
+             return;
+         }
+ 
+         if (function_exists('message_messenger_requirejs')) {
+             // before moodle 3.3
+             message_messenger_requirejs();
+             $url = new moodle_url('message/index.php', ['id' => $userto->id]);
+             $attributes = message_messenger_sendmessage_link_params($userto);
+             // Titel am Link, nicht am Icon
+             $attributes['title'] = fullname($userto);
+ 
+             return html_writer::link(
+                 $url,
+                 html_writer::tag('button',
+                     html_writer::tag('i', '', ['class' => 'fas fa-envelope'])
+                 ),
+                 $attributes
+             );
+ 
+         } else {
+             $url = new moodle_url('/message/index.php', ['id' => $userto->id]);
+             $attributes = [
+                 'target' => '_blank',
+                 'title'  => fullname($userto)
+             ];
+ 
+             return html_writer::link(
+                 $url,
+                 html_writer::tag('i', '', ['class' => 'fas fa-envelope']),
+                 $attributes
+             );
+         }
+ 
+     } else {
+         $attributes = [
+             'exa-type'   => 'iframe-popup',
+             'href'       => new moodle_url('message_to_course.php', ['courseid' => $COURSE->id]),
+             'exa-width'  => '340px',
+             'exa-height' => '340px',
+             'class'      => 'btn btn-default',
+             'title'      => block_exacomp_get_string('messagetocourse')
+         ];
+ 
+         return html_writer::tag(
+             'button',
+             html_writer::tag('i', '', ['class' => 'fas fa-envelope']),
+             $attributes
+         );
+     }
+ }
 
 /**
  * send notification to user

@@ -1485,3 +1485,26 @@ input[type=checkbox].be-sure {
 #exabis_competences_block tr.deletion-table-level-2 .cell {
     padding-left: 40px; /* Adjust the value as needed */
 }
+
+.block_exacomp img.icon {
+    width: 16px !important;
+   height: 16px !important;
+}
+
+.exacomp-header-edit {
+   min-height: 55px;
+}
+
+.exacomp-header-edit .form-control-daterangepicker {
+   width: auto;
+     display: inline-block;
+}
+
+#menuexacomp_competence_grid_select_student {
+   min-width: 190px;
+   margin-left: .5rem !important;
+}
+
+#clear-range {
+   background-color: #ebebeb;
+}

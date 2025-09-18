@@ -55,5 +55,9 @@ $observers = array(
     //     'eventname' => '\mod_quiz\event\question_manually_graded',
     //     'callback' => 'block_exacomp_observer::question_manually_graded',
     // ),
+    array(
+        'eventname' => '\block_exacomp\event\competence_assigned',
+        'callback' => 'block_exacomp_observer::competence_assigned',
+    ),
 
 );

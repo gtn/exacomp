@@ -985,3 +985,4 @@ $string['preselect_delete_subject_because_it_was_not_imported_in_last_import'] =
 $string['sync_all_grids_with_komet'] = 'Synchronisiere alle Raster mit Komet';
 $string['sync_all_grids_with_komet_description'] = 'Synchronisiere alle Raster mit Komet. Alle Raster, die in Komet nicht mehr vorhanden sind, werden gelöscht, es sei denn, sie sind bereits in Verwendung.';
 $string['no_examples_in_this_grid'] = 'In diesem Raster gibt es keine Lernmaterialien';
+$string['source_delete_info'] = 'Zu löschende Daten, die von <strong>"{$a}"</strong> importiert wurden, ';
