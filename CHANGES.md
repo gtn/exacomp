@@ -1,3 +1,9 @@
+### v4.6.7 (2025091800) ###
+* deprecation changes
+* text smilies to real smilies in unicode
+* "All Smileys" preconfiguration deleted
+* new block icons
+
 ### v4.6.7 (2025080700) ###
 * bugfixes
 * webservice for diggr+, dakora+ CompentenceProfile, use all settings from exacomp
