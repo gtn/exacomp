@@ -3224,7 +3224,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                                     'exa-type' => 'add-example-to-schedule',
                                                     'exampleid' => $example->id,
                                                     'studentid' => 0,
-                                                    'courseid' => $courseid,
+                                                    'courseid' => $data->courseid,
                                                 ]
                                             );
 
