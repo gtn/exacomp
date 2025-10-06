@@ -1704,16 +1704,20 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
     }
 
     $subjectSqlON = '';
-    $subjectSqlON1 = '';
-    $subjectSqlON2 = '';
     if (is_array($subjectid)) {
         $subjectSqlON = ' AND t.subjid IN (' . implode(',', $subjectid) . ') ';
     } else if ($subjectid > 0) {
-        $subjectSqlON1 = ' AND t.subjid = :subjid1 ';
-        $subjectSqlON2 = ' AND t.subjid = :subjid2 ';
+        $subjectSqlON = ' AND t.subjid = ? ';
     }
 
-    /*
+    // if there are topics / desrciptors in a crosssubject, that are not in the course anymore, they would not be shown
+    // ==> add them as well
+    if ($crosssubj) {
+        $crosssubj_topics = block_exacomp_get_topics_for_cross_subject($courseid, $crosssubj);
+    }
+    $crosssubj_topicids = !empty($crosssubj_topics) ? array_map('intval', $crosssubj_topics) : [];
+    $crosssubj_topicids_string = $crosssubj_topicids ? implode(',', $crosssubj_topicids) : '';
+
     $sql = '
     SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source, t.sourceid, t.span, tvis.visible as visible, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
     FROM {' . BLOCK_EXACOMP_DB_TOPICS . '} t
@@ -1735,12 +1739,45 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
     if (!is_array($subjectid) && $subjectid > 0) {
         $params[] = $subjectid;
     }
-    */
+
+    // Add UNION for cross-subject topics if any
+    if ($crosssubj_topicids_string) {
+        $sql .= '
+    UNION
+    SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source, t.sourceid, t.span, tvis.visible as visible, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
+    FROM {' . BLOCK_EXACOMP_DB_TOPICS . '} t
+    JOIN {' . BLOCK_EXACOMP_DB_SUBJECTS . '} s ON t.subjid=s.id
+    LEFT JOIN {' . BLOCK_EXACOMP_DB_TOPICVISIBILITY . '} tvis
+            ON tvis.topicid=t.id AND tvis.studentid=0 AND tvis.courseid=? AND tvis.niveauid IS NULL'
+            . ($showonlyvisible ? ' AND tvis.visible = 1 ' : '')
+            . ($showalldescriptors ? '' : '
+            JOIN {' . BLOCK_EXACOMP_DB_DESCTOPICS . '} topmm ON topmm.topicid=t.id
+            JOIN {' . BLOCK_EXACOMP_DB_DESCRIPTORS . '} d ON topmm.descrid=d.id
+            JOIN {' . BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY . '} da
+                ON ((d.id=da.compid AND da.comptype = ' . BLOCK_EXACOMP_TYPE_DESCRIPTOR . ')
+                    OR (t.id=da.compid AND da.comptype = ' . BLOCK_EXACOMP_TYPE_TOPIC . '))
+                AND da.activityid IN (' . block_exacomp_get_allowed_course_modules_for_course_for_select($courseid) . ')
+        )')
+            . ' WHERE t.id IN (' . $crosssubj_topicids_string . ')';
+        $params[] = $courseid;
+    }
+    // TODO: why is the LEFT join important here? It was a comment in the original query... but never written
 
 
-
+/*
     // if there are topics / desrciptors in a crosssubject, that are not in the course anymore, they would not be shown
     // ==> add them as well
+
+    $subjectSqlON = '';
+    $subjectSqlON1 = '';
+    $subjectSqlON2 = '';
+    if (is_array($subjectid)) {
+        $subjectSqlON = ' AND t.subjid IN (' . implode(',', $subjectid) . ') ';
+    } else if ($subjectid > 0) {
+        $subjectSqlON1 = ' AND t.subjid = :subjid1 ';
+        $subjectSqlON2 = ' AND t.subjid = :subjid2 ';
+    }
+
     if ($crosssubj) {
         $crosssubj_topics = block_exacomp_get_topics_for_cross_subject($courseid, $crosssubj);
     }
@@ -1789,14 +1826,15 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
     // this line checks the courseid for the "normal" subjects, but not for the crosssubjects
     // TODO: test if the courseid checks are not needed... if it works as before, for normal subjects, not crosssubjects
 
-    // $params = ['courseid1' => $courseid, 'courseid2' => $courseid, 'courseid3' => $courseid];
+    $params = ['courseid1' => $courseid, 'courseid2' => $courseid, 'courseid3' => $courseid];
     // $params = ['courseid1' => $courseid, 'courseid3' => $courseid];
-    $params = ['courseid3' => $courseid];
+    // $params = ['courseid3' => $courseid];
     // $params = [];
     if (!is_array($subjectid) && $subjectid > 0) {
         $params['subjid1'] = $subjectid;
         $params['subjid2'] = $subjectid;
     }
+*/
 
     $topics = $DB->get_records_sql($sql, $params);
 
