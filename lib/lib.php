@@ -1686,12 +1686,16 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
     }
 
     $subjectSqlON = '';
+    $subjectSqlON1 = '';
+    $subjectSqlON2 = '';
     if (is_array($subjectid)) {
         $subjectSqlON = ' AND t.subjid IN (' . implode(',', $subjectid) . ') ';
     } else if ($subjectid > 0) {
-        $subjectSqlON = ' AND t.subjid = ? ';
+        $subjectSqlON1 = ' AND t.subjid = :subjid1 ';
+        $subjectSqlON2 = ' AND t.subjid = :subjid2 ';
     }
 
+/*
     $sql = '
     SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source, t.sourceid, t.span, tvis.visible as visible, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
     FROM {' . BLOCK_EXACOMP_DB_TOPICS . '} t
@@ -1707,11 +1711,68 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
         JOIN {' . BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY . '} da ON ((d.id=da.compid AND da.comptype = ' . BLOCK_EXACOMP_TYPE_DESCRIPTOR . ') OR (t.id=da.compid AND da.comptype = ' . BLOCK_EXACOMP_TYPE_TOPIC . '))
             AND da.activityid IN (' . block_exacomp_get_allowed_course_modules_for_course_for_select($courseid) . ')
     ');
+*/
+
+    // if there are topics / desrciptors in a crosssubject, that are not in the course anymore, they would not be shown
+    // ==> add them as well
+    if ($crosssubj) {
+        $crosssubj_topics = block_exacomp_get_topics_for_cross_subject($courseid, $crosssubj);
+    }
+    $crosssubj_topicids = !empty($crosssubj_topics) ? array_map('intval', $crosssubj_topics) : [];
+    $crosssubj_topicids_string = $crosssubj_topicids ? implode(',', $crosssubj_topicids) : '';
+    $crosssubj_topicids_where_sql = $crosssubj_topicids_string ? ' OR t.id IN (' . $crosssubj_topicids_string . ')' : '';
+
+    // instead of the old join on coursetopics method, we do a WHERE t.id IN.
+    // -- AND tvis.courseid = :courseid1
+    // -- AND ct.courseid = :courseid2
+    $sql = '
+    SELECT DISTINCT
+        t.id, t.title, t.sorting, t.subjid, t.description, t.numb,
+        t.source, t.sourceid, t.span, tvis.visible AS visible,
+        s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
+    FROM {' . BLOCK_EXACOMP_DB_TOPICS . '} t
+    JOIN {' . BLOCK_EXACOMP_DB_SUBJECTS . '} s ON t.subjid=s.id -- join subject here, to make sure only topics with existing subject are loaded
+    JOIN {' . BLOCK_EXACOMP_DB_TOPICVISIBILITY . '} tvis
+        ON tvis.topicid=t.id
+        AND tvis.studentid=0
+        --
+        AND tvis.niveauid IS NULL' .
+            ($showonlyvisible ? ' AND tvis.visible = 1 ' : '') . '
+    JOIN {' . BLOCK_EXACOMP_DB_COURSETOPICS . '} ct ON ct.topicid = t.id
+        --
+    '
+        . (is_array($subjectid) ? $subjectSqlON : $subjectSqlON1) . '
+    ' . ($showalldescriptors ? '' : '
+        -- only show topics with at least one descriptor/activity
+        JOIN {' . BLOCK_EXACOMP_DB_DESCTOPICS . '} topmm ON topmm.topicid=t.id
+        JOIN {' . BLOCK_EXACOMP_DB_DESCRIPTORS . '} d ON topmm.descrid=d.id
+        JOIN {' . BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY . '} da
+            ON ((d.id=da.compid AND da.comptype = ' . BLOCK_EXACOMP_TYPE_DESCRIPTOR . ')
+            OR (t.id=da.compid AND da.comptype = ' . BLOCK_EXACOMP_TYPE_TOPIC . '))
+            AND da.activityid IN (' . block_exacomp_get_allowed_course_modules_for_course_for_select($courseid) . ')
+    ') . '
+    WHERE (
+        t.id IN (
+            SELECT ct.topicid
+            FROM {' . BLOCK_EXACOMP_DB_COURSETOPICS . '} ct
+            WHERE ct.courseid = :courseid3 ' . (is_array($subjectid) ? $subjectSqlON : $subjectSqlON2) . '
+        )
+        ' . $crosssubj_topicids_where_sql . '
+    )';
+    // TODO: test if the courseid checks are not needed... if it works as before, for normal subjects, not crosssubjects
 
     //GROUP By funktioniert nur mit allen feldern im select, aber nicht mit strings
+    /*
     $params = array($courseid);
     if (!is_array($subjectid) && $subjectid > 0) {
         $params[] = $subjectid;
+    }
+    */
+    // $params = ['courseid1' => $courseid, 'courseid2' => $courseid, 'courseid3' => $courseid];
+    $params = ['courseid3' => $courseid];
+    if (!is_array($subjectid) && $subjectid > 0) {
+        $params['subjid1'] = $subjectid;
+        $params['subjid2'] = $subjectid;
     }
 
     $topics = $DB->get_records_sql($sql, $params);
@@ -6578,14 +6639,7 @@ function block_exacomp_get_descriptors_assigned_to_cross_subject($crosssubjid) {
  * this is not perfect runtime-wise but there are so many places on where to get topics, that this way is easier
  */
 function block_exacomp_clear_topics_for_crosssubject($topics, $courseid, $crosssubj) {
-    $crosssubjid = is_scalar($crosssubj) ? $crosssubj : $crosssubj->id;
-
-    $descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubj);
-    $topicsOfCrosssubj = array();
-    foreach ($descriptors as $descriptor) {
-        $topicsOfCrosssubj[$descriptor->topicid] = $descriptor->topicid;
-    }
-
+    $topicsOfCrosssubj = block_exacomp_get_topics_for_cross_subject($courseid, $crosssubj);
     if (is_array($topics)) {
         foreach ($topics as $key => $topic) {
             if (isset($topicsOfCrosssubj[$topic->id])) {
@@ -6597,6 +6651,22 @@ function block_exacomp_clear_topics_for_crosssubject($topics, $courseid, $crosss
     }
     return $topics;
 }
+
+/**
+ * get topics for crosssubjects
+ */
+function block_exacomp_get_topics_for_cross_subject($courseid, $crosssubj) {
+    $descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubj);
+    $topicsOfCrosssubj = array();
+    foreach ($descriptors as $descriptor) {
+        $topicsOfCrosssubj[$descriptor->topicid] = $descriptor->topicid;
+    }
+
+    return $topicsOfCrosssubj;
+}
+
+
+
 
 /**
  * get descriptors for crosssubject
