@@ -1573,7 +1573,7 @@ function block_exacomp_get_subjects_for_schooltype($courseid, $schooltypeid = 0,
     if ($schooltypeid > 0) {
         $sql .= ' AND type.stid = ? ';
     }
-	
+
     return \block_exacomp\subject::get_objects_sql($sql, [$courseid, $schooltypeid]);
 }
 
@@ -9350,16 +9350,16 @@ function block_exacomp_get_studentid() {
  */
 function block_exacomp_get_message_icon($userid) {
      global $DB, $CFG, $COURSE;
- 
+
      if ($userid != BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
          require_once($CFG->dirroot . '/message/lib.php');
- 
+
          $userto = $DB->get_record('user', ['id' => $userid]);
- 
+
          if (!$userto) {
              return;
          }
- 
+
          if (function_exists('message_messenger_requirejs')) {
              // before moodle 3.3
              message_messenger_requirejs();
@@ -9367,7 +9367,7 @@ function block_exacomp_get_message_icon($userid) {
              $attributes = message_messenger_sendmessage_link_params($userto);
              // Titel am Link, nicht am Icon
              $attributes['title'] = fullname($userto);
- 
+
              return html_writer::link(
                  $url,
                  html_writer::tag('button',
@@ -9375,21 +9375,21 @@ function block_exacomp_get_message_icon($userid) {
                  ),
                  $attributes
              );
- 
+
          } else {
              $url = new moodle_url('/message/index.php', ['id' => $userto->id]);
              $attributes = [
                  'target' => '_blank',
                  'title'  => fullname($userto)
              ];
- 
+
              return html_writer::link(
                  $url,
                  html_writer::tag('i', '', ['class' => 'fas fa-envelope']),
                  $attributes
              );
          }
- 
+
      } else {
          $attributes = [
              'exa-type'   => 'iframe-popup',
@@ -9399,7 +9399,7 @@ function block_exacomp_get_message_icon($userid) {
              'class'      => 'btn btn-default',
              'title'      => block_exacomp_get_string('messagetocourse')
          ];
- 
+
          return html_writer::tag(
              'button',
              html_writer::tag('i', '', ['class' => 'fas fa-envelope']),
@@ -10203,7 +10203,7 @@ function block_exacomp_get_html_for_niveau_eval($evaluation) {
  *
  * @param unknown $courseid
  * @param unknown $studentid
- * @param unknown $subjectid
+ * @param int $subjectid
  * @param unknown $crosssubj
  * @return array{[subject_title, subject_eval, subject_evalniveau, subject_evalniveauid, timestamp,
  *                  content {[topicid] => [topic_evalniveau, topic_evalniveauid, topic_eval, topicid, visible, timestamp, span,
@@ -10217,7 +10217,7 @@ function block_exacomp_get_html_for_niveau_eval($evaluation) {
  *       show = false, if niveau not used within current topic
  *       span = 1 or 0 inidication if niveau is across (Ã¼bergreifend)
  */
-function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subjectid, $crosssubj = null) {
+function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, int $subjectid, $crosssubj = null) {
     global $DB;
     list($course_subjects, $table_column, $table_header, $selectedSubject, $selectedTopic, $selectedNiveau) =
         block_exacomp_init_overview_data($courseid, $subjectid, BLOCK_EXACOMP_SHOW_ALL_TOPICS, 0, false, block_exacomp_is_teacher(), $studentid, false, false, $crosssubj);
@@ -10226,9 +10226,17 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
     $user = block_exacomp_get_user_information_by_course($user, $courseid);
 
     $subject = block_exacomp\db_layer_student::create($courseid)->get_subject($subjectid);
+    // this returns null if the subject is not assigned to the course - but we want to show the subject anyways, if it is a crosssubject
 
     if (!$subject) {
-        return;
+        if ($crosssubj){
+            $crosssubj_subjects = block_exacomp_get_subjects_for_cross_subject($crosssubj);
+            $subject = $crosssubj_subjects[$subjectid];
+        }
+        // if there still is no subject found: return
+        if(!$subject){
+            return;
+        }
     }
     if (!$subject->topics) {
         $subject->topics = [];
