@@ -1395,7 +1395,7 @@ function block_exacomp_require_admin($context = null) {
  * @param bool $showalldescriptors default false, show only comps with activities
  * @return array $subjects
  */
-function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = false, $hideglobalsubjects = -1) {
+function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = false, $hideglobalsubjects = -1, $crosssubj = null) {
     if (!$showalldescriptors) {
         $showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
     }
@@ -1416,6 +1416,24 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 			';
 
     $subjects = block_exacomp\subject::get_objects_sql($sql, array($courseid));
+
+    // add subjects that are in this course because of crosssubjects, that are not in the $subjects list yet
+    if ($crosssubj) {
+        $crossubject_subjects = block_exacomp_get_subjects_for_cross_subject($crosssubj);
+        foreach ($crossubject_subjects as $cs) {
+            $found = false;
+            foreach ($subjects as $s) {
+                if ($s->id == $cs->id) {
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                $subjects[$cs->id] = $cs;
+            }
+        }
+    }
+
 
     //remove the subjects that are hidden because they are globalsubjects and the settings are set to hide them
 
@@ -2897,7 +2915,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher = true, $studentid = 0, $showonlyvisible = false, $hideglobalsubjects = false, $crosssubj = null) {
 
     $courseTopics = block_exacomp_get_topics_by_course($courseid, false, $showonlyvisible ? (($isTeacher) ? false : true) : false, $crosssubj);
-    $courseSubjects = block_exacomp_get_subjects_by_course($courseid, false, $hideglobalsubjects);
+    $courseSubjects = block_exacomp_get_subjects_by_course($courseid, false, $hideglobalsubjects, $crosssubj);
 
     $topic = new \stdClass();
     $topic->id = $topicid;
