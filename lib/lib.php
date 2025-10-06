@@ -1713,7 +1713,7 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
         $subjectSqlON2 = ' AND t.subjid = :subjid2 ';
     }
 
-/*
+    /*
     $sql = '
     SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source, t.sourceid, t.span, tvis.visible as visible, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
     FROM {' . BLOCK_EXACOMP_DB_TOPICS . '} t
@@ -1729,7 +1729,15 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
         JOIN {' . BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY . '} da ON ((d.id=da.compid AND da.comptype = ' . BLOCK_EXACOMP_TYPE_DESCRIPTOR . ') OR (t.id=da.compid AND da.comptype = ' . BLOCK_EXACOMP_TYPE_TOPIC . '))
             AND da.activityid IN (' . block_exacomp_get_allowed_course_modules_for_course_for_select($courseid) . ')
     ');
-*/
+
+    //GROUP By funktioniert nur mit allen feldern im select, aber nicht mit strings
+    $params = array($courseid);
+    if (!is_array($subjectid) && $subjectid > 0) {
+        $params[] = $subjectid;
+    }
+    */
+
+
 
     // if there are topics / desrciptors in a crosssubject, that are not in the course anymore, they would not be shown
     // ==> add them as well
@@ -1777,17 +1785,14 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
         )
         ' . $crosssubj_topicids_where_sql . '
     )';
+    // WHERE ct.courseid = :courseid3 ' . (is_array($subjectid) ? $subjectSqlON : $subjectSqlON2) . '
+    // this line checks the courseid for the "normal" subjects, but not for the crosssubjects
     // TODO: test if the courseid checks are not needed... if it works as before, for normal subjects, not crosssubjects
 
-    //GROUP By funktioniert nur mit allen feldern im select, aber nicht mit strings
-    /*
-    $params = array($courseid);
-    if (!is_array($subjectid) && $subjectid > 0) {
-        $params[] = $subjectid;
-    }
-    */
     // $params = ['courseid1' => $courseid, 'courseid2' => $courseid, 'courseid3' => $courseid];
+    // $params = ['courseid1' => $courseid, 'courseid3' => $courseid];
     $params = ['courseid3' => $courseid];
+    // $params = [];
     if (!is_array($subjectid) && $subjectid > 0) {
         $params['subjid1'] = $subjectid;
         $params['subjid2'] = $subjectid;
