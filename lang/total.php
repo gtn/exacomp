@@ -95,6 +95,10 @@ return [
     ],
 
     // === Teacher Tabs ===
+	'tab_teacher_import' => [
+        'Import',
+        'Import',
+    ],
     'tab_teacher_settings' => [
         'Kurs-Einstellungen',
         'Settings',

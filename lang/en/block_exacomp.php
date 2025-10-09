@@ -40,6 +40,7 @@ $string['admin_config_pending'] = 'Competence grids pre-selection needs to be pe
 $string['tab_admin_taxonomies'] = 'Difficulty levels';
 
 // === Teacher Tabs ===
+$string['tab_teacher_import'] = 'Import';
 $string['tab_teacher_settings'] = 'Settings';
 $string['tab_teacher_settings_configuration'] = 'Configuration';
 $string['tab_teacher_settings_selection_st'] = 'Schooltype selection';

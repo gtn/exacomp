@@ -40,6 +40,7 @@ $string['admin_config_pending'] = 'Vorauswahl der Kompetenzen durch den Administ
 $string['tab_admin_taxonomies'] = 'Niveaustufen';
 
 // === Teacher Tabs ===
+$string['tab_teacher_import'] = 'Import';
 $string['tab_teacher_settings'] = 'Kurs-Einstellungen';
 $string['tab_teacher_settings_configuration'] = 'Einstellungen';
 $string['tab_teacher_settings_selection_st'] = 'Schulart / Bezüge zum Bildungsplan';

@@ -420,6 +420,11 @@ class block_exacomp extends block_list {
             $this->content->items[] = '<a title="' . block_exacomp_get_string('tab_admin_import') . '" ' .
                 ' href="' . $CFG->wwwroot . '/blocks/exacomp/import.php?courseid=' . $courseid . '">' .
                 $icon . block_exacomp_get_string('tab_admin_import') . '</a>';
+        }else if ($isTeacher && block_exacomp_can_teacher_import_grid()) { // import grid link for teachers
+			$icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/importexport.svg' . '" width="16" height="16" class="icon" alt="" />';
+            $this->content->items[] = '<a title="' . block_exacomp_get_string('tab_teacher_import') . '" ' .
+                ' href="' . $CFG->wwwroot . '/blocks/exacomp/import_teacher.php?courseid=' . $courseid . '">' .
+                $icon . block_exacomp_get_string('tab_teacher_import') . '</a>';
         }
         // link to dakora_url
         $dakoraUrl = trim(get_config('exacomp', 'dakora_url'));
