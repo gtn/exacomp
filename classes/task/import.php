@@ -40,8 +40,8 @@ class import extends scheduled_task {
         $tasks = $DB->get_records(BLOCK_EXACOMP_DB_IMPORTTASKS, array('disabled' => 0)); // if an import task is just disabled, it will be handled as if it were removed.
 
 
-        $sync_all_grids_with_komet = get_config('exacomp', 'sync_all_grids_with_komet') && ($xmlserverurl || !empty($tasks));
-        if ($sync_all_grids_with_komet) {
+        $delete_grids_missing_from_xmlserverurl = get_config('exacomp', 'delete_grids_missing_from_xmlserverurl') && ($xmlserverurl || !empty($tasks));
+        if ($delete_grids_missing_from_xmlserverurl) {
             g::$DB->set_field(BLOCK_EXACOMP_DB_SUBJECTS, 'importstate', BLOCK_EXACOMP_SUBJECT_IMPORT_TASK_RUNNING);
         }
         $any_import_failed = false;
@@ -89,9 +89,9 @@ class import extends scheduled_task {
         }
 
         // The deletion task
-        // check if sync_all_grids_with_komet is set AND (if any url is in the xmlserverurl field, OR if $tasks is not empty)
-        if ($sync_all_grids_with_komet) {
-            mtrace('Exabis Competence Grid: sync_all_grids_with_komet  is running.');
+        // check if delete_grids_missing_from_xmlserverurl is set AND (if any url is in the xmlserverurl field, OR if $tasks is not empty)
+        if ($delete_grids_missing_from_xmlserverurl) {
+            mtrace('Exabis Competence Grid: delete_grids_missing_from_xmlserverurl  is running.');
             if ($any_import_failed) {
                 mtrace("Synchronize did not run because an import failed");
             } else {

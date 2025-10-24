@@ -15088,7 +15088,7 @@ function block_exacomp_is_block_active_in_course($courseid) {
 function block_exacomp_delete_grids_missing_from_komet_import() {
     global $DB, $CFG;
     // check the setting again, before deleting
-    if (!get_config('exacomp', 'sync_all_grids_with_komet')) {
+    if (!get_config('exacomp', 'delete_grids_missing_from_xmlserverurl')) {
         return false;
     }
 

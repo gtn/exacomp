@@ -173,9 +173,9 @@ $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/xmlserve
     block_exacomp_get_string('settings_configxmlserverurl'), "", PARAM_URL));
 
 
-$settings->add(new admin_setting_configcheckbox('exacomp/sync_all_grids_with_komet',
-    block_exacomp_get_string('sync_all_grids_with_komet'),
-    block_exacomp_get_string('sync_all_grids_with_komet_description'), 0));
+$settings->add(new admin_setting_configcheckbox('exacomp/delete_grids_missing_from_xmlserverurl',
+    block_exacomp_get_string('delete_grids_missing_from_xmlserverurl'),
+    block_exacomp_get_string('delete_grids_missing_from_xmlserverurl_description'), 0));
 
 
 $options = array('' => block_exacomp_get_string('settings_addblock_to_newcourse_option_no'),

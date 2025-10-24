@@ -2321,8 +2321,8 @@ class data_importer extends data {
         }
 
         // // set all importstate fields of the subjects of this source to 2
-        // $sync_all_grids_with_komet = get_config('exacomp', 'sync_all_grids_with_komet');
-        // if ($sync_all_grids_with_komet) {
+        // $delete_grids_missing_from_xmlserverurl = get_config('exacomp', 'delete_grids_missing_from_xmlserverurl');
+        // if ($delete_grids_missing_from_xmlserverurl) {
         //     g::$DB->set_field(BLOCK_EXACOMP_DB_SUBJECTS, 'importstate', 2, array('source' => self::$import_source_local_id));
         // }
 
@@ -2336,7 +2336,7 @@ class data_importer extends data {
         // // set all importstate fields of the subjects of this source to 1, if they are still set to 2.
         // // in the insert_edulevel function, the subjects are inserted and importstate is set to 0 if the subject is in the xml
         // // this leaves only the actually missing subjects set to 1, and during this process they are set to 2, so there never is a wrong marking on the deletion page
-        // if ($sync_all_grids_with_komet) {
+        // if ($delete_grids_missing_from_xmlserverurl) {
         //     g::$DB->set_field(BLOCK_EXACOMP_DB_SUBJECTS, 'importstate', 1, array('source' => self::$import_source_local_id, 'importstate' => 2));
         // }
 

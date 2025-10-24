@@ -25,7 +25,7 @@
 ### v4.6.7 (2025021300) ###
 * app login security fix
 * dakora+, diggr+ app, wording for roles teacher/student changeable in settings_preconfiguration
-* new pluginsetting sync_all_grids_with_komet. if set, grids which are not in automatic import file from Komet anymore get deleted.
+* new pluginsetting delete_grids_missing_from_xmlserverurl. if set, grids which are not in automatic import file from Komet anymore get deleted.
 * bugfixes in feature activities to descriptors
 * student selfassessment, teacher dont get notification anymore
 
