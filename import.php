@@ -429,20 +429,7 @@ if ($isAdmin || block_exacomp_check_customupload()) {
                             new moodle_url('/blocks/exacomp/import.php',
                                 array('courseid' => $courseid,
                                     'importtype' => 'normal')),
-                            block_exacomp_get_string('doimport_again'))) . '<hr>';
-                    if ($CFG->version >= 2017022300) { // only from Moodle 3.3
-                        $import_komet_html = html_writer::link(
-                                new moodle_url('/admin/tool/task/schedule_task.php',
-                                    array('task' => 'block_exacomp\task\import')),
-                                block_exacomp_get_string('import_from_related_komet'),
-                                array('target' => '_blank')) . '&nbsp;' . block_exacomp_help_icon(block_exacomp_get_string('import_from_related_komet'), block_exacomp_get_string('import_from_related_komet_help'));
-                    } else if (!$CFG->cronclionly) { // for oldest versions
-                        $import_komet_html = html_writer::link(
-                            new moodle_url('/admin/cron.php'),
-                            block_exacomp_get_string('import_from_related_komet'),
-                            array('target' => '_blank'));
-                    }
-                    echo $OUTPUT->box($import_komet_html);
+                            block_exacomp_get_string('doimport_again')));
                 } else {
                     // no data yet, allow import or import demo data
                     echo $OUTPUT->box(html_writer::empty_tag('img',
@@ -458,9 +445,6 @@ if ($isAdmin || block_exacomp_check_customupload()) {
                         block_exacomp_get_string('doimport')));
                     //echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'demo')), block_exacomp_get_string('do_demo_import')));
                 }
-                echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php',
-                    array('courseid' => $courseid, 'importtype' => 'scheduler')),
-                    block_exacomp_get_string('schedulerimport')));
             }
 
             // export
