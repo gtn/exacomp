@@ -37,7 +37,6 @@ class import extends scheduled_task {
 
         // set all importstate fields of the subjects of ALL sources to BLOCK_EXACOMP_SUBJECT_IMPORTING, meaning, it is currently importing and therefore in an unsure state
         $xmlserverurl = get_config('exacomp', 'xmlserverurl');
-        $tasks = $DB->get_records(BLOCK_EXACOMP_DB_IMPORTTASKS, array('disabled' => 0)); // if an import task is just disabled, it will be handled as if it were removed.
 
 
         $delete_grids_missing_from_xmlserverurl = get_config('exacomp', 'delete_grids_missing_from_xmlserverurl') && ($xmlserverurl || !empty($tasks));
@@ -66,34 +65,12 @@ class import extends scheduled_task {
             $any_import_failed = true;
         }
 
-        // The additional import task
-        foreach ($tasks as $task) {
-            mtrace('Exabis Competence Grid: import additional task is running.');
-            //import xml with provided server url
-            if (!$task->link) {
-                mtrace('nothing to import from this task');
-            }
-            try {
-                data::prepare();
-                if (data_importer::do_import_url($task->link, null, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, false, $task->id)) {
-                    mtrace("import done");
-                    block_exacomp_settstamp();
-                } else {
-                    mtrace("import failed: unknown error");
-                    $any_import_failed = true;
-                }
-            } catch (moodle_exception $e) {
-                mtrace("import failed: " . $e->getMessage());
-                $any_import_failed = true;
-            }
-        }
-
         // The deletion task
         // check if delete_grids_missing_from_xmlserverurl is set AND (if any url is in the xmlserverurl field, OR if $tasks is not empty)
         if ($delete_grids_missing_from_xmlserverurl) {
             mtrace('Exabis Competence Grid: delete_grids_missing_from_xmlserverurl  is running.');
             if ($any_import_failed) {
-                mtrace("Synchronize did not run because an import failed");
+                mtrace("Deletion script did not run because an import failed");
             } else {
                 // set all importstate fields of the subjects of ALL SOURCES to BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT, if they are still set to BLOCK_EXACOMP_SUBJECT_IMPORTING after the imports are done
                 // in the insert_edulevel function, the subjects are inserted and importstate is set to BLOCK_EXACOMP_SUBJECT_NOT_MISSING_FROM_IMPORT if the subject is in the xml
