@@ -42,7 +42,7 @@ return [
         'overview of administrator actions in a course',
     ],
     'exacomp:student' => [
-        'Übersicht der Teilnehmerfunktionen in einem Kurs',
+        'Übersicht der Teilnehmer:innenfunktionen in einem Kurs',
         'overview of student actions in a course',
     ],
     'exacomp:use' => [
