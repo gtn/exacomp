@@ -16,6 +16,8 @@
 
 namespace block_exacomp;
 
+defined('MOODLE_INTERNAL') || die;
+
 require_once __DIR__ . '/common.php';
 
 class lang extends common\lang {

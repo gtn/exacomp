@@ -7190,6 +7190,7 @@ function block_exacomp_descriptor_used($courseid, $descriptor, $studentid) {
  * @return boolean
  */
 function block_exacomp_example_used($courseid, $example, $studentid) {
+    // TODO: $block_exacomp_example_used_values nicht als globale variable, sondern als statische variable in der funktion.
     global $DB, $block_exacomp_example_used_values;
     //if studentid == 0 used = true, if no evaluation/submission for this example
     //if studentid != 0 used = true, if no evaluation/submission for this examples for this student
