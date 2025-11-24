@@ -1,5 +1,8 @@
 <?php
-error_reporting(E_ALL ^ (E_NOTICE | E_WARNING | E_DEPRECATED)); // Deprecations broke pictures
+
+require __DIR__ . '/../../inc.php';
+
+error_reporting(error_reporting() ^ (E_NOTICE | E_WARNING | E_DEPRECATED)); // Deprecations broke pictures
 
 /* pChart library inclusions */
 $pathToPChart = __DIR__ . '/../../vendor/pChart/';

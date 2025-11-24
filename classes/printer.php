@@ -61,7 +61,7 @@ class printer_TCPDF extends TCPDF {
             $args[0] = $path;
         }
 
-        return call_user_func_array(array('parent', __FUNCTION__), $args);
+        return parent::Image(...$args);
     }
 
     public function writeHTML($html, $ln = true, $fill = false, $reseth = false, $cell = false, $align = '') {

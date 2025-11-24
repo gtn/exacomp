@@ -18,6 +18,8 @@ namespace qbank_questiontodescriptor;
 
 use core_question\local\bank\column_base;
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * A column type for the name of the question creator.
  *
