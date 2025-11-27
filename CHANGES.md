@@ -1,3 +1,10 @@
+### v4.6.7 (2025112700) ###
+* fix problem with crosssubjects if related topics are not enabled in the course anymore
+* New Feature: Also Teacher can import grid-data into their course, not only Admins
+* code cleaning and fixing
+* better wording
+* security fixes
+
 ### v4.6.7 (2025091800) ###
 * deprecation changes
 * text smilies to real smilies in unicode
