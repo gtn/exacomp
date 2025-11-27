@@ -40,6 +40,7 @@ $string['admin_config_pending'] = 'Competence grids pre-selection needs to be pe
 $string['tab_admin_taxonomies'] = 'Difficulty levels';
 
 // === Teacher Tabs ===
+$string['tab_teacher_import'] = 'Import';
 $string['tab_teacher_settings'] = 'Settings';
 $string['tab_teacher_settings_configuration'] = 'Configuration';
 $string['tab_teacher_settings_selection_st'] = 'Schooltype selection';
@@ -972,7 +973,7 @@ $string['please_select_topic_first'] = 'Please first select a topic of competenc
 $string['no_course_templates'] = 'Can not find any course to use as a template';
 $string['preselect_delete_subject_because_it_is_disabled'] = 'Preselected for deletion because this subject is disabled in Komet';
 $string['preselect_delete_subject_because_it_was_not_imported_in_last_import'] = 'Preselected for deletion because this subject did not exist in the previous import task BUT is being used in courses or has gradings or has has content from another source.';
-$string['sync_all_grids_with_komet'] = 'Sync all grids with Komet';
-$string['sync_all_grids_with_komet_description'] = 'Keep only the Komet grids and competencies. Delete everything else unless a grid or competency is already in use';
+$string['delete_grids_missing_from_xmlserverurl'] = 'Delete data during synchronization with xmlserverurl';
+$string['delete_grids_missing_from_xmlserverurl_description'] = 'All grids that no longer exist in Komet (xmlserverurl) will be deleted unless they are already in use.';
 $string['no_examples_in_this_grid'] = 'There are no examples in this grid';
 $string['source_delete_info'] = 'Data imported from <strong>"{$a}"</strong> to delete, ';

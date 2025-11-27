@@ -4367,6 +4367,25 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2025082900, 'exacomp');
     }
 
+    if ($oldversion < 2025102902) {
+        // the adminsetting sync_all_grids_with_komet has been renamed to delete_grids_missing_from_xmlserverurl
+        // the old setting needs to be migrated to the new setting name and then removed
+
+        $oldname = 'sync_all_grids_with_komet';
+        $newname = 'delete_grids_missing_from_xmlserverurl';
+        $plugin = 'exacomp';
+
+        $oldvalue = get_config($plugin, $oldname);
+        if ($oldvalue !== false) {
+            set_config($newname, $oldvalue, $plugin);
+            unset_config($oldname, $plugin);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2025102902, 'exacomp');
+    }
+
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!

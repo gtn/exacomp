@@ -16,6 +16,8 @@
 
 namespace qbank_questiontodescriptor;
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * Class plugin_feature is the entrypoint for the columns.
  *

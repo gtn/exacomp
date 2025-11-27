@@ -29,6 +29,60 @@ if (!$group || empty($servicesGroups[$group])) {
     $servicesFiles = $servicesGroups[$group];
 }
 
+/**
+ * Needed, because xdebug overrides the default moodle var_dump in xdebug.mode=develop
+ */
+function my_var_dump($var, $indent = 0) {
+    if (ini_get('xdebug.mode') !== 'develop') {
+        var_dump($var);
+    }
+
+    $pad = str_repeat('  ', $indent);
+
+    switch (gettype($var)) {
+        case 'boolean':
+            echo $pad . 'bool(' . ($var ? 'true' : 'false') . ")\n";
+            break;
+        case 'integer':
+            echo $pad . 'int(' . $var . ")\n";
+            break;
+        case 'double':
+            echo $pad . 'float(' . $var . ")\n";
+            break;
+        case 'string':
+            echo $pad . 'string(' . strlen($var) . ') "' . $var . "\"\n";
+            break;
+        case 'NULL':
+            echo $pad . "NULL\n";
+            break;
+        case 'array':
+            echo $pad . 'array(' . count($var) . ") {\n";
+            foreach ($var as $key => $value) {
+                echo $pad . '  [' . (is_int($key) ? $key : '"' . $key . '"') . "]=>\n";
+                my_var_dump($value, $indent + 1);
+            }
+            echo $pad . "}\n";
+            break;
+        case 'object':
+            $class = get_class($var);
+            $props = (array)$var;
+            echo $pad . 'object(' . $class . ')#' . spl_object_id($var) . ' (' . count($props) . ") {\n";
+            foreach ($props as $key => $value) {
+                $cleanKey = preg_replace('/.*\0/', '', $key);
+                echo $pad . '  ["' . $cleanKey . '"]=>\n';
+                my_var_dump($value, $indent + 1);
+            }
+            echo $pad . "}\n";
+            break;
+        case 'resource':
+        case 'resource (closed)':
+            echo $pad . 'resource(' . get_resource_type($var) . ")\n";
+            break;
+        default:
+            echo $pad . gettype($var) . "\n";
+    }
+}
+
 function moodle_type_to_typescript_type($isParameters, $type) {
     if ($type == 'int' || $type == 'float') {
         $tsType = 'number';
@@ -153,8 +207,16 @@ foreach ($servicesFiles as $servicesFile) {
                 }
 
                 foreach ($o->keys as $paramName => $paramInfo) {
+                    $ignoreDefault = false;
+
                     if ($paramInfo instanceof external_value) {
                         $tsType = $get_external_value_type($isParameters, $namePrefix, $paramInfo, $paramName, $dokuInterface);
+                        if (!$isParameters && $paramInfo->required == VALUE_DEFAULT && $paramInfo->default === null && $paramInfo->allownull == NULL_ALLOWED) {
+                            // in moodle all external_values allow null by default, this is not correctly annotated in the exacomp/exaport services
+                            // solution: required=VALUE_DEFAULT with NULL as default value
+                            $tsType .= " | null";
+                            $ignoreDefault = true;
+                        }
                     } elseif ($paramInfo instanceof external_single_structure) {
                         $dokuInterface = $recursor($isParameters, $namePrefix . '_' . $paramName, $paramInfo) . $dokuInterface;
                         $tsType = $namePrefix . '_' . $paramName;
@@ -180,19 +242,27 @@ foreach ($servicesFiles as $servicesFile) {
                             $default = 'time()';
                         } else {
                             ob_start();
-                            var_dump($paramInfo->default);
+                            my_var_dump($paramInfo->default);
                             $default = preg_replace("![\r\n\s]+!", ' ', trim(ob_get_clean()));
                         }
                     } else {
                         $default = '';
                     }
 
+                    $comments = '';
+                    if ($default && !$ignoreDefault) {
+                        $comments .= " default: $default";
+                    }
+                    if ($paramInfo->desc && $paramInfo->desc != $paramName) {
+                        // nur ausgeben, wenn die beschreibung hilfreich ist, nicht wenn es nur der Parametername ist!
+                        $comments .= " " . preg_replace("![\r\n\s]+!", ' ', trim($paramInfo->desc));
+                    }
+
                     $dokuInterface .= "  {$paramName}" . ($isParameters
                             ? ($paramInfo->required == VALUE_REQUIRED ? '' : '?')
                             : ($paramInfo->required == VALUE_OPTIONAL ? '?' : '')
                         ) . ": {$tsType};" .
-                        ($default ? " // default: $default" : "") .
-                        ($paramInfo->desc ? " // " . preg_replace("![\r\n\s]+!", ' ', trim($paramInfo->desc)) : "") .
+                        ($comments ? ' //' . $comments : '') .
                         "\n";
                 }
 

@@ -1395,7 +1395,7 @@ function block_exacomp_require_admin($context = null) {
  * @param bool $showalldescriptors default false, show only comps with activities
  * @return array $subjects
  */
-function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = false, $hideglobalsubjects = -1) {
+function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = false, $hideglobalsubjects = -1, $crosssubj = null) {
     if (!$showalldescriptors) {
         $showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
     }
@@ -1416,6 +1416,24 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 			';
 
     $subjects = block_exacomp\subject::get_objects_sql($sql, array($courseid));
+
+    // add subjects that are in this course because of crosssubjects, that are not in the $subjects list yet
+    if ($crosssubj) {
+        $crossubject_subjects = block_exacomp_get_subjects_for_cross_subject($crosssubj);
+        foreach ($crossubject_subjects as $cs) {
+            $found = false;
+            foreach ($subjects as $s) {
+                if ($s->id == $cs->id) {
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                $subjects[$cs->id] = $cs;
+            }
+        }
+    }
+
 
     //remove the subjects that are hidden because they are globalsubjects and the settings are set to hide them
 
@@ -1573,7 +1591,7 @@ function block_exacomp_get_subjects_for_schooltype($courseid, $schooltypeid = 0,
     if ($schooltypeid > 0) {
         $sql .= ' AND type.stid = ? ';
     }
-	
+
     return \block_exacomp\subject::get_objects_sql($sql, [$courseid, $schooltypeid]);
 }
 
@@ -1692,6 +1710,14 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
         $subjectSqlON = ' AND t.subjid = ? ';
     }
 
+    // if there are topics / desrciptors in a crosssubject, that are not in the course anymore, they would not be shown
+    // ==> add them as well
+    if ($crosssubj) {
+        $crosssubj_topics = block_exacomp_get_topics_for_cross_subject($courseid, $crosssubj);
+    }
+    $crosssubj_topicids = !empty($crosssubj_topics) ? array_map('intval', $crosssubj_topics) : [];
+    $crosssubj_topicids_string = $crosssubj_topicids ? implode(',', $crosssubj_topicids) : '';
+
     $sql = '
     SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source, t.sourceid, t.span, tvis.visible as visible, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
     FROM {' . BLOCK_EXACOMP_DB_TOPICS . '} t
@@ -1713,6 +1739,102 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
     if (!is_array($subjectid) && $subjectid > 0) {
         $params[] = $subjectid;
     }
+
+    // Add UNION for cross-subject topics if any
+    if ($crosssubj_topicids_string) {
+        $sql .= '
+    UNION
+    SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source, t.sourceid, t.span, tvis.visible as visible, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
+    FROM {' . BLOCK_EXACOMP_DB_TOPICS . '} t
+    JOIN {' . BLOCK_EXACOMP_DB_SUBJECTS . '} s ON t.subjid=s.id
+    LEFT JOIN {' . BLOCK_EXACOMP_DB_TOPICVISIBILITY . '} tvis
+            ON tvis.topicid=t.id AND tvis.studentid=0 AND tvis.courseid=? AND tvis.niveauid IS NULL'
+            . ($showonlyvisible ? ' AND tvis.visible = 1 ' : '')
+            . ($showalldescriptors ? '' : '
+            JOIN {' . BLOCK_EXACOMP_DB_DESCTOPICS . '} topmm ON topmm.topicid=t.id
+            JOIN {' . BLOCK_EXACOMP_DB_DESCRIPTORS . '} d ON topmm.descrid=d.id
+            JOIN {' . BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY . '} da
+                ON ((d.id=da.compid AND da.comptype = ' . BLOCK_EXACOMP_TYPE_DESCRIPTOR . ')
+                    OR (t.id=da.compid AND da.comptype = ' . BLOCK_EXACOMP_TYPE_TOPIC . '))
+                AND da.activityid IN (' . block_exacomp_get_allowed_course_modules_for_course_for_select($courseid) . ')
+        )')
+            . ' WHERE t.id IN (' . $crosssubj_topicids_string . ')';
+        $params[] = $courseid;
+    }
+    // TODO: why is the LEFT join important here? It was a comment in the original query... but never written
+
+
+/*
+    // if there are topics / desrciptors in a crosssubject, that are not in the course anymore, they would not be shown
+    // ==> add them as well
+
+    $subjectSqlON = '';
+    $subjectSqlON1 = '';
+    $subjectSqlON2 = '';
+    if (is_array($subjectid)) {
+        $subjectSqlON = ' AND t.subjid IN (' . implode(',', $subjectid) . ') ';
+    } else if ($subjectid > 0) {
+        $subjectSqlON1 = ' AND t.subjid = :subjid1 ';
+        $subjectSqlON2 = ' AND t.subjid = :subjid2 ';
+    }
+
+    if ($crosssubj) {
+        $crosssubj_topics = block_exacomp_get_topics_for_cross_subject($courseid, $crosssubj);
+    }
+    $crosssubj_topicids = !empty($crosssubj_topics) ? array_map('intval', $crosssubj_topics) : [];
+    $crosssubj_topicids_string = $crosssubj_topicids ? implode(',', $crosssubj_topicids) : '';
+    $crosssubj_topicids_where_sql = $crosssubj_topicids_string ? ' OR t.id IN (' . $crosssubj_topicids_string . ')' : '';
+
+    // instead of the old join on coursetopics method, we do a WHERE t.id IN.
+    // -- AND tvis.courseid = :courseid1
+    // -- AND ct.courseid = :courseid2
+    $sql = '
+    SELECT DISTINCT
+        t.id, t.title, t.sorting, t.subjid, t.description, t.numb,
+        t.source, t.sourceid, t.span, tvis.visible AS visible,
+        s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
+    FROM {' . BLOCK_EXACOMP_DB_TOPICS . '} t
+    JOIN {' . BLOCK_EXACOMP_DB_SUBJECTS . '} s ON t.subjid=s.id -- join subject here, to make sure only topics with existing subject are loaded
+    JOIN {' . BLOCK_EXACOMP_DB_TOPICVISIBILITY . '} tvis
+        ON tvis.topicid=t.id
+        AND tvis.studentid=0
+        --
+        AND tvis.niveauid IS NULL' .
+            ($showonlyvisible ? ' AND tvis.visible = 1 ' : '') . '
+    JOIN {' . BLOCK_EXACOMP_DB_COURSETOPICS . '} ct ON ct.topicid = t.id
+        --
+    '
+        . (is_array($subjectid) ? $subjectSqlON : $subjectSqlON1) . '
+    ' . ($showalldescriptors ? '' : '
+        -- only show topics with at least one descriptor/activity
+        JOIN {' . BLOCK_EXACOMP_DB_DESCTOPICS . '} topmm ON topmm.topicid=t.id
+        JOIN {' . BLOCK_EXACOMP_DB_DESCRIPTORS . '} d ON topmm.descrid=d.id
+        JOIN {' . BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY . '} da
+            ON ((d.id=da.compid AND da.comptype = ' . BLOCK_EXACOMP_TYPE_DESCRIPTOR . ')
+            OR (t.id=da.compid AND da.comptype = ' . BLOCK_EXACOMP_TYPE_TOPIC . '))
+            AND da.activityid IN (' . block_exacomp_get_allowed_course_modules_for_course_for_select($courseid) . ')
+    ') . '
+    WHERE (
+        t.id IN (
+            SELECT ct.topicid
+            FROM {' . BLOCK_EXACOMP_DB_COURSETOPICS . '} ct
+            WHERE ct.courseid = :courseid3 ' . (is_array($subjectid) ? $subjectSqlON : $subjectSqlON2) . '
+        )
+        ' . $crosssubj_topicids_where_sql . '
+    )';
+    // WHERE ct.courseid = :courseid3 ' . (is_array($subjectid) ? $subjectSqlON : $subjectSqlON2) . '
+    // this line checks the courseid for the "normal" subjects, but not for the crosssubjects
+    // TODO: test if the courseid checks are not needed... if it works as before, for normal subjects, not crosssubjects
+
+    $params = ['courseid1' => $courseid, 'courseid2' => $courseid, 'courseid3' => $courseid];
+    // $params = ['courseid1' => $courseid, 'courseid3' => $courseid];
+    // $params = ['courseid3' => $courseid];
+    // $params = [];
+    if (!is_array($subjectid) && $subjectid > 0) {
+        $params['subjid1'] = $subjectid;
+        $params['subjid2'] = $subjectid;
+    }
+*/
 
     $topics = $DB->get_records_sql($sql, $params);
 
@@ -2836,7 +2958,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher = true, $studentid = 0, $showonlyvisible = false, $hideglobalsubjects = false, $crosssubj = null) {
 
     $courseTopics = block_exacomp_get_topics_by_course($courseid, false, $showonlyvisible ? (($isTeacher) ? false : true) : false, $crosssubj);
-    $courseSubjects = block_exacomp_get_subjects_by_course($courseid, false, $hideglobalsubjects);
+    $courseSubjects = block_exacomp_get_subjects_by_course($courseid, false, $hideglobalsubjects, $crosssubj);
 
     $topic = new \stdClass();
     $topic->id = $topicid;
@@ -6578,14 +6700,7 @@ function block_exacomp_get_descriptors_assigned_to_cross_subject($crosssubjid) {
  * this is not perfect runtime-wise but there are so many places on where to get topics, that this way is easier
  */
 function block_exacomp_clear_topics_for_crosssubject($topics, $courseid, $crosssubj) {
-    $crosssubjid = is_scalar($crosssubj) ? $crosssubj : $crosssubj->id;
-
-    $descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubj);
-    $topicsOfCrosssubj = array();
-    foreach ($descriptors as $descriptor) {
-        $topicsOfCrosssubj[$descriptor->topicid] = $descriptor->topicid;
-    }
-
+    $topicsOfCrosssubj = block_exacomp_get_topics_for_cross_subject($courseid, $crosssubj);
     if (is_array($topics)) {
         foreach ($topics as $key => $topic) {
             if (isset($topicsOfCrosssubj[$topic->id])) {
@@ -6597,6 +6712,22 @@ function block_exacomp_clear_topics_for_crosssubject($topics, $courseid, $crosss
     }
     return $topics;
 }
+
+/**
+ * get topics for crosssubjects
+ */
+function block_exacomp_get_topics_for_cross_subject($courseid, $crosssubj) {
+    $descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubj);
+    $topicsOfCrosssubj = array();
+    foreach ($descriptors as $descriptor) {
+        $topicsOfCrosssubj[$descriptor->topicid] = $descriptor->topicid;
+    }
+
+    return $topicsOfCrosssubj;
+}
+
+
+
 
 /**
  * get descriptors for crosssubject
@@ -7059,6 +7190,7 @@ function block_exacomp_descriptor_used($courseid, $descriptor, $studentid) {
  * @return boolean
  */
 function block_exacomp_example_used($courseid, $example, $studentid) {
+    // TODO: $block_exacomp_example_used_values nicht als globale variable, sondern als statische variable in der funktion.
     global $DB, $block_exacomp_example_used_values;
     //if studentid == 0 used = true, if no evaluation/submission for this example
     //if studentid != 0 used = true, if no evaluation/submission for this examples for this student
@@ -9350,16 +9482,16 @@ function block_exacomp_get_studentid() {
  */
 function block_exacomp_get_message_icon($userid) {
      global $DB, $CFG, $COURSE;
- 
+
      if ($userid != BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
          require_once($CFG->dirroot . '/message/lib.php');
- 
+
          $userto = $DB->get_record('user', ['id' => $userid]);
- 
+
          if (!$userto) {
              return;
          }
- 
+
          if (function_exists('message_messenger_requirejs')) {
              // before moodle 3.3
              message_messenger_requirejs();
@@ -9367,7 +9499,7 @@ function block_exacomp_get_message_icon($userid) {
              $attributes = message_messenger_sendmessage_link_params($userto);
              // Titel am Link, nicht am Icon
              $attributes['title'] = fullname($userto);
- 
+
              return html_writer::link(
                  $url,
                  html_writer::tag('button',
@@ -9375,21 +9507,21 @@ function block_exacomp_get_message_icon($userid) {
                  ),
                  $attributes
              );
- 
+
          } else {
              $url = new moodle_url('/message/index.php', ['id' => $userto->id]);
              $attributes = [
                  'target' => '_blank',
                  'title'  => fullname($userto)
              ];
- 
+
              return html_writer::link(
                  $url,
                  html_writer::tag('i', '', ['class' => 'fas fa-envelope']),
                  $attributes
              );
          }
- 
+
      } else {
          $attributes = [
              'exa-type'   => 'iframe-popup',
@@ -9399,7 +9531,7 @@ function block_exacomp_get_message_icon($userid) {
              'class'      => 'btn btn-default',
              'title'      => block_exacomp_get_string('messagetocourse')
          ];
- 
+
          return html_writer::tag(
              'button',
              html_writer::tag('i', '', ['class' => 'fas fa-envelope']),
@@ -10203,7 +10335,7 @@ function block_exacomp_get_html_for_niveau_eval($evaluation) {
  *
  * @param unknown $courseid
  * @param unknown $studentid
- * @param unknown $subjectid
+ * @param int $subjectid
  * @param unknown $crosssubj
  * @return array{[subject_title, subject_eval, subject_evalniveau, subject_evalniveauid, timestamp,
  *                  content {[topicid] => [topic_evalniveau, topic_evalniveauid, topic_eval, topicid, visible, timestamp, span,
@@ -10217,7 +10349,7 @@ function block_exacomp_get_html_for_niveau_eval($evaluation) {
  *       show = false, if niveau not used within current topic
  *       span = 1 or 0 inidication if niveau is across (Ã¼bergreifend)
  */
-function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subjectid, $crosssubj = null) {
+function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, int $subjectid, $crosssubj = null) {
     global $DB;
     list($course_subjects, $table_column, $table_header, $selectedSubject, $selectedTopic, $selectedNiveau) =
         block_exacomp_init_overview_data($courseid, $subjectid, BLOCK_EXACOMP_SHOW_ALL_TOPICS, 0, false, block_exacomp_is_teacher(), $studentid, false, false, $crosssubj);
@@ -10226,9 +10358,17 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
     $user = block_exacomp_get_user_information_by_course($user, $courseid);
 
     $subject = block_exacomp\db_layer_student::create($courseid)->get_subject($subjectid);
+    // this returns null if the subject is not assigned to the course - but we want to show the subject anyways, if it is a crosssubject
 
     if (!$subject) {
-        return;
+        if ($crosssubj){
+            $crosssubj_subjects = block_exacomp_get_subjects_for_cross_subject($crosssubj);
+            $subject = $crosssubj_subjects[$subjectid];
+        }
+        // if there still is no subject found: return
+        if(!$subject){
+            return;
+        }
     }
     if (!$subject->topics) {
         $subject->topics = [];
@@ -14949,7 +15089,7 @@ function block_exacomp_is_block_active_in_course($courseid) {
 function block_exacomp_delete_grids_missing_from_komet_import() {
     global $DB, $CFG;
     // check the setting again, before deleting
-    if (!get_config('exacomp', 'sync_all_grids_with_komet')) {
+    if (!get_config('exacomp', 'delete_grids_missing_from_xmlserverurl')) {
         return false;
     }
 

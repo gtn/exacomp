@@ -61,7 +61,7 @@ class printer_TCPDF extends TCPDF {
             $args[0] = $path;
         }
 
-        return call_user_func_array(array('parent', __FUNCTION__), $args);
+        return parent::Image(...$args);
     }
 
     public function writeHTML($html, $ln = true, $fill = false, $reseth = false, $cell = false, $align = '') {
@@ -85,8 +85,40 @@ class printer_TCPDF extends TCPDF {
             return $matches[0];
         }, $html);
 
+        // convert emojis to text-based emoticons for better PDF compatibility
+        $html = $this->convertEmojisToEmoticons($html);
+
         return parent::writeHTML($style . $html, $ln, $fill, $reseth, $cell, $align);
     }
+
+
+    /**
+     * Convert emoji smileys to text-based emoticons for PDF compatibility
+     *
+     * @param string $text The text containing emojis or emoji entities
+     * @return string Text with emojis converted to emoticons
+     */
+    protected function convertEmojisToEmoticons($text)
+    {
+        // Mapping of emojis and entities to ASCII emoticons
+        $emojiMap = [
+            // 😊 (smiling face with smiling eyes)
+            '😊' => ':-)',
+            '&#x1F60A;' => ':-)',
+
+            // 😐 (neutral face)
+            '😐' => ':-|',
+            '&#x1F610;' => ':-|',
+
+            // 🙁 (slightly frowning face)
+            '🙁' => ':-(',
+            '&#x1F641;' => ':-(',
+        ];
+
+        // Replace each emoji or entity with its emoticon equivalent
+        return str_replace(array_keys($emojiMap), array_values($emojiMap), $text);
+    }
+
 
     public function Header() {
         if ($this->_header) {

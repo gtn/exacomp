@@ -25,6 +25,7 @@ $string['tab_admin_settings'] = 'Importar';
 $string['tab_admin_configuration'] = 'Configuració';
 
 //Teacher Tabs
+$string['tab_teacher_import'] = 'Import';
 $string['tab_teacher_settings'] = 'propietats';
 $string['tab_teacher_settings_configuration'] = 'Configuració';
 $string['tab_teacher_settings_selection_st'] = 'Tipus d\'escola';

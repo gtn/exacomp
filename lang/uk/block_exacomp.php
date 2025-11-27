@@ -713,6 +713,7 @@ $string['tab_admin_import'] = 'Імпорт/Експорт';
 $string['tab_admin_settings'] = 'Налаштування адміністратора';
 $string['tab_admin_taxonomies'] = 'Рівні складності';
 $string['tab_badges'] = 'Мої відзнаки';
+$string['tab_teacher_import'] = 'Import';
 $string['tab_competence_gridoverview'] = 'Огляд';
 $string['tab_competence_overview'] = 'Сітка компетенцій';
 $string['tab_competence_profile'] = 'Профіль компетентностей';

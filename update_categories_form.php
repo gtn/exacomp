@@ -17,6 +17,8 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once $CFG->libdir . '/formslib.php';
 
 class block_exacomp_update_categories_form extends moodleform {
