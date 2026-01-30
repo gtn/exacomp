@@ -22,7 +22,6 @@ require_once $CFG->dirroot . '/mod/assign/locallib.php';
 require_once $CFG->dirroot . '/mod/assign/submission/file/locallib.php';
 require_once $CFG->dirroot . '/lib/filelib.php';
 
-use block_enrolcode_lib;
 use block_exacomp\cross_subject;
 use block_exacomp\db;
 use block_exacomp\db_record;
@@ -14749,7 +14748,7 @@ class externallib extends base {
             'moodleversion' => $CFG->version,
             'msteams_import_enabled' => !!trim($msteams_client_id),
             'msteams_azure_app_client_id' => $msteams_client_id,
-            'enrolcode_enabled' => !!$info_block_enrolcode,
+            'enrolcode_enabled' => $info_block_enrolcode && $info_block_enrolcode->versiondb >= 2025040302,
             'example_upload_global' => get_config('exacomp', 'example_upload_global'),
             'plugins' => $plugins,
         );
@@ -14925,8 +14924,7 @@ class externallib extends base {
         $DB->delete_records('block_enrolcode', array('roleid' => $roleid, 'courseid' => $courseid));
 
         // create new code
-        require_once $CFG->dirroot . '/blocks/enrolcode/locallib.php';
-        $code = block_enrolcode_lib::create_code($courseid, $roleid, 0, 1, $maturity, 0, 0);
+        $code = \block_enrolcode\locallib::create_code($courseid, $roleid, 0, 1, $maturity, 0, 0);
 
         return array("code" => $code, 'valid_until' => $maturity);
     }
@@ -14965,16 +14963,14 @@ class externallib extends base {
         static::validate_parameters(static::diggrplus_enrol_by_enrolcode_parameters(), array(
             'code' => $code,
         ));
-        global $CFG;
 
-        require_once $CFG->dirroot . '/blocks/enrolcode/locallib.php';
-        $courseid = block_enrolcode_lib::enrol_by_code($code);
+        $courseid = \block_enrolcode\locallib::enrol_by_code($code);
 
         if (!$courseid) {
             return ['success' => false];
         }
 
-        return array("success" => true);
+        return ["success" => true];
     }
 
     /**
