@@ -1,3 +1,7 @@
+### v5.1 (2026020500) ###
+* Use same version as latest moodle release
+* fix new integration with block_enrolcode
+
 ### v4.6.7 (2025112700) ###
 * fix problem with crosssubjects if related topics are not enabled in the course anymore
 * New Feature: Also Teacher can import grid-data into their course, not only Admins
