@@ -50,6 +50,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
     public function header_v2($page_identifier = "") {
         // g::$PAGE->show_tabtree
+        debugging("COURSE->id: " . json_encode(g::$COURSE->id, JSON_PRETTY_PRINT), DEBUG_DEVELOPER);
+        debugging("page_identifier: " . json_encode($page_identifier, JSON_PRETTY_PRINT), DEBUG_DEVELOPER);
+        debugging("block_exacomp_get_context_from_courseid: " . serialize(block_exacomp_get_context_from_courseid(g::$COURSE->id)), DEBUG_DEVELOPER); // serialize instead of json because circlar?
         return $this->header(block_exacomp_get_context_from_courseid(g::$COURSE->id), g::$COURSE->id, $page_identifier);
     }
 
@@ -96,6 +99,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
         if ($tabtree === null) {
             $tabtree = $PAGE->pagelayout != 'embedded';
         }
+
+        debugging("tabtree && context: " . json_encode($tabtree && $context, JSON_PRETTY_PRINT), DEBUG_DEVELOPER);
+        debugging("block_exacomp_build_navigation_tabs: " . json_encode(block_exacomp_build_navigation_tabs($context, $courseid), JSON_PRETTY_PRINT), DEBUG_DEVELOPER);
 
         return
             parent::header() .
