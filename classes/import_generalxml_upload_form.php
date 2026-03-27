@@ -22,7 +22,7 @@ class generalxml_upload_form extends moodleform {
 
         $this->_form->_attributes['action'] = $_SERVER['REQUEST_URI'];
         $this->_form->_attributes['class'] = "mform exacomp_import";
-        $check = data::has_data();
+        $check = data::has_imported_data();
 
         if ($importtype == 'custom') {
             $mform->addElement('header', 'comment', block_exacomp_get_string("doimport_own"));

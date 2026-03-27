@@ -3393,7 +3393,7 @@ function block_exacomp_build_navigation_tabs_settings($courseid) {
  * @return \block_exacomp\tabobject[]
  */
 function block_exacomp_build_navigation_tabs_admin_settings($courseid) {
-    $checkImport = block_exacomp\data::has_data();
+    $checkImport = block_exacomp\data::has_imported_data();
 
     $settings_subtree = array();
     // Standards pre-selection submenu
@@ -3468,7 +3468,7 @@ function block_exacomp_build_navigation_tabs($context, $courseid) {
         $checkConfig = block_exacomp_is_configured();
     }
 
-    $has_data = \block_exacomp\data::has_data();
+    $has_data = \block_exacomp\data::has_imported_data();
 
     $rows = array();
 

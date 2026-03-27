@@ -128,8 +128,15 @@ class data {
     /**
      * checks if data is imported
      */
-    public static function has_data() {
+    public static function has_imported_data() {
         return (bool)g::$DB->get_records_select('block_exacompdescriptors', 'source!=' . BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER, array(), null, 'id', 0, 1);
+    }
+
+    /**
+     * Checks if there are any subjects in the system (imported or manually created)
+     */
+    public static function has_any_subjects() {
+        return (bool)g::$DB->record_exists('block_exacompsubjects', array());
     }
 
     /*
