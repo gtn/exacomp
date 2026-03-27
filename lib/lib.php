@@ -3477,7 +3477,6 @@ function block_exacomp_build_navigation_tabs($context, $courseid) {
     $isTeacherOrStudent = $isTeacher || $isStudent;
 
 
-    debugging("is_skillsmanagement(): " . json_encode(block_exacomp_is_skillsmanagement(), JSON_PRETTY_PRINT), DEBUG_DEVELOPER);
     debugging("checkConfig: " . json_encode($checkConfig, JSON_PRETTY_PRINT), DEBUG_DEVELOPER);
     debugging("has_data: " . json_encode($has_data, JSON_PRETTY_PRINT), DEBUG_DEVELOPER);
     debugging("courseSettings: " . json_encode($courseSettings, JSON_PRETTY_PRINT), DEBUG_DEVELOPER);
