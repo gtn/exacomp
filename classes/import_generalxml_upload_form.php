@@ -22,16 +22,16 @@ class generalxml_upload_form extends moodleform {
 
         $this->_form->_attributes['action'] = $_SERVER['REQUEST_URI'];
         $this->_form->_attributes['class'] = "mform exacomp_import";
-        $check = data::has_imported_data();
+        $check = data::has_imported_data(); // here the has_imported_data fits... not has_any_subject, because it is specifically about IMPORTING
 
         if ($importtype == 'custom') {
             $mform->addElement('header', 'comment', block_exacomp_get_string("doimport_own"));
         } else if ($importtype == 'scheduler') {
             $mform->addElement('header', 'comment', block_exacomp_get_string("scheduler_import_settings"));
         } else if ($check) {
-            $mform->addElement('header', 'comment', block_exacomp_get_string("doimport"));
+            $mform->addElement('header', 'comment', block_exacomp_get_string("doimport")); // TODO this has no effect? where is it displayed?
         } else {
-            $mform->addElement('header', 'comment', block_exacomp_get_string("doimport_again"));
+            $mform->addElement('header', 'comment', block_exacomp_get_string("doimport_again")); // TODO this has no effect? where is it displayed?
         }
 
         if ($importtype != 'scheduler') {

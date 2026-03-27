@@ -258,13 +258,14 @@ if ($isAdmin || block_exacomp_check_customupload()) {
                     'importtype' => 'custom')),
                 'For the latest exacomp version you need to reimport school/company specific standards'));
         } else {
-            $hasData = block_exacomp\data::has_imported_data();
+            $hasData = block_exacomp\data::has_any_subjects(); // if there are ANY subjects, allow to export them
+            $hasImportedData = block_exacomp\data::has_imported_data(); // still check if it has been imported, because there might be manually created subjects
 
             if ($delete) {
                 echo $OUTPUT->box(block_exacomp_get_string("delete_success"));
             }
             if ($isAdmin) {
-                if ($hasData) {
+                if ($hasImportedData) {
                     echo $OUTPUT->box(block_exacomp_get_string("importdone"));
 
                     echo $OUTPUT->box(html_writer::link(

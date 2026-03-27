@@ -275,8 +275,8 @@ class block_exacomp extends block_list {
             $checkConfig = block_exacomp_is_configured();
         }
 
-        // $has_data = block_exacomp\data::has_imported_data();
-        $has_data = true; // 22.03.2020 SZ
+        $has_data = block_exacomp\data::has_any_subjects();
+        // $has_data = true; // 22.03.2020 SZ
 
         $courseSettings = block_exacomp_get_settings_by_course($courseid);
 
