@@ -3476,12 +3476,6 @@ function block_exacomp_build_navigation_tabs($context, $courseid) {
     $isStudent = has_capability('block/exacomp:student', $context) && $courseid != 1 && !has_capability('block/exacomp:admin', $context);
     $isTeacherOrStudent = $isTeacher || $isStudent;
 
-
-    debugging("checkConfig: " . json_encode($checkConfig, JSON_PRETTY_PRINT), DEBUG_DEVELOPER);
-    debugging("has_data: " . json_encode($has_data, JSON_PRETTY_PRINT), DEBUG_DEVELOPER);
-    debugging("courseSettings: " . json_encode($courseSettings, JSON_PRETTY_PRINT), DEBUG_DEVELOPER);
-    debugging("checkConfig && has_data: " . json_encode($checkConfig && $has_data, JSON_PRETTY_PRINT), DEBUG_DEVELOPER);
-
     if ($checkConfig && $has_data) {    //Modul wurde konfiguriert
         if ($isTeacherOrStudent && block_exacomp_has_topics_assigned($courseid)) {
             $rows[] = new tabobject('tab_competence_gridoverview', new moodle_url('/blocks/exacomp/competence_grid.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_competence_gridoverview'), null, true);
