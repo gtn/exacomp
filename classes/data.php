@@ -129,6 +129,7 @@ class data {
      * checks if data is imported
      */
     public static function has_data() {
+        return true;
         return (bool)g::$DB->get_records_select('block_exacompdescriptors', 'source!=' . BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER, array(), null, 'id', 0, 1);
     }
 
