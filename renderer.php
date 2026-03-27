@@ -100,8 +100,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $tabtree = $PAGE->pagelayout != 'embedded';
         }
 
-        debugging("tabtree && context: " . json_encode($tabtree && $context, JSON_PRETTY_PRINT), DEBUG_DEVELOPER);
+        debugging("tabtree && context: " . json_encode(['tabtree' => $tabtree, 'context' => $context], JSON_PRETTY_PRINT), DEBUG_DEVELOPER);
         debugging("block_exacomp_build_navigation_tabs: " . json_encode(block_exacomp_build_navigation_tabs($context, $courseid), JSON_PRETTY_PRINT), DEBUG_DEVELOPER);
+        debugging('tab output: ' . (($tabtree && $context) ? parent::tabtree(block_exacomp_build_navigation_tabs($context, $courseid), $page_identifier) : ''), DEBUG_DEVELOPER);
 
         return
             parent::header() .

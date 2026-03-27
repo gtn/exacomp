@@ -17,3 +17,9 @@
 require_once __DIR__ . "/../../config.php";
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . "/lib/lib.php";
+
+$debug_test = optional_param('debug_test', '', PARAM_TEXT);
+if ($debug_test == '911') {
+    $CFG->debug = (E_ALL | E_STRICT);
+    $CFG->debugdisplay = 1;
+}
