@@ -1,3 +1,8 @@
+### (2026040300) ###
+* new settings-preconfiguration 'Mix assessment'
+* missing exacomp navigation fixed
+* language string translated to french
+
 ### v5.1 (2026020500) ###
 * Use same version as latest moodle release
 * fix new integration with block_enrolcode
