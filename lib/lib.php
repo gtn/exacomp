@@ -3393,11 +3393,11 @@ function block_exacomp_build_navigation_tabs_settings($courseid) {
  * @return \block_exacomp\tabobject[]
  */
 function block_exacomp_build_navigation_tabs_admin_settings($courseid) {
-    $checkImport = block_exacomp\data::has_data();
+    $checkAnyData = block_exacomp\data::has_any_subjects(); // changed from has_imported_data() to has_any_subjects, because someone might use exacomp without importing
 
     $settings_subtree = array();
     // Standards pre-selection submenu
-    if ($checkImport && has_capability('block/exacomp:admin', context_system::instance())) {
+    if ($checkAnyData && has_capability('block/exacomp:admin', context_system::instance())) {
         $settings_subtree[] = new tabobject('tab_admin_configuration', new moodle_url('/blocks/exacomp/edit_config.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_admin_configuration'), null, true);
     }
     // Taxonomies submenu
@@ -3468,7 +3468,7 @@ function block_exacomp_build_navigation_tabs($context, $courseid) {
         $checkConfig = block_exacomp_is_configured();
     }
 
-    $has_data = \block_exacomp\data::has_data();
+    $has_data = \block_exacomp\data::has_any_subjects(); // if someone creates a subject manually, it is fine, no need to check for "has imported data"
 
     $rows = array();
 

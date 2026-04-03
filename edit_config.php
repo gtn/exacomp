@@ -32,7 +32,8 @@ require_login($course);
 $context = context_system::instance();
 block_exacomp_require_admin($context);
 
-$check = block_exacomp\data::has_data();
+// you need to first have some data, so redirect to import if there is no data. If you MANUALLY created a subject, you should be allowed to create taxonomies though, so not has_imported_data but has_any_subjects
+$check = block_exacomp\data::has_any_subjects(); // todo: what are the taxonomies even really? where are they used? might need a different check
 if (!$check) {
     redirect(new moodle_url ('/blocks/exacomp/import.php', array(
         'courseid' => $courseid,
