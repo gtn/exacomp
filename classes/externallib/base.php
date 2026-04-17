@@ -156,6 +156,30 @@ class base extends \external_api {
         return false;
     }
 
+    // convert db_record objects to plain objects so moodle can handle them
+    // (moodle's external_api does `(array) $response`, which does not expose
+    // lazy-loaded / dynamic values stored in db_record::$_data as top-level keys)
+    public static function prepare_ws_return(mixed $value): mixed {
+        if (is_array($value)) {
+            return array_map([static::class, 'prepare_ws_return'], $value);
+        }
+
+        if ($value instanceof \block_exacomp\db_record) {
+            // get_data() merges _data + public props into a fresh stdClass
+            $value = $value->get_data();
+        }
+
+        if (is_object($value)) {
+            $out = new \stdClass();
+            foreach (get_object_vars($value) as $k => $v) {
+                $out->$k = static::prepare_ws_return($v);
+            }
+            return $out;
+        }
+
+        return $value;
+    }
+
     /**
      * @param string $string
      * @return string

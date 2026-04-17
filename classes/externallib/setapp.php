@@ -865,7 +865,7 @@ class setapp extends base {
             }
         }
 
-        return ['edulevels' => $data->levels];
+        return static::prepare_ws_return(['edulevels' => $data->levels]);
     }
 
     public static function diggrplus_v_get_course_edulevel_schooltype_tree_returns() {
