@@ -158,13 +158,29 @@ class base extends \external_api {
 
     // convert db_record objects to plain objects so moodle can handle them
     // (moodle's external_api does `(array) $response`, which does not expose
-    // lazy-loaded / dynamic values stored in db_record::$_data as top-level keys)
-    public static function prepare_ws_return(mixed $value): mixed {
+    // lazy-loaded / dynamic values stored in db_record::$_data as top-level keys).
+    // SplObjectStorage is used for a cycle guard, because some db_records hold
+    // back-references to their parent (e.g. $topic->subject) — without it, simple
+    // recursion would loop forever. $_visited is for internal recursion use only.
+    public static function prepare_ws_return(mixed $value, \SplObjectStorage $_visited = null): mixed {
+        $_visited ??= new \SplObjectStorage();
+
         if (is_array($value)) {
-            return array_map([static::class, 'prepare_ws_return'], $value);
+            $out = [];
+            foreach ($value as $k => $v) {
+                $out[$k] = static::prepare_ws_return($v, $_visited);
+            }
+            return $out;
         }
 
         if ($value instanceof \block_exacomp\db_record) {
+            // cycle guard: e.g. topic has a back-reference to its subject,
+            // which would otherwise recurse forever
+            if ($_visited->contains($value)) {
+                return null;
+            }
+            $_visited->attach($value);
+
             // get_data() merges _data + public props into a fresh stdClass
             $value = $value->get_data();
         }
@@ -172,7 +188,7 @@ class base extends \external_api {
         if (is_object($value)) {
             $out = new \stdClass();
             foreach (get_object_vars($value) as $k => $v) {
-                $out->$k = static::prepare_ws_return($v);
+                $out->$k = static::prepare_ws_return($v, $_visited);
             }
             return $out;
         }
