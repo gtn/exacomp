@@ -1717,7 +1717,7 @@ class externallib extends base {
             }
 
             $itemid = $DB->insert_record("block_exaportitem", array('userid' => $USER->id, 'name' => $exampletitle, 'url' => $url, 'intro' => $effort, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id));
-            static::exaport_ensure_item_category_mapping($itemid, $subject_category->id);
+            static::exaportEnsureItemCategoryMapping($itemid, $subject_category->id);
             //autogenerate a published view for the new item
             $dbView = new stdClass();
             $dbView->userid = $USER->id;
@@ -6806,7 +6806,7 @@ class externallib extends base {
             $itemid = $DB->insert_record("block_exaportitem",
                 array('userid' => $USER->id, 'name' => $exampletitle, 'intro' => '', 'url' => $url, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id, 'teachervalue' => null, 'studentvalue' => null,
                     'courseid' => $courseid));
-            static::exaport_ensure_item_category_mapping($itemid, $subject_category->id);
+            static::exaportEnsureItemCategoryMapping($itemid, $subject_category->id);
             //autogenerate a published view for the new item
             $dbView = new stdClass();
             $dbView->userid = $USER->id;
@@ -7033,7 +7033,7 @@ class externallib extends base {
 
             $itemid = $DB->insert_record("block_exaportitem",
                 array('userid' => $USER->id, 'name' => $comptitle, 'intro' => $solutiondescription, 'url' => $url, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id, 'courseid' => $courseid));
-            static::exaport_ensure_item_category_mapping($itemid, $subject_category->id);
+            static::exaportEnsureItemCategoryMapping($itemid, $subject_category->id);
             //autogenerate a published view for the new item
             $dbView = new stdClass();
             $dbView->userid = $USER->id;
@@ -15645,7 +15645,7 @@ class externallib extends base {
         return new external_function_parameters(array());
     }
 
-    private static function exaport_itemcate_table_exists(): bool {
+    private static function exaportItemcateTableExists(): bool {
         global $DB;
 
         static $tableExists = null;
@@ -15656,10 +15656,10 @@ class externallib extends base {
         return $tableExists;
     }
 
-    private static function exaport_ensure_item_category_mapping(int $itemid, int $categoryid): void {
+    private static function exaportEnsureItemCategoryMapping(int $itemid, int $categoryid): void {
         global $DB;
 
-        if (!static::exaport_itemcate_table_exists()) {
+        if (!static::exaportItemcateTableExists()) {
             return;
         }
 
@@ -15680,7 +15680,7 @@ class externallib extends base {
             return [];
         }
 
-        if (static::exaport_itemcate_table_exists()) {
+        if (static::exaportItemcateTableExists()) {
             $items = $DB->get_records_sql('
                 SELECT i.*
                   FROM {block_exaportitem} i
@@ -15690,7 +15690,7 @@ class externallib extends base {
                        i.categoryid = :categoryidlegacy
                        OR EXISTS (
                            SELECT 1
-                             FROM {' . self::EXAPORT_ITEM_CATE_TABLE . '} ic
+                             FROM {block_exaportitemcate} ic
                             WHERE ic.itemid = i.id
                               AND ic.cateid = :categoryidnew
                        )
@@ -15776,7 +15776,7 @@ class externallib extends base {
         $newItem->timemodified = time();
 
         if ($id) {
-            if (static::exaport_itemcate_table_exists()) {
+            if (static::exaportItemcateTableExists()) {
                 $oldItem = $DB->get_record_sql('
                     SELECT i.*
                       FROM {block_exaportitem} i
@@ -15787,7 +15787,7 @@ class externallib extends base {
                            i.categoryid = :categoryidlegacy
                            OR EXISTS (
                                SELECT 1
-                                 FROM {' . self::EXAPORT_ITEM_CATE_TABLE . '} ic
+                                  FROM {block_exaportitemcate} ic
                                 WHERE ic.itemid = i.id
                                   AND ic.cateid = :categoryidnew
                            )
@@ -15809,12 +15809,12 @@ class externallib extends base {
 
             $newItem->id = $id;
             $DB->update_record("block_exaportitem", $newItem);
-            static::exaport_ensure_item_category_mapping($id, $category->id);
+            static::exaportEnsureItemCategoryMapping($id, $category->id);
         } else {
             $newItem->timecreated = time();
 
             $itemid = $DB->insert_record('block_exaportitem', $newItem);
-            static::exaport_ensure_item_category_mapping($itemid, $category->id);
+            static::exaportEnsureItemCategoryMapping($itemid, $category->id);
         }
 
         return array("success" => true);
