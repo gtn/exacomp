@@ -15681,17 +15681,25 @@ class externallib extends base {
 
         if (static::exaport_itemcate_table_exists()) {
             $items = $DB->get_records_sql('
-                SELECT DISTINCT i.*
+                SELECT i.*
                   FROM {block_exaportitem} i
-             LEFT JOIN {block_exaportitemcate} ic ON ic.itemid = i.id
                  WHERE i.userid = :userid
                    AND i.type = :type
-                   AND (i.categoryid = :categoryid OR ic.cateid = :categoryid)
+                   AND (
+                       i.categoryid = :categoryidlegacy
+                       OR EXISTS (
+                           SELECT 1
+                             FROM {block_exaportitemcate} ic
+                            WHERE ic.itemid = i.id
+                              AND ic.cateid = :categoryidnew
+                       )
+                   )
               ORDER BY i.timemodified DESC
             ', [
                 'userid' => $USER->id,
                 'type' => 'note',
-                'categoryid' => $category->id,
+                'categoryidlegacy' => $category->id,
+                'categoryidnew' => $category->id,
             ]);
         } else {
             $items = $DB->get_records('block_exaportitem', ['userid' => $USER->id, 'type' => 'note', 'categoryid' => $category->id], 'timemodified DESC');
@@ -15769,18 +15777,26 @@ class externallib extends base {
         if ($id) {
             if (static::exaport_itemcate_table_exists()) {
                 $oldItem = $DB->get_record_sql('
-                    SELECT DISTINCT i.*
+                    SELECT i.*
                       FROM {block_exaportitem} i
-                 LEFT JOIN {block_exaportitemcate} ic ON ic.itemid = i.id
                      WHERE i.id = :id
                        AND i.userid = :userid
                        AND i.type = :type
-                       AND (i.categoryid = :categoryid OR ic.cateid = :categoryid)
+                       AND (
+                           i.categoryid = :categoryidlegacy
+                           OR EXISTS (
+                               SELECT 1
+                                 FROM {block_exaportitemcate} ic
+                                WHERE ic.itemid = i.id
+                                  AND ic.cateid = :categoryidnew
+                           )
+                       )
                 ', [
                     'id' => $id,
                     'userid' => $USER->id,
                     'type' => 'note',
-                    'categoryid' => $category->id,
+                    'categoryidlegacy' => $category->id,
+                    'categoryidnew' => $category->id,
                 ]);
             } else {
                 $oldItem = $DB->get_record('block_exaportitem', ['userid' => $USER->id, 'id' => $id, 'type' => 'note', 'categoryid' => $category->id]);
