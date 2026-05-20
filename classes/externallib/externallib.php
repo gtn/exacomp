@@ -15809,7 +15809,7 @@ class externallib extends base {
             $newItem->timecreated = time();
 
             $itemid = $DB->insert_record('block_exaportitem', $newItem);
-            if ($itemid) {
+            if ($itemid !== false) {
                 static::exaportEnsureItemCategoryMapping((int)$itemid, $category->id);
             }
         }
