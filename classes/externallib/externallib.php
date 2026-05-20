@@ -1716,6 +1716,7 @@ class externallib extends base {
             }
 
             $itemid = $DB->insert_record("block_exaportitem", array('userid' => $USER->id, 'name' => $exampletitle, 'url' => $url, 'intro' => $effort, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id));
+            static::exaport_ensure_item_category_mapping($itemid, $subject_category->id);
             //autogenerate a published view for the new item
             $dbView = new stdClass();
             $dbView->userid = $USER->id;
@@ -6804,6 +6805,7 @@ class externallib extends base {
             $itemid = $DB->insert_record("block_exaportitem",
                 array('userid' => $USER->id, 'name' => $exampletitle, 'intro' => '', 'url' => $url, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id, 'teachervalue' => null, 'studentvalue' => null,
                     'courseid' => $courseid));
+            static::exaport_ensure_item_category_mapping($itemid, $subject_category->id);
             //autogenerate a published view for the new item
             $dbView = new stdClass();
             $dbView->userid = $USER->id;
@@ -7030,6 +7032,7 @@ class externallib extends base {
 
             $itemid = $DB->insert_record("block_exaportitem",
                 array('userid' => $USER->id, 'name' => $comptitle, 'intro' => $solutiondescription, 'url' => $url, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id, 'courseid' => $courseid));
+            static::exaport_ensure_item_category_mapping($itemid, $subject_category->id);
             //autogenerate a published view for the new item
             $dbView = new stdClass();
             $dbView->userid = $USER->id;
@@ -15641,6 +15644,29 @@ class externallib extends base {
         return new external_function_parameters(array());
     }
 
+    private static function exaport_itemcate_table_exists(): bool {
+        global $DB;
+
+        static $tableexists = null;
+        if ($tableexists === null) {
+            $tableexists = $DB->get_manager()->table_exists(new \xmldb_table('block_exaportitemcate'));
+        }
+
+        return $tableexists;
+    }
+
+    private static function exaport_ensure_item_category_mapping(int $itemid, int $categoryid): void {
+        global $DB;
+
+        if (!static::exaport_itemcate_table_exists()) {
+            return;
+        }
+
+        if (!$DB->record_exists('block_exaportitemcate', ['itemid' => $itemid, 'cateid' => $categoryid])) {
+            $DB->insert_record('block_exaportitemcate', ['itemid' => $itemid, 'cateid' => $categoryid]);
+        }
+    }
+
     /**
      * @ws-type-read
      * @return array
@@ -15653,7 +15679,23 @@ class externallib extends base {
             return [];
         }
 
-        $items = $DB->get_records('block_exaportitem', ['userid' => $USER->id, 'type' => 'note', 'categoryid' => $category->id], 'timemodified DESC');
+        if (static::exaport_itemcate_table_exists()) {
+            $items = $DB->get_records_sql('
+                SELECT DISTINCT i.*
+                  FROM {block_exaportitem} i
+             LEFT JOIN {block_exaportitemcate} ic ON ic.itemid = i.id
+                 WHERE i.userid = :userid
+                   AND i.type = :type
+                   AND (i.categoryid = :categoryid OR ic.cateid = :categoryid)
+              ORDER BY i.timemodified DESC
+            ', [
+                'userid' => $USER->id,
+                'type' => 'note',
+                'categoryid' => $category->id,
+            ]);
+        } else {
+            $items = $DB->get_records('block_exaportitem', ['userid' => $USER->id, 'type' => 'note', 'categoryid' => $category->id], 'timemodified DESC');
+        }
 
         array_walk($items, function($item) {
             $item->title = $item->name;
@@ -15725,7 +15767,24 @@ class externallib extends base {
         $newItem->timemodified = time();
 
         if ($id) {
-            $oldItem = $DB->get_record('block_exaportitem', ['userid' => $USER->id, 'id' => $id, 'type' => 'note', 'categoryid' => $category->id]);
+            if (static::exaport_itemcate_table_exists()) {
+                $oldItem = $DB->get_record_sql('
+                    SELECT DISTINCT i.*
+                      FROM {block_exaportitem} i
+                 LEFT JOIN {block_exaportitemcate} ic ON ic.itemid = i.id
+                     WHERE i.id = :id
+                       AND i.userid = :userid
+                       AND i.type = :type
+                       AND (i.categoryid = :categoryid OR ic.cateid = :categoryid)
+                ', [
+                    'id' => $id,
+                    'userid' => $USER->id,
+                    'type' => 'note',
+                    'categoryid' => $category->id,
+                ]);
+            } else {
+                $oldItem = $DB->get_record('block_exaportitem', ['userid' => $USER->id, 'id' => $id, 'type' => 'note', 'categoryid' => $category->id]);
+            }
             // check if is owner
             if (!$oldItem) {
                 throw new invalid_parameter_exception ("learning_diary entry not found or not allowed");
@@ -15733,10 +15792,12 @@ class externallib extends base {
 
             $newItem->id = $id;
             $DB->update_record("block_exaportitem", $newItem);
+            static::exaport_ensure_item_category_mapping($id, $category->id);
         } else {
             $newItem->timecreated = time();
 
-            $DB->insert_record('block_exaportitem', $newItem);
+            $itemid = $DB->insert_record('block_exaportitem', $newItem);
+            static::exaport_ensure_item_category_mapping($itemid, $category->id);
         }
 
         return array("success" => true);
