@@ -15648,12 +15648,7 @@ class externallib extends base {
     private static function exaportItemcateTableExists(): bool {
         global $DB;
 
-        static $tableExists = null;
-        if ($tableExists === null) {
-            $tableExists = $DB->get_manager()->table_exists(new \xmldb_table(self::EXAPORT_ITEM_CATE_TABLE));
-        }
-
-        return $tableExists;
+        return $DB->get_manager()->table_exists(new \xmldb_table(self::EXAPORT_ITEM_CATE_TABLE));
     }
 
     private static function exaportEnsureItemCategoryMapping(int $itemid, int $categoryid): void {
