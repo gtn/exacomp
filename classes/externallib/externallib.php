@@ -54,6 +54,7 @@ use stdClass;
 use user_picture;
 
 class externallib extends base {
+    private const EXAPORT_ITEM_CATE_TABLE = 'block_exaportitemcate';
 
     /**
      * Returns description of method parameters
@@ -15647,12 +15648,12 @@ class externallib extends base {
     private static function exaport_itemcate_table_exists(): bool {
         global $DB;
 
-        static $tableexists = null;
-        if ($tableexists === null) {
-            $tableexists = $DB->get_manager()->table_exists(new \xmldb_table('block_exaportitemcate'));
+        static $tableExists = null;
+        if ($tableExists === null) {
+            $tableExists = $DB->get_manager()->table_exists(new \xmldb_table(self::EXAPORT_ITEM_CATE_TABLE));
         }
 
-        return $tableexists;
+        return $tableExists;
     }
 
     private static function exaport_ensure_item_category_mapping(int $itemid, int $categoryid): void {
@@ -15662,8 +15663,8 @@ class externallib extends base {
             return;
         }
 
-        if (!$DB->record_exists('block_exaportitemcate', ['itemid' => $itemid, 'cateid' => $categoryid])) {
-            $DB->insert_record('block_exaportitemcate', ['itemid' => $itemid, 'cateid' => $categoryid]);
+        if (!$DB->record_exists(self::EXAPORT_ITEM_CATE_TABLE, ['itemid' => $itemid, 'cateid' => $categoryid])) {
+            $DB->insert_record(self::EXAPORT_ITEM_CATE_TABLE, ['itemid' => $itemid, 'cateid' => $categoryid]);
         }
     }
 
@@ -15689,7 +15690,7 @@ class externallib extends base {
                        i.categoryid = :categoryidlegacy
                        OR EXISTS (
                            SELECT 1
-                             FROM {block_exaportitemcate} ic
+                             FROM {' . self::EXAPORT_ITEM_CATE_TABLE . '} ic
                             WHERE ic.itemid = i.id
                               AND ic.cateid = :categoryidnew
                        )
@@ -15786,7 +15787,7 @@ class externallib extends base {
                            i.categoryid = :categoryidlegacy
                            OR EXISTS (
                                SELECT 1
-                                 FROM {block_exaportitemcate} ic
+                                 FROM {' . self::EXAPORT_ITEM_CATE_TABLE . '} ic
                                 WHERE ic.itemid = i.id
                                   AND ic.cateid = :categoryidnew
                            )
