@@ -54,7 +54,6 @@ use stdClass;
 use user_picture;
 
 class externallib extends base {
-    private const EXAPORT_ITEM_CATE_TABLE = 'block_exaportitemcate';
 
     /**
      * Returns description of method parameters
@@ -1716,8 +1715,9 @@ class externallib extends base {
                 $subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $elove_category->id);
             }
 
-            $itemid = $DB->insert_record("block_exaportitem", array('userid' => $USER->id, 'name' => $exampletitle, 'url' => $url, 'intro' => $effort, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id));
-            static::exaportEnsureItemCategoryMapping($itemid, $subject_category->id);
+            // Create portfolio item (categoryid deprecated, use m:n table instead).
+            $itemid = $DB->insert_record("block_exaportitem", array('userid' => $USER->id, 'name' => $exampletitle, 'url' => $url, 'intro' => $effort, 'type' => $type, 'timemodified' => time()));
+            $DB->insert_record('block_exaportitemcate', ['itemid' => $itemid, 'cateid' => $subject_category->id]);
             //autogenerate a published view for the new item
             $dbView = new stdClass();
             $dbView->userid = $USER->id;
@@ -6803,10 +6803,11 @@ class externallib extends base {
                 $subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
             }
 
+            // Create portfolio item (categoryid deprecated, use m:n table instead).
             $itemid = $DB->insert_record("block_exaportitem",
-                array('userid' => $USER->id, 'name' => $exampletitle, 'intro' => '', 'url' => $url, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id, 'teachervalue' => null, 'studentvalue' => null,
+                array('userid' => $USER->id, 'name' => $exampletitle, 'intro' => '', 'url' => $url, 'type' => $type, 'timemodified' => time(), 'teachervalue' => null, 'studentvalue' => null,
                     'courseid' => $courseid));
-            static::exaportEnsureItemCategoryMapping($itemid, $subject_category->id);
+            $DB->insert_record('block_exaportitemcate', ['itemid' => $itemid, 'cateid' => $subject_category->id]);
             //autogenerate a published view for the new item
             $dbView = new stdClass();
             $dbView->userid = $USER->id;
@@ -7031,9 +7032,10 @@ class externallib extends base {
                 $subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
             }
 
+            // Create portfolio item (categoryid deprecated, use m:n table instead).
             $itemid = $DB->insert_record("block_exaportitem",
-                array('userid' => $USER->id, 'name' => $comptitle, 'intro' => $solutiondescription, 'url' => $url, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id, 'courseid' => $courseid));
-            static::exaportEnsureItemCategoryMapping($itemid, $subject_category->id);
+                array('userid' => $USER->id, 'name' => $comptitle, 'intro' => $solutiondescription, 'url' => $url, 'type' => $type, 'timemodified' => time(), 'courseid' => $courseid));
+            $DB->insert_record('block_exaportitemcate', ['itemid' => $itemid, 'cateid' => $subject_category->id]);
             //autogenerate a published view for the new item
             $dbView = new stdClass();
             $dbView->userid = $USER->id;
@@ -15645,24 +15647,6 @@ class externallib extends base {
         return new external_function_parameters(array());
     }
 
-    private static function exaportItemcateTableExists(): bool {
-        global $DB;
-
-        return $DB->get_manager()->table_exists(new \xmldb_table(self::EXAPORT_ITEM_CATE_TABLE));
-    }
-
-    private static function exaportEnsureItemCategoryMapping(int $itemid, int $categoryid): void {
-        global $DB;
-
-        if (!static::exaportItemcateTableExists()) {
-            return;
-        }
-
-        if (!$DB->record_exists(self::EXAPORT_ITEM_CATE_TABLE, ['itemid' => $itemid, 'cateid' => $categoryid])) {
-            $DB->insert_record(self::EXAPORT_ITEM_CATE_TABLE, ['itemid' => $itemid, 'cateid' => $categoryid]);
-        }
-    }
-
     /**
      * @ws-type-read
      * @return array
@@ -15675,31 +15659,20 @@ class externallib extends base {
             return [];
         }
 
-        if (static::exaportItemcateTableExists()) {
-            $items = $DB->get_records_sql('
-                SELECT i.*
-                  FROM {block_exaportitem} i
-                 WHERE i.userid = :userid
-                   AND i.type = :type
-                   AND (
-                       i.categoryid = :categoryidlegacy
-                       OR EXISTS (
-                           SELECT 1
-                             FROM {block_exaportitemcate} ic
-                            WHERE ic.itemid = i.id
-                              AND ic.cateid = :categoryidnew
-                       )
-                   )
-              ORDER BY i.timemodified DESC
-            ', [
-                'userid' => $USER->id,
-                'type' => 'note',
-                'categoryidlegacy' => $category->id,
-                'categoryidnew' => $category->id,
-            ]);
-        } else {
-            $items = $DB->get_records('block_exaportitem', ['userid' => $USER->id, 'type' => 'note', 'categoryid' => $category->id], 'timemodified DESC');
-        }
+        // Items are linked to categories via block_exaportitemcate (m:n).
+        $items = $DB->get_records_sql('
+            SELECT i.*
+              FROM {block_exaportitem} i
+              JOIN {block_exaportitemcate} ic ON ic.itemid = i.id
+             WHERE i.userid = :userid
+               AND i.type = :type
+               AND ic.cateid = :cateid
+          ORDER BY i.timemodified DESC
+        ', [
+            'userid' => $USER->id,
+            'type' => 'note',
+            'cateid' => $category->id,
+        ]);
 
         array_walk($items, function($item) {
             $item->title = $item->name;
@@ -15766,52 +15739,37 @@ class externallib extends base {
         $newItem->userid = $USER->id;
         $newItem->name = $title ?: date('Y-m-d');
         $newItem->intro = $text;
-        $newItem->categoryid = $category->id;
         $newItem->type = 'note';
         $newItem->timemodified = time();
 
         if ($id) {
-            if (static::exaportItemcateTableExists()) {
-                $oldItem = $DB->get_record_sql('
-                    SELECT i.*
-                      FROM {block_exaportitem} i
-                     WHERE i.id = :id
-                       AND i.userid = :userid
-                       AND i.type = :type
-                       AND (
-                           i.categoryid = :categoryidlegacy
-                           OR EXISTS (
-                               SELECT 1
-                                  FROM {block_exaportitemcate} ic
-                                WHERE ic.itemid = i.id
-                                  AND ic.cateid = :categoryidnew
-                           )
-                       )
-                ', [
-                    'id' => $id,
-                    'userid' => $USER->id,
-                    'type' => 'note',
-                    'categoryidlegacy' => $category->id,
-                    'categoryidnew' => $category->id,
-                ]);
-            } else {
-                $oldItem = $DB->get_record('block_exaportitem', ['userid' => $USER->id, 'id' => $id, 'type' => 'note', 'categoryid' => $category->id]);
-            }
-            // check if is owner
+            // Verify item belongs to this user and category (via m:n table).
+            $oldItem = $DB->get_record_sql('
+                SELECT i.*
+                  FROM {block_exaportitem} i
+                  JOIN {block_exaportitemcate} ic ON ic.itemid = i.id
+                 WHERE i.id = :id
+                   AND i.userid = :userid
+                   AND i.type = :type
+                   AND ic.cateid = :cateid
+            ', [
+                'id' => $id,
+                'userid' => $USER->id,
+                'type' => 'note',
+                'cateid' => $category->id,
+            ]);
             if (!$oldItem) {
                 throw new invalid_parameter_exception ("learning_diary entry not found or not allowed");
             }
 
             $newItem->id = $id;
             $DB->update_record("block_exaportitem", $newItem);
-            static::exaportEnsureItemCategoryMapping($id, $category->id);
         } else {
             $newItem->timecreated = time();
 
+            // Create item and assign to category via m:n table.
             $itemid = $DB->insert_record('block_exaportitem', $newItem);
-            if ($itemid !== false) {
-                static::exaportEnsureItemCategoryMapping((int)$itemid, $category->id);
-            }
+            $DB->insert_record('block_exaportitemcate', ['itemid' => $itemid, 'cateid' => $category->id]);
         }
 
         return array("success" => true);

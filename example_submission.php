@@ -99,14 +99,11 @@ if ($formdata = $form->get_data()) {
         $formdata->url = (filter_var($formdata->url, FILTER_VALIDATE_URL) == true) ? $formdata->url : "http://" . $formdata->url;
     }
 
+    // Create portfolio item (categoryid is deprecated, category assigned via block_exaportitemcate).
     $itemid = $DB->insert_record("block_exaportitem",
-        array('userid' => $USER->id, 'name' => $formdata->name, 'url' => $formdata->url, 'intro' => $formdata->intro, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id, 'courseid' => $courseid));
-    $dbman = $DB->get_manager();
-    if ($dbman->table_exists(new xmldb_table('block_exaportitemcate'))) {
-        if (!$DB->record_exists('block_exaportitemcate', array('itemid' => $itemid, 'cateid' => $subject_category->id))) {
-            $DB->insert_record('block_exaportitemcate', array('itemid' => $itemid, 'cateid' => $subject_category->id));
-        }
-    }
+        array('userid' => $USER->id, 'name' => $formdata->name, 'url' => $formdata->url, 'intro' => $formdata->intro, 'type' => $type, 'timemodified' => time(), 'courseid' => $courseid));
+    // Assign item to category via m:n table.
+    $DB->insert_record('block_exaportitemcate', array('itemid' => $itemid, 'cateid' => $subject_category->id));
     //autogenerate a published view for the new item
     $exampleTitle = $DB->get_field('block_exacompexamples', 'title', array('id' => $exampleid));
 
