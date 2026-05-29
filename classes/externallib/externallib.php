@@ -14646,7 +14646,7 @@ class externallib extends base {
             }
         }
 
-        return ['schooltypes' => $schooltypes];
+        return static::prepare_ws_return(['schooltypes' => $schooltypes]);
     }
 
     public static function diggrplus_get_course_schooltype_tree_returns() {
