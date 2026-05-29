@@ -1715,7 +1715,9 @@ class externallib extends base {
                 $subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $elove_category->id);
             }
 
-            $itemid = $DB->insert_record("block_exaportitem", array('userid' => $USER->id, 'name' => $exampletitle, 'url' => $url, 'intro' => $effort, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id));
+            // Create portfolio item (categoryid deprecated, use m:n table instead).
+            $itemid = $DB->insert_record("block_exaportitem", array('userid' => $USER->id, 'name' => $exampletitle, 'url' => $url, 'intro' => $effort, 'type' => $type, 'timemodified' => time()));
+            $DB->insert_record('block_exaportitemcate', ['itemid' => $itemid, 'cateid' => $subject_category->id]);
             //autogenerate a published view for the new item
             $dbView = new stdClass();
             $dbView->userid = $USER->id;
@@ -6801,9 +6803,11 @@ class externallib extends base {
                 $subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
             }
 
+            // Create portfolio item (categoryid deprecated, use m:n table instead).
             $itemid = $DB->insert_record("block_exaportitem",
-                array('userid' => $USER->id, 'name' => $exampletitle, 'intro' => '', 'url' => $url, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id, 'teachervalue' => null, 'studentvalue' => null,
+                array('userid' => $USER->id, 'name' => $exampletitle, 'intro' => '', 'url' => $url, 'type' => $type, 'timemodified' => time(), 'teachervalue' => null, 'studentvalue' => null,
                     'courseid' => $courseid));
+            $DB->insert_record('block_exaportitemcate', ['itemid' => $itemid, 'cateid' => $subject_category->id]);
             //autogenerate a published view for the new item
             $dbView = new stdClass();
             $dbView->userid = $USER->id;
@@ -7028,8 +7032,10 @@ class externallib extends base {
                 $subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
             }
 
+            // Create portfolio item (categoryid deprecated, use m:n table instead).
             $itemid = $DB->insert_record("block_exaportitem",
-                array('userid' => $USER->id, 'name' => $comptitle, 'intro' => $solutiondescription, 'url' => $url, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id, 'courseid' => $courseid));
+                array('userid' => $USER->id, 'name' => $comptitle, 'intro' => $solutiondescription, 'url' => $url, 'type' => $type, 'timemodified' => time(), 'courseid' => $courseid));
+            $DB->insert_record('block_exaportitemcate', ['itemid' => $itemid, 'cateid' => $subject_category->id]);
             //autogenerate a published view for the new item
             $dbView = new stdClass();
             $dbView->userid = $USER->id;
@@ -15653,7 +15659,20 @@ class externallib extends base {
             return [];
         }
 
-        $items = $DB->get_records('block_exaportitem', ['userid' => $USER->id, 'type' => 'note', 'categoryid' => $category->id], 'timemodified DESC');
+        // Items are linked to categories via block_exaportitemcate (m:n).
+        $items = $DB->get_records_sql('
+            SELECT i.*
+              FROM {block_exaportitem} i
+              JOIN {block_exaportitemcate} ic ON ic.itemid = i.id
+             WHERE i.userid = :userid
+               AND i.type = :type
+               AND ic.cateid = :cateid
+          ORDER BY i.timemodified DESC
+        ', [
+            'userid' => $USER->id,
+            'type' => 'note',
+            'cateid' => $category->id,
+        ]);
 
         array_walk($items, function($item) {
             $item->title = $item->name;
@@ -15720,13 +15739,25 @@ class externallib extends base {
         $newItem->userid = $USER->id;
         $newItem->name = $title ?: date('Y-m-d');
         $newItem->intro = $text;
-        $newItem->categoryid = $category->id;
         $newItem->type = 'note';
         $newItem->timemodified = time();
 
         if ($id) {
-            $oldItem = $DB->get_record('block_exaportitem', ['userid' => $USER->id, 'id' => $id, 'type' => 'note', 'categoryid' => $category->id]);
-            // check if is owner
+            // Verify item belongs to this user and category (via m:n table).
+            $oldItem = $DB->get_record_sql('
+                SELECT i.*
+                  FROM {block_exaportitem} i
+                  JOIN {block_exaportitemcate} ic ON ic.itemid = i.id
+                 WHERE i.id = :id
+                   AND i.userid = :userid
+                   AND i.type = :type
+                   AND ic.cateid = :cateid
+            ', [
+                'id' => $id,
+                'userid' => $USER->id,
+                'type' => 'note',
+                'cateid' => $category->id,
+            ]);
             if (!$oldItem) {
                 throw new invalid_parameter_exception ("learning_diary entry not found or not allowed");
             }
@@ -15736,7 +15767,9 @@ class externallib extends base {
         } else {
             $newItem->timecreated = time();
 
-            $DB->insert_record('block_exaportitem', $newItem);
+            // Create item and assign to category via m:n table.
+            $itemid = $DB->insert_record('block_exaportitem', $newItem);
+            $DB->insert_record('block_exaportitemcate', ['itemid' => $itemid, 'cateid' => $category->id]);
         }
 
         return array("success" => true);
