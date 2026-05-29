@@ -26,7 +26,13 @@ require_once __DIR__ . '/classes.php';
 require_once __DIR__ . '/../block_exacomp.php';
 require_once($CFG->dirroot . '/course/lib.php');
 require_once($CFG->libdir . '/badgeslib.php');
-require_once($CFG->dirroot . '/badges/lib/awardlib.php');
+// Backwards compatibility: In Moodle 5.2, badges/lib/awardlib.php was removed and its
+// functions (process_manual_award, process_manual_revoke) were moved into the
+// \core_badges\award_manager class (MDL-83902). On Moodle < 5.2 we still need to include
+// the old file because the global functions do not exist otherwise.
+if (file_exists($CFG->dirroot . '/badges/lib/awardlib.php')) {
+    require_once($CFG->dirroot . '/badges/lib/awardlib.php');
+}
 require_once($CFG->dirroot . '/cohort/lib.php');
 require_once __DIR__ . '/setapp.php';
 
@@ -3982,7 +3988,16 @@ function block_exacomp_award_badges($courseid, $userid = null) {
 
             // has all required competencies
             $acceptedroles = array_keys($badge->criteria[BADGE_CRITERIA_TYPE_MANUAL]->params);
-            if (process_manual_award($user->id, $USER->id, $acceptedroles[0], $badge->id)) {
+            // Backwards compatibility: In Moodle 5.2, the global function process_manual_award() was
+            // moved into \core_badges\award_manager::process_manual_award() (MDL-83902).
+            // On Moodle 5.2+ we use the new class; on older Moodle versions we fall back to the global
+            // function (which is available because awardlib.php is conditionally included above).
+            if (class_exists('\\core_badges\\award_manager')) {
+                $awarded = \core_badges\award_manager::process_manual_award($user->id, $USER->id, $acceptedroles[0], $badge->id);
+            } else {
+                $awarded = process_manual_award($user->id, $USER->id, $acceptedroles[0], $badge->id);
+            }
+            if ($awarded) {
                 // If badge was successfully awarded, review manual badge criteria.
                 $data = new stdClass();
                 $data->crit = $badge->criteria[BADGE_CRITERIA_TYPE_MANUAL];
