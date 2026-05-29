@@ -397,6 +397,7 @@ class block_exacomp_observer {
 
             // Award badge
             $acceptedroles = array_keys($badge->criteria[BADGE_CRITERIA_TYPE_MANUAL]->params);
+            // TODO: the $USER->id does not work. A student would award the badge to himself...
             // Backwards compatibility: In Moodle 5.2, the global function process_manual_award() was
             // moved into \core_badges\award_manager::process_manual_award() (MDL-83902).
             // On Moodle 5.2+ we use the new class; on older Moodle versions we fall back to the global
@@ -404,7 +405,7 @@ class block_exacomp_observer {
             if (class_exists('\\core_badges\\award_manager')) {
                 $awarded = \core_badges\award_manager::process_manual_award($userid, $USER->id, $acceptedroles[0], $badge->id);
             } else {
-                $awarded = process_manual_award($userid, $USER->id, $acceptedroles[0], $badge->id); // TODO: the $USER->id does not work. A student would award the badge to himself...
+                $awarded = process_manual_award($userid, $USER->id, $acceptedroles[0], $badge->id);
             }
             if ($awarded) {
                 // TODO: maybe rething the whole awarding process... "awarded by a teacher" but actually awarded by the system
