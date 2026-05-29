@@ -14,16 +14,7 @@
 //         // TODO: maybe rework this to award it more directly, not manually.
 //         // Accepts a badge object, user id, and awarder id (e.g. teacher or system)
 //         $acceptedroles = array_keys($badge->criteria[BADGE_CRITERIA_TYPE_MANUAL]->params);
-//         // Backwards compatibility: In Moodle 5.2, the global function process_manual_award() was
-//         // moved into \core_badges\award_manager::process_manual_award() (MDL-83902).
-//         // On Moodle 5.2+ we use the new class; on older versions we fall back to the global function
-//         // (which is available because awardlib.php is conditionally included in lib/lib.php).
-//         if (class_exists('\\core_badges\\award_manager')) {
-//             $awarded = \core_badges\award_manager::process_manual_award($userid, $awarderid, $acceptedroles[0], $badge->id);
-//         } else {
-//             $awarded = process_manual_award($userid, $awarderid, $acceptedroles[0], $badge->id);
-//         }
-//         if ($awarded) {
+//         if (process_manual_award($userid, $awarderid, $acceptedroles[0], $badge->id)) {
 //             $data = new \stdClass();
 //             $data->crit = $badge->criteria[BADGE_CRITERIA_TYPE_MANUAL];
 //             $data->userid = $userid;
