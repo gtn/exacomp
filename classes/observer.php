@@ -119,7 +119,7 @@ class block_exacomp_observer {
                     $studentgraderesult = $quiz_grade->grade;
                 }
             }
-            // TODO if needed some day: the same can be done for anything else with a grade... e.g. assignments can have grades ==> get assignment, get the grade, set maxgrad and studengraderesult and userealvalue
+            // TODO if needed some day: the same can be done for anything else with a grade... e.g. assignments can have grades ==> get assignment, get the grade, set maxgrad and studengraderesult
             if ($activity_completion && ($activity_completion->completionstate == COMPLETION_COMPLETE || $activity_completion->completionstate == COMPLETION_COMPLETE_PASS)) {
                 block_exacomp_assign_competences($event->courseid, $event->relateduserid, $topics, $descriptors, $examples, $userealvalue, $maxgrade, $studentgraderesult, $admingrading);
                 // $event->relateduserid is the id of the student that is graded. $event->userid is the id of the user that triggered the event
@@ -243,7 +243,7 @@ class block_exacomp_observer {
 
                     if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->courseid)) {
                         block_exacomp_save_additional_grading_for_comp($descriptor->courseid, $descriptor->descrid, $quizattempt->userid,
-                            block_exacomp_get_assessment_max_good_value($grading_scheme, true, $questionattempt->maxmark, $questionattempt->fraction, $descriptor->courseid), $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR, -1, $admingrading);
+                            block_exacomp_get_assessment_max_good_value($grading_scheme, true, $questionattempt->maxmark, $questionattempt->fraction, $descriptor->courseid), $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR, BLOCK_EXACOMP_ROLE_TEACHER);
                     }
 
                     block_exacomp_set_user_competence($quizattempt->userid, $descriptor->descrid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->courseid, BLOCK_EXACOMP_ROLE_TEACHER,
@@ -317,7 +317,7 @@ class block_exacomp_observer {
     //
     //             if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->courseid)) {
     //                 block_exacomp_save_additional_grading_for_comp($descriptor->courseid, $descriptor->descrid, $quizattempt->userid,
-    //                     block_exacomp_get_assessment_max_good_value($grading_scheme, true, $questionattempt->maxmark, $questionattempt->fraction, $descriptor->courseid), $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR, -1, $admingrading);
+    //                     block_exacomp_get_assessment_max_good_value($grading_scheme, true, $questionattempt->maxmark, $questionattempt->fraction, $descriptor->courseid), $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR, BLOCK_EXACOMP_ROLE_TEACHER);
     //             }
     //
     //             block_exacomp_set_user_competence($quizattempt->userid, $descriptor->descrid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->courseid, BLOCK_EXACOMP_ROLE_TEACHER,
@@ -397,8 +397,17 @@ class block_exacomp_observer {
 
             // Award badge
             $acceptedroles = array_keys($badge->criteria[BADGE_CRITERIA_TYPE_MANUAL]->params);
-            if (process_manual_award($userid, $USER->id, $acceptedroles[0], $badge->id)) { // TODO: the $USER-id does not work. A student would award the badge to himself...
-                // TODO: maybe rething the whole awarding process... "awarded by a teacher" but actually awarded by the system
+            // Backwards compatibility: In Moodle 5.2, the global function process_manual_award() was
+            // moved into \core_badges\award_manager::process_manual_award() (MDL-83902).
+            // On Moodle 5.2+ we use the new class; on older versions we fall back to the global function
+            // (which is available because awardlib.php is conditionally included in lib/lib.php).
+            if (class_exists('\\core_badges\\award_manager')) {
+                $awarded = \core_badges\award_manager::process_manual_award($userid, $USER->id, $acceptedroles[0], $badge->id);
+            } else {
+                $awarded = process_manual_award($userid, $USER->id, $acceptedroles[0], $badge->id);
+            }
+            if ($awarded) { // TODO: the $USER->id does not work. A student would award the badge to himself...
+                // TODO: maybe rethink the whole awarding process... "awarded by a teacher" but actually awarded by the system
                 $data = new \stdClass();
                 $data->crit = $badge->criteria[BADGE_CRITERIA_TYPE_MANUAL];
                 $data->userid = $userid;
