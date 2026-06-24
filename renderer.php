@@ -2724,30 +2724,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         if (isset($data->eportfolioitems[$student->id]) && isset($data->eportfolioitems[$student->id]->competencies[$descriptor->id])) {
                             $shared = false;
                             $li_items = '';
-                            foreach ($data->eportfolioitems[$student->id]->competencies[$descriptor->id]->items as $item) {
+                            foreach ($data->eportfolioitems[$student->id]->competencies[$descriptor->id]->items as $itemid => $item) {
                                 $item_is_shared = !empty($item->shared) || !empty($item->category_shared);
 
                                 if ($item_is_shared) {
-                                    if (!empty($item->useextern) && !empty($item->hash)) {
-                                        $item_url = new moodle_url('/blocks/exaport/shared_view.php', array(
-                                            'courseid' => $COURSE->id,
-                                            'access' => 'hash/' . $item->owner . '-' . $item->hash,
-                                        ));
-                                    } elseif (!empty($item->viewid)) {
-                                        $item_url = new moodle_url('/blocks/exaport/shared_view.php', array(
-                                            'courseid' => $COURSE->id,
-                                            'access' => 'id/' . $item->owner . '-' . $item->viewid,
-                                        ));
-                                    } else {
-                                        $item_url = null;
-                                    }
+                                    $item_url = new moodle_url('/blocks/exaport/shared_item.php', array(
+                                        'courseid' => $COURSE->id,
+                                        'access' => 'portfolio/id/' . $student->id,
+                                        'itemid' => $itemid,
+                                    ));
 
-                                    if ($item_url) {
-                                        $li_item = html_writer::link($item_url, s($item->name), array('target' => '_blank'))
-                                            . block_exacomp_get_string('eportitem_shared');
-                                    } else {
-                                        $li_item = s($item->name) . block_exacomp_get_string('eportitem_shared');
-                                    }
+                                    $li_item = html_writer::link($item_url, s($item->name), array('target' => '_blank', 'class' => 'eportitem-shared-link'))
+                                        . block_exacomp_get_string('eportitem_shared');
                                     $shared = true;
                                 } else {
                                     $li_item = s($item->name) . block_exacomp_get_string('eportitem_notshared');
