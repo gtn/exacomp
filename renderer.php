@@ -2734,7 +2734,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                         'itemid' => $itemid,
                                     ));
 
-                                    $li_item = html_writer::link($item_url, s($item->name), array('target' => '_blank', 'class' => 'eportitem-shared-link'))
+                                    $li_item = html_writer::link($item_url, s($item->name), array('target' => '_blank', 'rel' => 'noopener noreferrer', 'class' => 'eportitem-shared-link'))
                                         . block_exacomp_get_string('eportitem_shared');
                                     $shared = true;
                                 } else {
