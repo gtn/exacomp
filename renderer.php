@@ -2728,7 +2728,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 $item_is_shared = !empty($item->shared) || !empty($item->category_shared);
 
                                 if ($item_is_shared) {
-                                    $item_url = $CFG->wwwroot . '/blocks/exaport/shared_item.php?access=view/id/' . urlencode($item->owner) . '-' . urlencode($item->viewid) . '&itemid=' . urlencode($itemid);
+                                    if (!empty($item->shared) && !empty($item->viewid)) {
+                                        $item_url = $CFG->wwwroot . '/blocks/exaport/shared_item.php?access=view/id/' . urlencode($item->owner) . '-' . urlencode($item->viewid) . '&itemid=' . urlencode($itemid);
+                                    } else {
+                                        $item_url = $CFG->wwwroot . '/blocks/exaport/shared_item.php?courseid=' . $COURSE->id . '&access=portfolio/id/' . urlencode($student->id) . '&itemid=' . urlencode($itemid);
+                                    }
 
                                     $li_item = html_writer::link($item_url, s($item->name), array('target' => '_blank', 'rel' => 'noopener noreferrer', 'class' => 'eportitem-shared-link'))
                                         . block_exacomp_get_string('eportitem_shared');
