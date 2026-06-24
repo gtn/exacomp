@@ -4345,11 +4345,20 @@ function block_exacomp_get_eportfolioitem_association($students) {
     $result = array();
     foreach ($students as $student) {
         $eportfolioitems = $DB->get_records_sql('
-			SELECT mm.id, compid, activityid, i.shareall, i.externaccess, i.name
+			SELECT mm.id, compid, activityid, i.shareall, i.externaccess, i.name, i.categoryid,
+			       CASE
+			           WHEN EXISTS (
+			               SELECT 1
+			                 FROM {block_exaportcatshar} cs
+			                WHERE cs.catid = i.categoryid
+			                  AND cs.userid = ?
+			           ) THEN 1
+			           ELSE 0
+			       END AS category_shared
 			    FROM {' . BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY . '} mm
 			        JOIN {block_exaportitem} i ON mm.activityid=i.id
 			    WHERE mm.eportfolioitem = 1 AND i.userid=?
-                ORDER BY compid', array($student->id));
+                ORDER BY compid', array($USER->id, $student->id));
 
         $result[$student->id] = new stdClass();
         $result[$student->id]->competencies = array();
@@ -4412,6 +4421,7 @@ function block_exacomp_get_eportfolioitem_association($students) {
             $result[$student->id]->competencies[$item->compid]->items[$item->activityid]->owner = $owner;
             $result[$student->id]->competencies[$item->compid]->items[$item->activityid]->useextern = $useextern;
             $result[$student->id]->competencies[$item->compid]->items[$item->activityid]->hash = $hash;
+            $result[$student->id]->competencies[$item->compid]->items[$item->activityid]->category_shared = !empty($item->category_shared);
         }
     }
 
@@ -15147,4 +15157,3 @@ function block_exacomp_delete_grids_missing_from_komet_import() {
 function block_exacomp_can_teacher_import_grid() {
     return get_config('exacomp', 'teacher_can_import_grid');
 }
-

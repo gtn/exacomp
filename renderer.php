@@ -2725,40 +2725,46 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             $shared = false;
                             $li_items = '';
                             foreach ($data->eportfolioitems[$student->id]->competencies[$descriptor->id]->items as $item) {
-                                $li_item = $item->name;
-                                if ($item->shared) {
-                                    $li_item .= block_exacomp_get_string('eportitem_shared');
+                                $item_is_shared = !empty($item->shared) || !empty($item->category_shared);
+
+                                if ($item_is_shared) {
+                                    if (!empty($item->useextern) && !empty($item->hash)) {
+                                        $item_url = new moodle_url('/blocks/exaport/shared_view.php', array(
+                                            'courseid' => $COURSE->id,
+                                            'access' => 'hash/' . $item->owner . '-' . $item->hash,
+                                        ));
+                                    } elseif (!empty($item->viewid)) {
+                                        $item_url = new moodle_url('/blocks/exaport/shared_view.php', array(
+                                            'courseid' => $COURSE->id,
+                                            'access' => 'id/' . $item->owner . '-' . $item->viewid,
+                                        ));
+                                    } else {
+                                        $item_url = null;
+                                    }
+
+                                    if ($item_url) {
+                                        $li_item = html_writer::link($item_url, s($item->name), array('target' => '_blank'))
+                                            . block_exacomp_get_string('eportitem_shared');
+                                    } else {
+                                        $li_item = s($item->name) . block_exacomp_get_string('eportitem_shared');
+                                    }
                                     $shared = true;
                                 } else {
-                                    $li_item .= block_exacomp_get_string('eportitem_notshared');
+                                    $li_item = s($item->name) . block_exacomp_get_string('eportitem_notshared');
                                 }
 
                                 $li_items .= html_writer::tag('li', $li_item);
                             }
-                            $first_param = 'id';
-                            $second_param = $item->viewid;
-                            if ($item->useextern) {
-                                $second_param = $item->hash;
-                                $first_param = 'hash';
-                            }
-                            // link to view if only 1 item, else link to shared_views list
-                            if (count($data->eportfolioitems[$student->id]->competencies[$descriptor->id]->items) == 1) {
-                                $link = new moodle_url('/blocks/exaport/shared_view.php', array('courseid' => $COURSE->id, 'access' => $first_param . '/' . $item->owner . '-' . $second_param));
-                            } else {
-                                $link = new moodle_url('/blocks/exaport/shared_views.php', array('courseid' => $COURSE->id, 'userid' => $student->id, 'sort' => 'timemodified'));
-                            }
 
                             if ($shared) {
-                                //								$img = html_writer::link($link, html_writer::empty_tag("img", array("src" => "pix/folder_shared.png", "alt" => '', 'style' => 'margin: 0 0 0 5px;')));
-                                $img = html_writer::link($link, html_writer::tag("img", $this->pix_icon("i/folder", null, null, array('style' => 'margin: 0 0 0 5px;', 'class' => 'folder_views_shared'))));
+                                $img = html_writer::tag('i', '', array('class' => 'icon fa fa-folder fa-fw folder_views_shared', 'aria-hidden' => 'true', 'style' => 'margin: 0 0 0 5px;'));
                             } else {
-                                //$img = html_writer::empty_tag("img", array("src" => "pix/folder_notshared.png", "alt" => '', 'style' => 'margin: 0 0 0 5px;'));
-                                $img = html_writer::tag("img", $this->pix_icon("i/folder", null, null, array('style' => 'margin: 0 0 0 5px;', 'class' => 'folder_views_not_shared')));
+                                $img = html_writer::tag('i', '', array('class' => 'icon fa fa-folder fa-fw folder_views_not_shared', 'aria-hidden' => 'true', 'style' => 'margin: 0 0 0 5px;'));
                             }
 
                             $text = block_exacomp_get_string('eportitems') . html_writer::tag('ul', $li_items);
 
-                            $eportfoliotext = '<span title="' . $text . '" class="exabis-tooltip">' . $img . '</span>';
+                            $eportfoliotext = '<span data-tooltip-content="' . s($text) . '" class="exabis-tooltip">' . $img . '</span>';
                         } else {
                             $eportfoliotext = '';
                         }
