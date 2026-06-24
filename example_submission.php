@@ -38,7 +38,7 @@ if ($itemInformation && !optional_param('newsubmission', false, PARAM_BOOL)) {
     // edit url
     // $url = new moodle_url("/blocks/exaport/item.php",array("courseid"=>$courseid,"action"=>"edit","sesskey"=>sesskey(),"id"=>$itemInformation->id,"descriptorselection"=>false));
     // view url + comments
-    $url = $CFG->wwwroot . '/blocks/exaport/shared_item.php?access=portfolio/id/' . $itemInformation->userid . '&itemid=' . $itemInformation->id;
+    $url = $CFG->wwwroot . '/blocks/exaport/shared_item.php?access=portfolio/id/' . urlencode($itemInformation->userid) . '&itemid=' . urlencode($itemInformation->id);
     redirect($url);
 }
 
