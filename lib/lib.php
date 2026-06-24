@@ -174,18 +174,30 @@ const BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT_BUT_USED = 3;
 
 
 /**
- * get the assessemnt preconfigurations from the xml, but only load it once (global)
+ * Returns all assessment preconfigurations from the DB table.
  *
- * @return array
+ * @return array keyed by row id, with name and all assessment settings in each entry
  */
 function block_exacomp_get_assessment_configurations() {
     global $DB, $block_exacomp_assessment_configurations;
 
     if (!empty($block_exacomp_assessment_configurations)) {
         return $block_exacomp_assessment_configurations;
-    } else {
-        $block_exacomp_assessment_configurations = block_exacomp_read_preconfigurations_xml();
     }
+
+    // Keep the old array shape so existing callers can continue to use the data unchanged.
+    $rows = $DB->get_records('block_exacomp_assessment_cfgs', null, 'sortorder ASC, id ASC');
+    $result = array();
+    foreach ($rows as $row) {
+        $entry = (array)$row;
+        $id = $entry['id'];
+        unset($entry['id']);
+        // sortorder only controls admin ordering and must not leak into setting payloads.
+        unset($entry['sortorder']);
+        $result[$id] = $entry;
+    }
+
+    $block_exacomp_assessment_configurations = $result;
     return $block_exacomp_assessment_configurations;
 }
 
@@ -13523,34 +13535,12 @@ function block_exacomp_update_evaluation_niveau_tables($data = '', $option_type 
  * @return array
  */
 function block_exacomp_read_preconfigurations_xml() {
-    global $CFG;
-    $xmlresult = array();
-    $path = $CFG->dirroot . '/blocks/exacomp/';
-    $namexml = $path . 'settings_preconfiguration.xml';
-    $xmlcontent = file_get_contents($namexml);
-    $xmlarray = (array)simplexml_load_string($xmlcontent);
-    if ($xmlarray && is_array($xmlarray) && $xmlarray['configOption']) {
-        if (!is_array($xmlarray['configOption'])) {
-            $configs = array($xmlarray['configOption']);
-        } else {
-            $configs = $xmlarray['configOption'];
-        }
-        foreach ($configs as $config) {
-            $data = (array)$config;
-            if ($data['@attributes']['id'] > 0) {
-                $key = $data['@attributes']['id'];
-            } else {
-                $key = max(array_keys($xmlresult)) + 1;
-            }
-            unset($data['@attributes']);
-            $xmlresult[$key] = $data;
-        }
-    }
-    return $xmlresult;
+    // Keep the legacy function name so older call sites transparently use the DB-backed data.
+    return block_exacomp_get_assessment_configurations();
 }
 
 function block_exacomp_get_preconfigparameters_list() {
-    $xmlpreconfig = block_exacomp_read_preconfigurations_xml();
+    $xmlpreconfig = block_exacomp_get_assessment_configurations();
     $preconfigparameters = array();
     foreach ($xmlpreconfig as $id => $config) {
         unset($config['name']);

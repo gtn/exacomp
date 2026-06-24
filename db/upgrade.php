@@ -4385,6 +4385,194 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2025102902, 'exacomp');
     }
 
+    if ($oldversion < 2026062402) {
+        $table = new xmldb_table('block_exacomp_assessment_cfgs');
+
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('sortorder', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
+        $table->add_field('assessment_example_scheme', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_example_diffLevel', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_example_SelfEval', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_childcomp_scheme', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_childcomp_diffLevel', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_childcomp_SelfEval', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_comp_scheme', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_comp_diffLevel', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_comp_SelfEval', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_topic_scheme', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_topic_diffLevel', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_topic_SelfEval', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_subject_scheme', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_subject_diffLevel', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_subject_SelfEval', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_theme_scheme', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_theme_diffLevel', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_theme_SelfEval', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_points_limit', XMLDB_TYPE_INTEGER, '10', null, null, null, 10);
+        $table->add_field('assessment_points_negativ', XMLDB_TYPE_INTEGER, '10', null, null, null, 4);
+        $table->add_field('assessment_grade_limit', XMLDB_TYPE_INTEGER, '10', null, null, null, 6);
+        $table->add_field('assessment_grade_negativ', XMLDB_TYPE_INTEGER, '10', null, null, null, 5);
+        $table->add_field('assessment_grade_verbose', XMLDB_TYPE_CHAR, '1333', null, null, null, '');
+        $table->add_field('assessment_diffLevel_options', XMLDB_TYPE_CHAR, '255', null, null, null, '');
+        $table->add_field('assessment_verbose_options', XMLDB_TYPE_CHAR, '1333', null, null, null, '');
+        $table->add_field('assessment_verbose_negative', XMLDB_TYPE_INTEGER, '10', null, null, null, 0);
+        $table->add_field('assessment_verbose_options_short', XMLDB_TYPE_CHAR, '255', null, null, null, '');
+        $table->add_field('assessment_verbose_lowerisbetter', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Seed only an empty table so later admin changes survive plugin upgrades untouched.
+        if (!$DB->count_records('block_exacomp_assessment_cfgs')) {
+            $records = array(
+                array(
+                    'id' => 1,
+                    'name' => 'Gemeinschaftsschule',
+                    'sortorder' => 1,
+                    'assessment_example_scheme' => 2,
+                    'assessment_example_diffLevel' => 1,
+                    'assessment_example_SelfEval' => 1,
+                    'assessment_childcomp_scheme' => 2,
+                    'assessment_childcomp_diffLevel' => 1,
+                    'assessment_childcomp_SelfEval' => 1,
+                    'assessment_comp_scheme' => 1,
+                    'assessment_comp_diffLevel' => 1,
+                    'assessment_comp_SelfEval' => 1,
+                    'assessment_topic_scheme' => 1,
+                    'assessment_topic_diffLevel' => 1,
+                    'assessment_topic_SelfEval' => 1,
+                    'assessment_subject_scheme' => 1,
+                    'assessment_subject_diffLevel' => 1,
+                    'assessment_subject_SelfEval' => 1,
+                    'assessment_theme_scheme' => 1,
+                    'assessment_theme_diffLevel' => 1,
+                    'assessment_theme_SelfEval' => 1,
+                    'assessment_points_limit' => 10,
+                    'assessment_points_negativ' => 4,
+                    'assessment_grade_limit' => 6,
+                    'assessment_grade_negativ' => 5,
+                    'assessment_grade_verbose' => 'sehr gut, gut, befriedigend, ausreichend, mangelhaft, ungenügend',
+                    'assessment_diffLevel_options' => 'G,M,E,Z',
+                    'assessment_verbose_options' => 'nicht erreicht, teilweise erreicht, überwiegend erreicht, vollständig erreicht',
+                    'assessment_verbose_negative' => 0,
+                    'assessment_verbose_options_short' => 'ne, te, üe, ve',
+                    'assessment_verbose_lowerisbetter' => 0,
+                ),
+                array(
+                    'id' => 2,
+                    'name' => 'berufliche Schulen',
+                    'sortorder' => 2,
+                    'assessment_example_scheme' => 3,
+                    'assessment_example_diffLevel' => 0,
+                    'assessment_example_SelfEval' => 1,
+                    'assessment_childcomp_scheme' => 3,
+                    'assessment_childcomp_diffLevel' => 0,
+                    'assessment_childcomp_SelfEval' => 1,
+                    'assessment_comp_scheme' => 3,
+                    'assessment_comp_diffLevel' => 0,
+                    'assessment_comp_SelfEval' => 1,
+                    'assessment_topic_scheme' => 3,
+                    'assessment_topic_diffLevel' => 0,
+                    'assessment_topic_SelfEval' => 1,
+                    'assessment_subject_scheme' => 3,
+                    'assessment_subject_diffLevel' => 0,
+                    'assessment_subject_SelfEval' => 1,
+                    'assessment_theme_scheme' => 3,
+                    'assessment_theme_diffLevel' => 0,
+                    'assessment_theme_SelfEval' => 1,
+                    'assessment_points_limit' => 10,
+                    'assessment_points_negativ' => 4,
+                    'assessment_grade_limit' => 6,
+                    'assessment_grade_negativ' => 5,
+                    'assessment_grade_verbose' => 'sehr gut, gut, befriedigend, ausreichend, mangelhaft, ungenügend',
+                    'assessment_diffLevel_options' => 'A,B,C',
+                    'assessment_verbose_options' => 'nicht erreicht, teilweise erreicht, überwiegend erreicht, vollständig erreicht',
+                    'assessment_verbose_negative' => 0,
+                    'assessment_verbose_options_short' => 'ne, te, üe, ve',
+                    'assessment_verbose_lowerisbetter' => 0,
+                ),
+                array(
+                    'id' => 3,
+                    'name' => '4.0 Skala',
+                    'sortorder' => 3,
+                    'assessment_example_scheme' => 2,
+                    'assessment_example_diffLevel' => 1,
+                    'assessment_example_SelfEval' => 1,
+                    'assessment_childcomp_scheme' => 2,
+                    'assessment_childcomp_diffLevel' => 1,
+                    'assessment_childcomp_SelfEval' => 1,
+                    'assessment_comp_scheme' => 2,
+                    'assessment_comp_diffLevel' => 1,
+                    'assessment_comp_SelfEval' => 1,
+                    'assessment_topic_scheme' => 2,
+                    'assessment_topic_diffLevel' => 1,
+                    'assessment_topic_SelfEval' => 1,
+                    'assessment_subject_scheme' => 2,
+                    'assessment_subject_diffLevel' => 1,
+                    'assessment_subject_SelfEval' => 1,
+                    'assessment_theme_scheme' => 2,
+                    'assessment_theme_diffLevel' => 1,
+                    'assessment_theme_SelfEval' => 1,
+                    'assessment_points_limit' => 10,
+                    'assessment_points_negativ' => 4,
+                    'assessment_grade_limit' => 6,
+                    'assessment_grade_negativ' => 5,
+                    'assessment_grade_verbose' => 'sehr gut, gut, befriedigend, ausreichend, mangelhaft, ungenügend',
+                    'assessment_diffLevel_options' => 'G,M,E,Z',
+                    'assessment_verbose_options' => 'WESENTLICHE mit Hilfe erreicht, WESENTLICHE in Ansätzen erfüllt, WESENTLICHE teilweise erreicht, WESENTLICHE überwiegend erreicht, WESENTLICHE erreicht, WESENTLICHE übertroffen, WESENTLICHE weit übertroffen',
+                    'assessment_verbose_negative' => 0,
+                    'assessment_verbose_options_short' => 'mhe, iae, te, üe, e, ü, wü',
+                    'assessment_verbose_lowerisbetter' => 0,
+                ),
+                array(
+                    'id' => 4,
+                    'name' => 'Dakora +',
+                    'sortorder' => 4,
+                    'assessment_example_scheme' => 2,
+                    'assessment_example_diffLevel' => 0,
+                    'assessment_example_SelfEval' => 1,
+                    'assessment_childcomp_scheme' => 2,
+                    'assessment_childcomp_diffLevel' => 0,
+                    'assessment_childcomp_SelfEval' => 1,
+                    'assessment_comp_scheme' => 2,
+                    'assessment_comp_diffLevel' => 0,
+                    'assessment_comp_SelfEval' => 1,
+                    'assessment_topic_scheme' => 2,
+                    'assessment_topic_diffLevel' => 0,
+                    'assessment_topic_SelfEval' => 1,
+                    'assessment_subject_scheme' => 2,
+                    'assessment_subject_diffLevel' => 0,
+                    'assessment_subject_SelfEval' => 1,
+                    'assessment_theme_scheme' => 2,
+                    'assessment_theme_diffLevel' => 0,
+                    'assessment_theme_SelfEval' => 1,
+                    'assessment_points_limit' => 10,
+                    'assessment_points_negativ' => 4,
+                    'assessment_grade_limit' => 6,
+                    'assessment_grade_negativ' => 5,
+                    'assessment_grade_verbose' => '😊,😐,🙁',
+                    'assessment_diffLevel_options' => 'A,B,C',
+                    'assessment_verbose_options' => '😊,😐,🙁',
+                    'assessment_verbose_negative' => 2,
+                    'assessment_verbose_options_short' => '😊,😐,🙁',
+                    'assessment_verbose_lowerisbetter' => 1,
+                ),
+            );
+
+            foreach ($records as $record) {
+                // Preserve the historical ids so existing selected templates still point to the same row.
+                $DB->insert_record_raw('block_exacomp_assessment_cfgs', (object)$record, true, false, true);
+            }
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2026062402, 'exacomp');
+    }
+
 
     /*
      * insert new upgrade scripts before this comment section

@@ -48,10 +48,9 @@ $output = block_exacomp_get_renderer();
 echo $output->header_v2('tab_teacher_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $page_identifier);
 
-// get the possible preconfigurations from the settings_preconfiguration.xml and create choices for the dropdown select menu
-$preconfigurations = block_exacomp_read_preconfigurations_xml();
+// Read preconfigurations once so the teacher dropdown stays aligned with the admin-managed templates.
+$preconfigurations = block_exacomp_get_assessment_configurations();
 $choices = array('0' => block_exacomp_get_string('course_assessment_use_global'));
-$preconfigurations = block_exacomp_read_preconfigurations_xml();
 if ($preconfigurations && is_array($preconfigurations)) {
     foreach ($preconfigurations as $key => $config) {
         $choices[$key] = $config['name'];

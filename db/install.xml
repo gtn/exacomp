@@ -827,5 +827,43 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
+    <TABLE NAME="block_exacomp_assessment_cfgs" COMMENT="Assessment preconfigurations for admin-managed templates">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_example_scheme" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_example_diffLevel" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_example_SelfEval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_childcomp_scheme" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_childcomp_diffLevel" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_childcomp_SelfEval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_comp_scheme" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_comp_diffLevel" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_comp_SelfEval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_topic_scheme" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_topic_diffLevel" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_topic_SelfEval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_subject_scheme" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_subject_diffLevel" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_subject_SelfEval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_theme_scheme" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_theme_diffLevel" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_theme_SelfEval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_points_limit" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="10" SEQUENCE="false"/>
+        <FIELD NAME="assessment_points_negativ" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="4" SEQUENCE="false"/>
+        <FIELD NAME="assessment_grade_limit" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="6" SEQUENCE="false"/>
+        <FIELD NAME="assessment_grade_negativ" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="5" SEQUENCE="false"/>
+        <FIELD NAME="assessment_grade_verbose" TYPE="char" LENGTH="1333" NOTNULL="false" DEFAULT="" SEQUENCE="false"/>
+        <FIELD NAME="assessment_diffLevel_options" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="" SEQUENCE="false"/>
+        <FIELD NAME="assessment_verbose_options" TYPE="char" LENGTH="1333" NOTNULL="false" DEFAULT="" SEQUENCE="false"/>
+        <FIELD NAME="assessment_verbose_negative" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_verbose_options_short" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="" SEQUENCE="false"/>
+        <FIELD NAME="assessment_verbose_lowerisbetter" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
   </TABLES>
 </XMLDB>

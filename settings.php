@@ -22,6 +22,13 @@ defined('MOODLE_INTERNAL') || die;
 require_once __DIR__ . '/inc.php';
 require_once __DIR__ . '/lib/settings_helper.php';
 
+$ADMIN->add('blocksettings', new admin_externalpage(
+    'block_exacomp_assessment_preconfigs',
+    get_string('manage_assessment_configurations', 'block_exacomp'),
+    new moodle_url('/blocks/exacomp/admin/assessment_preconfig.php'),
+    'moodle/site:config'
+));
+
 // Generate id if not set.
 block_exacomp\data::generate_my_source();
 
@@ -307,4 +314,3 @@ $settings->add(new admin_setting_configcheckbox('exacomp/usetopicgrading',
 $settings->add(new admin_setting_configcheckbox('exacomp/usesubjectgrading',
         block_exacomp_get_string('usesubjectgrading'),
 	    '', 0));*/
-
