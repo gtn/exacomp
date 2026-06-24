@@ -2498,7 +2498,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
     function descriptors(&$rows, $level, $descriptors, $data, $students, $profoundness = false, $editmode = false, $custom_created_descriptors = false, $parent = false, $crosssubjid = 0, $parent_visible = array(), $isEditingTeacher = true,
         $forReport = false, $hideAllActionButtons = false) {
-        global $USER, $COURSE, $DB, $OUTPUT;
+        global $USER, $COURSE, $DB, $OUTPUT, $CFG;
 
         $evaluation = ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? "teacher" : "student";
         $showstudents = block_exacomp_get_studentid();
@@ -2728,11 +2728,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 $item_is_shared = !empty($item->shared) || !empty($item->category_shared);
 
                                 if ($item_is_shared) {
-                                    $item_url = new moodle_url('/blocks/exaport/shared_item.php', array(
-                                        'courseid' => $COURSE->id,
-                                        'access' => 'portfolio/id/' . $student->id,
-                                        'itemid' => $itemid,
-                                    ));
+                                    $item_url = $CFG->wwwroot . '/blocks/exaport/shared_item.php?access=view/id/' . $item->owner . '-' . $item->viewid . '&itemid=' . $itemid;
 
                                     $li_item = html_writer::link($item_url, s($item->name), array('target' => '_blank', 'rel' => 'noopener noreferrer', 'class' => 'eportitem-shared-link'))
                                         . block_exacomp_get_string('eportitem_shared');
