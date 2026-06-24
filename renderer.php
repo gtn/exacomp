@@ -2764,7 +2764,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                             $text = block_exacomp_get_string('eportitems') . html_writer::tag('ul', $li_items);
 
-                            $eportfoliotext = html_writer::tag('span', $img, array('data-tooltip-content' => $text, 'class' => 'exabis-tooltip'));
+                            $eportfoliotext = '<span data-tooltip-content="' . s($text) . '" class="exabis-tooltip">' . $img . '</span>';
                         } else {
                             $eportfoliotext = '';
                         }

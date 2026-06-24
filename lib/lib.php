@@ -4342,7 +4342,6 @@ function block_exacomp_get_allowed_course_modules_for_course_for_select($coursei
 function block_exacomp_get_eportfolioitem_association($students) {
     global $DB, $COURSE, $USER;
     //$teachers = \block_exacomp\permissions::get_course_teachers($COURSE->id);
-    $teacherid = $USER->id;
     $result = array();
     foreach ($students as $student) {
         $eportfolioitems = $DB->get_records_sql('
@@ -4360,7 +4359,7 @@ function block_exacomp_get_eportfolioitem_association($students) {
 			    FROM {' . BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY . '} mm
 			        JOIN {block_exaportitem} i ON mm.activityid=i.id
 			    WHERE mm.eportfolioitem = 1 AND i.userid=?
-                ORDER BY compid', array($teacherid, $student->id));
+                ORDER BY compid', array($USER->id, $student->id));
 
         $result[$student->id] = new stdClass();
         $result[$student->id]->competencies = array();
