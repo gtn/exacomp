@@ -4430,7 +4430,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         if (!$DB->count_records('block_exacomp_assessment_cfgs')) {
             $records = array(
                 array(
-                    'id' => 1,
                     'name' => 'Gemeinschaftsschule',
                     'sortorder' => 1,
                     'assessment_example_scheme' => 2,
@@ -4463,7 +4462,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
                     'assessment_verbose_lowerisbetter' => 0,
                 ),
                 array(
-                    'id' => 2,
                     'name' => 'berufliche Schulen',
                     'sortorder' => 2,
                     'assessment_example_scheme' => 3,
@@ -4496,7 +4494,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
                     'assessment_verbose_lowerisbetter' => 0,
                 ),
                 array(
-                    'id' => 3,
                     'name' => '4.0 Skala',
                     'sortorder' => 3,
                     'assessment_example_scheme' => 2,
@@ -4529,7 +4526,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
                     'assessment_verbose_lowerisbetter' => 0,
                 ),
                 array(
-                    'id' => 4,
                     'name' => 'Dakora +',
                     'sortorder' => 4,
                     'assessment_example_scheme' => 2,
@@ -4564,8 +4560,8 @@ function xmldb_block_exacomp_upgrade($oldversion) {
             );
 
             foreach ($records as $record) {
-                // Preserve the historical ids so existing selected templates still point to the same row.
-                $DB->insert_record_raw('block_exacomp_assessment_cfgs', (object)$record, true, false, true);
+                // Insert rows in the historical order so the new ids still match the old XML ids.
+                $DB->insert_record('block_exacomp_assessment_cfgs', (object)$record);
             }
         }
 

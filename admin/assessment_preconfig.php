@@ -14,6 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Admin page for managing assessment preconfiguration templates stored in the database.
+ */
+
 require_once __DIR__ . '/../../../config.php';
 require_once $CFG->libdir . '/adminlib.php';
 require_once __DIR__ . '/../inc.php';
