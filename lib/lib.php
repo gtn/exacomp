@@ -4331,6 +4331,9 @@ function block_exacomp_get_allowed_course_modules_for_course_for_select($coursei
  * Returns an associative array that gives information about which competence/topic is
  * associated with which eportfolioitem
  *
+ * Also gives the information if the item is shared or not, either through being in a shared category (directly done in the query)
+ * or by being used in a shared view (done in the foreach)
+ *
  * $array[$studentid->competencies[compid]->items[$itemid]->name = artefact name
  *
  * $array[$studentid->competencies[compid]->items[$itemid]->shared = shared or not
