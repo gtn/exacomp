@@ -1423,6 +1423,18 @@ input[type=checkbox].be-sure {
     color: #fcba5d;
 }
 
+.ui-tooltip-content a.eportitem-shared-link,
+.ui-tooltip a.eportitem-shared-link {
+    color: #006ccb;
+    text-decoration: underline;
+}
+
+.ui-tooltip-content a.eportitem-shared-link:hover,
+.ui-tooltip a.eportitem-shared-link:hover {
+    color: #004a8f;
+    text-decoration: underline;
+}
+
 #course-selection-filter {
     background-color: #f9f9f9;
     padding: 5px;

@@ -4331,6 +4331,9 @@ function block_exacomp_get_allowed_course_modules_for_course_for_select($coursei
  * Returns an associative array that gives information about which competence/topic is
  * associated with which eportfolioitem
  *
+ * Also gives the information if the item is shared or not, either through being in a shared category (directly done in the query)
+ * or by being used in a shared view (done in the foreach)
+ *
  * $array[$studentid->competencies[compid]->items[$itemid]->name = artefact name
  *
  * $array[$studentid->competencies[compid]->items[$itemid]->shared = shared or not
@@ -4345,11 +4348,21 @@ function block_exacomp_get_eportfolioitem_association($students) {
     $result = array();
     foreach ($students as $student) {
         $eportfolioitems = $DB->get_records_sql('
-			SELECT mm.id, compid, activityid, i.shareall, i.externaccess, i.name
+			SELECT mm.id, compid, activityid, i.shareall, i.externaccess, i.name,
+			       CASE
+			           WHEN EXISTS (
+			               SELECT 1
+			                 FROM {block_exaportitemcate} ic
+			                 JOIN {block_exaportcatshar} cs ON cs.catid = ic.cateid
+			                WHERE ic.itemid = i.id
+			                  AND cs.userid = ?
+			           ) THEN 1
+			           ELSE 0
+			       END AS category_shared
 			    FROM {' . BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY . '} mm
 			        JOIN {block_exaportitem} i ON mm.activityid=i.id
 			    WHERE mm.eportfolioitem = 1 AND i.userid=?
-                ORDER BY compid', array($student->id));
+                ORDER BY compid', array($USER->id, $student->id));
 
         $result[$student->id] = new stdClass();
         $result[$student->id]->competencies = array();
@@ -4412,6 +4425,7 @@ function block_exacomp_get_eportfolioitem_association($students) {
             $result[$student->id]->competencies[$item->compid]->items[$item->activityid]->owner = $owner;
             $result[$student->id]->competencies[$item->compid]->items[$item->activityid]->useextern = $useextern;
             $result[$student->id]->competencies[$item->compid]->items[$item->activityid]->hash = $hash;
+            $result[$student->id]->competencies[$item->compid]->items[$item->activityid]->category_shared = !empty($item->category_shared);
         }
     }
 
@@ -15147,4 +15161,3 @@ function block_exacomp_delete_grids_missing_from_komet_import() {
 function block_exacomp_can_teacher_import_grid() {
     return get_config('exacomp', 'teacher_can_import_grid');
 }
-
