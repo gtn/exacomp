@@ -185,16 +185,40 @@ function block_exacomp_get_assessment_configurations() {
         return $block_exacomp_assessment_configurations;
     }
 
-    // Keep the old array shape so existing callers can continue to use the data unchanged.
+    // Mapping from snake_case (database) to camelCase (for backward compatibility)
+    $fieldMapping = [
+        'assessment_example_diff_level' => 'assessment_example_diffLevel',
+        'assessment_example_self_eval' => 'assessment_example_SelfEval',
+        'assessment_childcomp_diff_level' => 'assessment_childcomp_diffLevel',
+        'assessment_childcomp_self_eval' => 'assessment_childcomp_SelfEval',
+        'assessment_comp_diff_level' => 'assessment_comp_diffLevel',
+        'assessment_comp_self_eval' => 'assessment_comp_SelfEval',
+        'assessment_topic_diff_level' => 'assessment_topic_diffLevel',
+        'assessment_topic_self_eval' => 'assessment_topic_SelfEval',
+        'assessment_subject_diff_level' => 'assessment_subject_diffLevel',
+        'assessment_subject_self_eval' => 'assessment_subject_SelfEval',
+        'assessment_theme_diff_level' => 'assessment_theme_diffLevel',
+        'assessment_theme_self_eval' => 'assessment_theme_SelfEval',
+        'assessment_diff_level_options' => 'assessment_diffLevel_options',
+    ];
+
     $rows = $DB->get_records('block_exacomp_assessment_cfgs', null, 'sortorder ASC, id ASC');
-    $result = array();
+    $result = [];
+
     foreach ($rows as $row) {
         $entry = (array)$row;
         $id = $entry['id'];
         unset($entry['id']);
-        // sortorder only controls admin ordering and must not leak into setting payloads.
         unset($entry['sortorder']);
-        $result[$id] = $entry;
+
+        // Apply field name mapping
+        $mappedEntry = [];
+        foreach ($entry as $key => $value) {
+            $newKey = $fieldMapping[$key] ?? $key; // Use mapped key or keep original
+            $mappedEntry[$newKey] = $value;
+        }
+
+        $result[$id] = $mappedEntry;
     }
 
     $block_exacomp_assessment_configurations = $result;

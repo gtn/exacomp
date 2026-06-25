@@ -833,29 +833,29 @@
         <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="assessment_example_scheme" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="assessment_example_diffLevel" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="assessment_example_SelfEval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_example_diff_level" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_example_self_eval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="assessment_childcomp_scheme" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="assessment_childcomp_diffLevel" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="assessment_childcomp_SelfEval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_childcomp_diff_level" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_childcomp_self_eval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="assessment_comp_scheme" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="assessment_comp_diffLevel" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="assessment_comp_SelfEval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_comp_diff_level" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_comp_self_eval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="assessment_topic_scheme" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="assessment_topic_diffLevel" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="assessment_topic_SelfEval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_topic_diff_level" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_topic_self_eval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="assessment_subject_scheme" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="assessment_subject_diffLevel" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="assessment_subject_SelfEval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_subject_diff_level" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_subject_self_eval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="assessment_theme_scheme" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="assessment_theme_diffLevel" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="assessment_theme_SelfEval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_theme_diff_level" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assessment_theme_self_eval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="assessment_points_limit" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="10" SEQUENCE="false"/>
         <FIELD NAME="assessment_points_negativ" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="4" SEQUENCE="false"/>
         <FIELD NAME="assessment_grade_limit" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="6" SEQUENCE="false"/>
         <FIELD NAME="assessment_grade_negativ" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="5" SEQUENCE="false"/>
         <FIELD NAME="assessment_grade_verbose" TYPE="char" LENGTH="1333" NOTNULL="false" DEFAULT="" SEQUENCE="false"/>
-        <FIELD NAME="assessment_diffLevel_options" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="" SEQUENCE="false"/>
+        <FIELD NAME="assessment_diff_level_options" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="" SEQUENCE="false"/>
         <FIELD NAME="assessment_verbose_options" TYPE="char" LENGTH="1333" NOTNULL="false" DEFAULT="" SEQUENCE="false"/>
         <FIELD NAME="assessment_verbose_negative" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="assessment_verbose_options_short" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="" SEQUENCE="false"/>
