@@ -4385,7 +4385,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2025102902, 'exacomp');
     }
 
-    if ($oldversion < 2026062500) {
+    if ($oldversion < 2026062501) {
         $table = new xmldb_table('block_exacomp_assessment_cfgs');
 
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
@@ -4430,7 +4430,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         block_exacomp_seed_assessment_configurations();
 
         // Exacomp savepoint reached.
-        upgrade_block_savepoint(true, 2026062500, 'exacomp');
+        upgrade_block_savepoint(true, 2026062501, 'exacomp');
     }
 
 
