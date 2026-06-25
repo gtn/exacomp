@@ -4569,6 +4569,65 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2026062402, 'exacomp');
     }
 
+    if ($oldversion < 2026062500) {
+
+        // Add new "Mix assessment" preconfiguration only if it does not already exist.
+        if (!$DB->record_exists('block_exacomp_assessment_cfgs', array(
+            'name' => 'Mix assessment',
+        ))) {
+
+            $record = (object)array(
+                'name' => 'Mix assessment',
+                'sortorder' => 5,
+
+                'assessment_example_scheme' => 0,
+                'assessment_example_diff_level' => 0,
+                'assessment_example_self_eval' => 0,
+
+                'assessment_childcomp_scheme' => 3,
+                'assessment_childcomp_diff_level' => 1,
+                'assessment_childcomp_self_eval' => 1,
+
+                'assessment_comp_scheme' => 3,
+                'assessment_comp_diff_level' => 1,
+                'assessment_comp_self_eval' => 1,
+
+                'assessment_topic_scheme' => 0,
+                'assessment_topic_diff_level' => 1,
+                'assessment_topic_self_eval' => 1,
+
+                'assessment_subject_scheme' => 0,
+                'assessment_subject_diff_level' => 0,
+                'assessment_subject_self_eval' => 0,
+
+                'assessment_theme_scheme' => 0,
+                'assessment_theme_diff_level' => 0,
+                'assessment_theme_self_eval' => 0,
+
+                'assessment_points_limit' => 2,
+                'assessment_points_negativ' => 0,
+
+                'assessment_grade_limit' => 2,
+                'assessment_grade_negativ' => 0,
+
+                'assessment_grade_verbose' => 'NA, ECA, A',
+                'assessment_diff_level_options' => 'NA, ECA, A',
+                'assessment_verbose_options' => 'NA, ECA, A',
+
+                'assessment_verbose_negative' => 0,
+
+                'assessment_verbose_options_short' => 'NA, ECA, A',
+
+                'assessment_verbose_lowerisbetter' => 0,
+            );
+
+            $DB->insert_record('block_exacomp_assessment_cfgs', $record);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2026062500, 'exacomp');
+    }
+
 
     /*
      * insert new upgrade scripts before this comment section
