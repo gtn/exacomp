@@ -16,6 +16,12 @@
 
 /**
  * Admin page for managing assessment preconfiguration templates stored in the database.
+ * The folder admin/ does not have a meaning for moodle, like e.g. putting the settings into plugin/settings.php.
+ * It is just for organization reasons, that we put it here, instead of lib.
+ *
+ * Why this external page at all? https://moodledev.io/docs/5.0/apis/subsystems/admin?#when-to-use-an-admin_settings-vs-admin_externalpages
+ * "when the settings you are changing are in a custom table and not in the config tables via set_config"
+ *
  */
 
 require_once __DIR__ . '/../../../config.php';
@@ -195,6 +201,21 @@ $records = $DB->get_records($tablename, null, 'sortorder ASC, id ASC');
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('manage_assessment_configurations', 'block_exacomp'));
+
+// Back button to the main Exabis Competencies settings page.
+// The section parameter is the admin settings section name registered by the plugin.
+$backurl = new moodle_url('/admin/settings.php', array(
+    'section' => 'blocksettingexacomp',
+));
+
+echo html_writer::div(
+    html_writer::link(
+        $backurl,
+        get_string('back'),
+        array('class' => 'btn btn-secondary')
+    ),
+    'mb-3'
+);
 
 $table = new html_table();
 $table->head = array('ID', get_string('name'), get_string('actions'));
