@@ -18,10 +18,12 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 require_once __DIR__ . '/../inc.php';
+require_once __DIR__ . '/upgradelib.php';
 
 // called when installing a plugin
 function xmldb_block_exacomp_install() {
     block_exacomp_disable_core_competency(); // disable Moodle Competencies module
     block_exacomp_update_evaluation_niveau_tables('G,M,E,Z'); // default: G,M,E,Z
     block_exacomp_check_profile_fields();
+    block_exacomp_seed_assessment_configurations();
 }
