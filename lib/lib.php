@@ -174,18 +174,54 @@ const BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT_BUT_USED = 3;
 
 
 /**
- * get the assessemnt preconfigurations from the xml, but only load it once (global)
+ * Returns all assessment preconfigurations from the DB table.
  *
- * @return array
+ * @return array keyed by row id, with name and all assessment settings in each entry
  */
 function block_exacomp_get_assessment_configurations() {
     global $DB, $block_exacomp_assessment_configurations;
 
     if (!empty($block_exacomp_assessment_configurations)) {
         return $block_exacomp_assessment_configurations;
-    } else {
-        $block_exacomp_assessment_configurations = block_exacomp_read_preconfigurations_xml();
     }
+
+    // Mapping from snake_case (database) to camelCase (for backward compatibility)
+    $fieldMapping = [
+        'assessment_example_diff_level' => 'assessment_example_diffLevel',
+        'assessment_example_self_eval' => 'assessment_example_SelfEval',
+        'assessment_childcomp_diff_level' => 'assessment_childcomp_diffLevel',
+        'assessment_childcomp_self_eval' => 'assessment_childcomp_SelfEval',
+        'assessment_comp_diff_level' => 'assessment_comp_diffLevel',
+        'assessment_comp_self_eval' => 'assessment_comp_SelfEval',
+        'assessment_topic_diff_level' => 'assessment_topic_diffLevel',
+        'assessment_topic_self_eval' => 'assessment_topic_SelfEval',
+        'assessment_subject_diff_level' => 'assessment_subject_diffLevel',
+        'assessment_subject_self_eval' => 'assessment_subject_SelfEval',
+        'assessment_theme_diff_level' => 'assessment_theme_diffLevel',
+        'assessment_theme_self_eval' => 'assessment_theme_SelfEval',
+        'assessment_diff_level_options' => 'assessment_diffLevel_options',
+    ];
+
+    $rows = $DB->get_records('block_exacomp_assessment_cfgs', null, 'sortorder ASC, id ASC');
+    $result = [];
+
+    foreach ($rows as $row) {
+        $entry = (array)$row;
+        $id = $entry['id'];
+        unset($entry['id']);
+        unset($entry['sortorder']);
+
+        // Apply field name mapping
+        $mappedEntry = [];
+        foreach ($entry as $key => $value) {
+            $newKey = $fieldMapping[$key] ?? $key; // Use mapped key or keep original
+            $mappedEntry[$newKey] = $value;
+        }
+
+        $result[$id] = $mappedEntry;
+    }
+
+    $block_exacomp_assessment_configurations = $result;
     return $block_exacomp_assessment_configurations;
 }
 
@@ -13523,34 +13559,12 @@ function block_exacomp_update_evaluation_niveau_tables($data = '', $option_type 
  * @return array
  */
 function block_exacomp_read_preconfigurations_xml() {
-    global $CFG;
-    $xmlresult = array();
-    $path = $CFG->dirroot . '/blocks/exacomp/';
-    $namexml = $path . 'settings_preconfiguration.xml';
-    $xmlcontent = file_get_contents($namexml);
-    $xmlarray = (array)simplexml_load_string($xmlcontent);
-    if ($xmlarray && is_array($xmlarray) && $xmlarray['configOption']) {
-        if (!is_array($xmlarray['configOption'])) {
-            $configs = array($xmlarray['configOption']);
-        } else {
-            $configs = $xmlarray['configOption'];
-        }
-        foreach ($configs as $config) {
-            $data = (array)$config;
-            if ($data['@attributes']['id'] > 0) {
-                $key = $data['@attributes']['id'];
-            } else {
-                $key = max(array_keys($xmlresult)) + 1;
-            }
-            unset($data['@attributes']);
-            $xmlresult[$key] = $data;
-        }
-    }
-    return $xmlresult;
+    // Keep the legacy function name so older call sites transparently use the DB-backed data.
+    return block_exacomp_get_assessment_configurations();
 }
 
 function block_exacomp_get_preconfigparameters_list() {
-    $xmlpreconfig = block_exacomp_read_preconfigurations_xml();
+    $xmlpreconfig = block_exacomp_get_assessment_configurations();
     $preconfigparameters = array();
     foreach ($xmlpreconfig as $id => $config) {
         unset($config['name']);

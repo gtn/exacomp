@@ -4385,6 +4385,54 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2025102902, 'exacomp');
     }
 
+    if ($oldversion < 2026062501) {
+        $table = new xmldb_table('block_exacomp_assessment_cfgs');
+
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('sortorder', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
+        $table->add_field('assessment_example_scheme', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_example_diff_level', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_example_self_eval', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_childcomp_scheme', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_childcomp_diff_level', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_childcomp_self_eval', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_comp_scheme', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_comp_diff_level', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_comp_self_eval', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_topic_scheme', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_topic_diff_level', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_topic_self_eval', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_subject_scheme', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_subject_diff_level', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_subject_self_eval', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_theme_scheme', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_theme_diff_level', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_theme_self_eval', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        $table->add_field('assessment_points_limit', XMLDB_TYPE_INTEGER, '10', null, null, null, 10);
+        $table->add_field('assessment_points_negativ', XMLDB_TYPE_INTEGER, '10', null, null, null, 4);
+        $table->add_field('assessment_grade_limit', XMLDB_TYPE_INTEGER, '10', null, null, null, 6);
+        $table->add_field('assessment_grade_negativ', XMLDB_TYPE_INTEGER, '10', null, null, null, 5);
+        $table->add_field('assessment_grade_verbose', XMLDB_TYPE_CHAR, '1333', null, null, null, '');
+        $table->add_field('assessment_diff_level_options', XMLDB_TYPE_CHAR, '255', null, null, null, '');
+        $table->add_field('assessment_verbose_options', XMLDB_TYPE_CHAR, '1333', null, null, null, '');
+        $table->add_field('assessment_verbose_negative', XMLDB_TYPE_INTEGER, '10', null, null, null, 0);
+        $table->add_field('assessment_verbose_options_short', XMLDB_TYPE_CHAR, '255', null, null, null, '');
+        $table->add_field('assessment_verbose_lowerisbetter', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        require_once(__DIR__ . '/upgradelib.php');
+        block_exacomp_seed_assessment_configurations();
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2026062501, 'exacomp');
+    }
+
 
     /*
      * insert new upgrade scripts before this comment section

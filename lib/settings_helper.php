@@ -415,7 +415,7 @@ class block_exacomp_admin_setting_preconfiguration extends admin_setting_configs
 
     public function load_choices() {
         $choices = array('0' => block_exacomp_get_string('settings_admin_preconfiguration_none'));
-        $xmlarray = block_exacomp_read_preconfigurations_xml();
+        $xmlarray = block_exacomp_get_assessment_configurations();
         if ($xmlarray && is_array($xmlarray)) {
             foreach ($xmlarray as $key => $config) {
                 $choices[$key] = $config['name'];
@@ -439,12 +439,19 @@ class block_exacomp_admin_setting_preconfiguration extends admin_setting_configs
             $e->setAttribute('onChange', $e->getAttribute('onChange') . '; if (typeof reloadVerboseNegativeSelectbox === "function") {reloadVerboseNegativeSelectbox();};');
         }
         $output = $doc->saveHTML($doc->documentElement);
-        // Add JS code, generated from settings_preconfiguration.xml.
+        // Add a direct admin link so configurations can be maintained without editing files on disk.
+        $manageurl = new moodle_url('/blocks/exacomp/admin/assessment_preconfig.php');
+        $output .= html_writer::div(
+            html_writer::link($manageurl, get_string('manage_assessment_configurations', 'block_exacomp'),
+                array('class' => 'btn btn-sm btn-secondary')),
+            'mt-1 mb-1'
+        );
+        // Build the live JS payload from DB rows so the settings form stays in sync with saved templates.
         $output .= '<script>';
-        $xmlarray = block_exacomp_read_preconfigurations_xml();
+        $xmlarray = block_exacomp_get_assessment_configurations();
 
         if ($xmlarray && is_array($xmlarray)) {
-            // Get all parameters from XML. XML can has different sets of parameters
+            // Collect all known settings so every JS payload has the same keys.
             $configparameters = array();
             foreach ($xmlarray as $id => $config) {
                 unset($config['name']);
