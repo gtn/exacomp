@@ -1,4 +1,4 @@
-### (2026062400) ###
+### v5.1 (2026062400) ###
 * Moodle 5.2 compatibility: badges award API refactored to use `\core_badges\award_manager::process_manual_award()` with fallback for older Moodle versions (MDL-83902)
 * ePortfolio item-category relation migrated to m:n table (`block_exaportitemcate`): deprecated `categoryid` field removed from insert calls in `externallib.php`, `example_submission.php`, and learning diary webservices
 * ePortfolio shared items in competence grid now shown as clickable links (direct link to shared item or portfolio view)
@@ -6,7 +6,7 @@
 * Renderer: replaced deprecated `pix_icon`-based folder icons with Font Awesome icons (`fa-folder`)
 * CSS: added styles for `.eportitem-shared-link` inside tooltips
 
-### (2026040300) ###
+### v5.1 (2026040300) ###
 * new settings-preconfiguration 'Mix assessment'
 * missing exacomp navigation fixed
 * language string translated to french
