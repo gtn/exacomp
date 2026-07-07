@@ -2803,7 +2803,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                         // Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
                         // the warning contains the name of the reviewer
-                        if (!array_key_exists($reviewerid, $this->reviewers)) {
+                        if (!array_key_exists($reviewerid ?? '', $this->reviewers)) {
                             $reviewerTeacherFirstname = $DB->get_field('user', 'firstname', array('id' => $reviewerid));
                             $reviewerTeacherLastname = $DB->get_field('user', 'lastname', array('id' => $reviewerid));
                             if ($reviewerTeacherFirstname != null && $reviewerTeacherLastname != null) {
@@ -2812,9 +2812,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 $reviewerTeacherUsername = $DB->get_field('user', 'username', array('id' => $reviewerid));
                                 $reviewername = $reviewerTeacherUsername;
                             }
-                            $this->reviewers[$reviewerid] = $reviewername;
+                            $this->reviewers[$reviewerid ?? ''] = $reviewername;
                         } else {
-                            $reviewername = $this->reviewers[$reviewerid];
+                            $reviewername = $this->reviewers[$reviewerid ?? ''];
                         }
                         $params = array('name' => 'add-grading-' . $student->id . '-' . $descriptor->id, 'type' => 'text',
                             'maxlength' => 3, 'class' => 'percent-rating-text',
@@ -4733,7 +4733,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         //Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
         //the warning contains the name of the reviewer
-        if (!array_key_exists($reviewerid, $this->reviewers)) {
+        if (!array_key_exists($reviewerid ?? '', $this->reviewers)) {
             $reviewerTeacherFirstname = $DB->get_field('user', 'firstname', array('id' => $reviewerid));
             $reviewerTeacherLastname = $DB->get_field('user', 'lastname', array('id' => $reviewerid));
             if ($reviewerTeacherFirstname != null && $reviewerTeacherLastname != null) {
@@ -4742,9 +4742,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $reviewerTeacherUsername = $DB->get_field('user', 'username', array('id' => $reviewerid));
                 $reviewername = $reviewerTeacherUsername;
             }
-            $this->reviewers[$reviewerid] = $reviewername;
+            $this->reviewers[$reviewerid ?? ''] = $reviewername;
         } else {
-            $reviewername = $this->reviewers[$reviewerid];
+            $reviewername = $this->reviewers[$reviewerid ?? ''];
         }
 
         // TODO: diese $scheme brauchen wir nicht mehr? einfach $options = $scheme_values?
@@ -4795,7 +4795,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         //Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
         //the warning contains the name of the reviewer
-        if (!array_key_exists($reviewerid, $this->reviewers)) {
+        if (!array_key_exists($reviewerid ?? '', $this->reviewers)) {
             $reviewerTeacherFirstname = $DB->get_field('user', 'firstname', array('id' => $reviewerid));
             $reviewerTeacherLastname = $DB->get_field('user', 'lastname', array('id' => $reviewerid));
             if ($reviewerTeacherFirstname != null && $reviewerTeacherLastname != null) {
@@ -4804,9 +4804,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $reviewerTeacherUsername = $DB->get_field('user', 'username', array('id' => $reviewerid));
                 $reviewername = $reviewerTeacherUsername;
             }
-            $this->reviewers[$reviewerid] = $reviewername;
+            $this->reviewers[$reviewerid ?? ''] = $reviewername;
         } else {
-            $reviewername = $this->reviewers[$reviewerid];
+            $reviewername = $this->reviewers[$reviewerid ?? ''];
         }
 
         if ($this->useEvalNiveau) {
