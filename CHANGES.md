@@ -1,3 +1,7 @@
+### v5.1 (2026070800) ###
+* Migrate assessment preconfigurations from XML to DB. Allow editing and adding of assessment preconfigurations in the settings page.
+* PHP 8.1 deprecation fixes
+
 ### v5.1 (2026062400) ###
 * Moodle 5.2 compatibility: badges award API refactored to use `\core_badges\award_manager::process_manual_award()` with fallback for older Moodle versions (MDL-83902)
 * ePortfolio item-category relation migrated to m:n table (`block_exaportitemcate`): deprecated `categoryid` field removed from insert calls in `externallib.php`, `example_submission.php`, and learning diary webservices
