@@ -22,6 +22,11 @@
  * Why this external page at all? https://moodledev.io/docs/5.0/apis/subsystems/admin?#when-to-use-an-admin_settings-vs-admin_externalpages
  * "when the settings you are changing are in a custom table and not in the config tables via set_config"
  *
+ * Why NOT admin_externalpage_setup() here?
+ * That function looks up the page name in the admin tree, which is only built when the full
+ * settings.php has been evaluated. Registering the page under 'blocksettings' would make it
+ * visible as a standalone nav item, which we don't want. Instead we do manual access control:
+ * require login, require the site-config capability, and set up the page ourselves.
  */
 
 require_once __DIR__ . '/../../../config.php';
@@ -31,11 +36,14 @@ require_once __DIR__ . '/../inc.php';
 $context = context_system::instance();
 $pageurl = new moodle_url('/blocks/exacomp/admin/assessment_preconfig.php');
 
-admin_externalpage_setup('block_exacomp_assessment_preconfigs');
+// Manual access control — equivalent to what admin_externalpage_setup() would enforce,
+// but without requiring the page to be registered in the visible admin navigation tree.
+require_login();
 require_capability('moodle/site:config', $context);
 
 $PAGE->set_context($context);
 $PAGE->set_url($pageurl);
+$PAGE->set_pagelayout('admin');
 $PAGE->set_heading(get_string('manage_assessment_configurations', 'block_exacomp'));
 $PAGE->set_title(get_string('manage_assessment_configurations', 'block_exacomp'));
 
