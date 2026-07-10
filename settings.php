@@ -22,12 +22,10 @@ defined('MOODLE_INTERNAL') || die;
 require_once __DIR__ . '/inc.php';
 require_once __DIR__ . '/lib/settings_helper.php';
 
-$ADMIN->add('blocksettings', new admin_externalpage(
-    'block_exacomp_assessment_preconfigs',
-    get_string('manage_assessment_configurations', 'block_exacomp'),
-    new moodle_url('/blocks/exacomp/admin/assessment_preconfig.php'),
-    'moodle/site:config'
-));
+// Note: block_exacomp_assessment_preconfigs is NOT registered as an admin_externalpage here.
+// It is only accessible via the "Manage assessment configurations" button inside the settings page
+// (rendered by block_exacomp_admin_setting_preconfiguration::output_html in lib/settings_helper.php).
+// Adding it to $ADMIN->add('blocksettings', ...) would expose it as a standalone nav item outside settings.
 
 // Generate id if not set.
 block_exacomp\data::generate_my_source();
