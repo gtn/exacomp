@@ -977,3 +977,4 @@ $string['delete_grids_missing_from_xmlserverurl'] = 'Delete data during synchron
 $string['delete_grids_missing_from_xmlserverurl_description'] = 'All grids that no longer exist in Komet (xmlserverurl) will be deleted unless they are already in use.';
 $string['no_examples_in_this_grid'] = 'There are no examples in this grid';
 $string['source_delete_info'] = 'Data imported from <strong>"{$a}"</strong> to delete, ';
+$string['manage_assessment_configurations'] = 'Manage assessment configurations';

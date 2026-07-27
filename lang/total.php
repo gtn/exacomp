@@ -3675,4 +3675,8 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Zu löschende Daten, die von <strong>"{$a}"</strong> importiert wurden, ',
         'Data imported from <strong>"{$a}"</strong> to delete, ',
     ],
+    'manage_assessment_configurations' => [
+        'Bewertungskonfigurationen verwalten',
+        'Manage assessment configurations',
+    ],
 ];

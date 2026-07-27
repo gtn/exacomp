@@ -987,3 +987,4 @@ $string['delete_grids_missing_from_xmlserverurl'] = 'Supprimer les données lors
 $string['delete_grids_missing_from_xmlserverurl_description'] = 'Toutes les grilles qui ne sont pas présentes dans Komet (xmlserverurl) seront supprimées, sauf si elles sont déjà en cours d\'utilisation.';
 $string['no_examples_in_this_grid'] = 'Il n\'y a pas de matériels pédagogiques dans cette grille';
 $string['source_delete_info'] = 'Données à supprimer, importées depuis <strong>"{$a}"</strong>, ';
+$string['manage_assessment_configurations'] = 'Gérer les configurations d'évaluation';
