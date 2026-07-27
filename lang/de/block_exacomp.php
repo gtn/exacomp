@@ -987,3 +987,4 @@ $string['delete_grids_missing_from_xmlserverurl'] = 'Daten bei Synchronisation m
 $string['delete_grids_missing_from_xmlserverurl_description'] = 'Alle Raster, die in Komet (xmlserverurl) nicht vorhanden sind, werden gelöscht, es sei denn, sie sind bereits in Verwendung.';
 $string['no_examples_in_this_grid'] = 'In diesem Raster gibt es keine Lernmaterialien';
 $string['source_delete_info'] = 'Zu löschende Daten, die von <strong>"{$a}"</strong> importiert wurden, ';
+$string['manage_assessment_configurations'] = 'Bewertungskonfigurationen verwalten';
