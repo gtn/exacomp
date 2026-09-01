@@ -22,17 +22,6 @@ defined('MOODLE_INTERNAL') || die;
 require_once __DIR__ . '/inc.php';
 require_once __DIR__ . '/lib/settings_helper.php';
 
-// Register the external page as a hidden child of this plugin's settings node.
-// It must be registered so admin_externalpage_setup() in assessment_preconfig.php works,
-// but nesting it under the plugin node (not 'blocksettings') prevents it from appearing
-// as a standalone item in the top-level admin navigation.
-$ADMIN->add('block_exacomp', new admin_externalpage(
-    'block_exacomp_assessment_preconfigs',
-    get_string('manage_assessment_configurations', 'block_exacomp'),
-    new moodle_url('/blocks/exacomp/admin/assessment_preconfig.php'),
-    'moodle/site:config'
-));
-
 // Generate id if not set.
 block_exacomp\data::generate_my_source();
 
