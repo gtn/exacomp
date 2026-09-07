@@ -178,7 +178,7 @@ class db_layer {
             'topic' => $parent->topicid,
         ), $this);
 
-        return $descriptors;
+        return block_exacomp_sort_items($descriptors, BLOCK_EXACOMP_DB_DESCRIPTORS);
     }
 
     /**
