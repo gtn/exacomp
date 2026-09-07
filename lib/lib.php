@@ -9319,15 +9319,16 @@ function block_exacomp_example_order($exampleid, $descrid, $operator = "<") {
 }
 
 /**
- * Change the order of a custom child descriptor among its custom siblings.
+ * Change the order of a custom descriptor among its eligible siblings.
  *
  * @param int $descriptorid
  * @param string $direction
  * @param int $courseid
+ * @param int $topicid
  * @return bool
  * @throws block_exacomp_permission_exception
  */
-function block_exacomp_descriptor_order($descriptorid, $direction, $courseid) {
+function block_exacomp_descriptor_order($descriptorid, $direction, $courseid, $topicid) {
     global $DB;
 
     if (!in_array($direction, ['up', 'down'], true)) {
@@ -9335,7 +9336,7 @@ function block_exacomp_descriptor_order($descriptorid, $direction, $courseid) {
     }
 
     $descriptor = \block_exacomp\descriptor::get($descriptorid, null, MUST_EXIST);
-    if (!$descriptor->parentid || $descriptor->source != BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR) {
+    if ($descriptor->source != BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR) {
         throw new block_exacomp_permission_exception();
     }
     if (!block_exacomp_is_editingteacher($courseid)) {
@@ -9347,10 +9348,30 @@ function block_exacomp_descriptor_order($descriptorid, $direction, $courseid) {
     }
 
     $transaction = $DB->start_delegated_transaction();
-    $siblings = array_values($DB->get_records(BLOCK_EXACOMP_DB_DESCRIPTORS, [
-        'parentid' => $descriptor->parentid,
-        'source' => BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR,
-    ]));
+    if ($descriptor->parentid) {
+        $siblings = array_values($DB->get_records(BLOCK_EXACOMP_DB_DESCRIPTORS, [
+            'parentid' => $descriptor->parentid,
+            'source' => BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR,
+        ]));
+    } else {
+        if (!$DB->record_exists(BLOCK_EXACOMP_DB_DESCTOPICS, [
+            'descrid' => $descriptor->id,
+            'topicid' => $topicid,
+        ])) {
+            throw new block_exacomp_permission_exception('No topic descriptor');
+        }
+
+        $sql = 'SELECT DISTINCT d.*
+                  FROM {' . BLOCK_EXACOMP_DB_DESCRIPTORS . '} d
+                  JOIN {' . BLOCK_EXACOMP_DB_DESCTOPICS . '} dt ON dt.descrid = d.id
+                 WHERE d.parentid = 0
+                   AND d.source = ?
+                   AND dt.topicid = ?';
+        $siblings = array_values($DB->get_records_sql($sql, [
+            BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR,
+            $topicid,
+        ]));
+    }
     usort($siblings, function($a, $b) {
         if ($a->sorting < $b->sorting) {
             return -1;

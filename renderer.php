@@ -2647,11 +2647,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             array("onclick" => "if (confirm(" . json_encode(block_exacomp_get_string('delete_confirmation_descr', null, $descriptor->title)) . ")) block_exacomp.delete_descriptor(" . $descriptor->id . "); return false;"));
                     }
                     if ($editmode && $isEditingTeacher && $data->role == BLOCK_EXACOMP_ROLE_TEACHER
-                        && $descriptor->parentid > 0 && $descriptor->source == BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR) {
+                        && $descriptor->source == BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR) {
                         $titleCell->text .= html_writer::link('#', $this->pix_icon('t/up', block_exacomp_get_string('move_up')),
-                            array('exa-type' => 'descriptor-sorting', 'exa-direction' => 'up', 'exa-descriptorid' => $descriptor->id));
+                            array('exa-type' => 'descriptor-sorting', 'exa-direction' => 'up', 'exa-descriptorid' => $descriptor->id, 'exa-topicid' => $descriptor->topicid));
                         $titleCell->text .= html_writer::link('#', $this->pix_icon('t/down', block_exacomp_get_string('move_down')),
-                            array('exa-type' => 'descriptor-sorting', 'exa-direction' => 'down', 'exa-descriptorid' => $descriptor->id));
+                            array('exa-type' => 'descriptor-sorting', 'exa-direction' => 'down', 'exa-descriptorid' => $descriptor->id, 'exa-topicid' => $descriptor->topicid));
                     }
                 }
                 /*if ($editmode) {
