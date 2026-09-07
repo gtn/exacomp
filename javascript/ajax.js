@@ -1051,6 +1051,7 @@
       action: 'descriptor-sorting',
       direction: this.getAttribute('exa-direction'),
       descriptorid: this.getAttribute('exa-descriptorid'),
+      topicid: this.getAttribute('exa-topicid'),
     }).done(function () {
       location.reload();
     });
