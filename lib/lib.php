@@ -9319,6 +9319,68 @@ function block_exacomp_example_order($exampleid, $descrid, $operator = "<") {
 }
 
 /**
+ * Change the order of a custom child descriptor among its custom siblings.
+ *
+ * @param int $descriptorid
+ * @param string $direction
+ * @param int $courseid
+ * @return bool
+ * @throws block_exacomp_permission_exception
+ */
+function block_exacomp_descriptor_order($descriptorid, $direction, $courseid) {
+    global $DB;
+
+    if (!in_array($direction, ['up', 'down'], true)) {
+        throw new \moodle_exception('invalidparameter', 'block_exacomp');
+    }
+
+    $descriptor = \block_exacomp\descriptor::get($descriptorid, null, MUST_EXIST);
+    if (!$descriptor->parentid || $descriptor->source != BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR) {
+        throw new block_exacomp_permission_exception();
+    }
+    if (!block_exacomp_is_editingteacher($courseid)) {
+        throw new block_exacomp_permission_exception('User is no editing teacher');
+    }
+    block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_MODIFY, $descriptor);
+    if (!in_array($courseid, block_exacomp_get_courseids_by_descriptor($descriptor->id))) {
+        throw new block_exacomp_permission_exception('No course descriptor');
+    }
+
+    $transaction = $DB->start_delegated_transaction();
+    $siblings = array_values($DB->get_records(BLOCK_EXACOMP_DB_DESCRIPTORS, [
+        'parentid' => $descriptor->parentid,
+        'source' => BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR,
+    ]));
+    usort($siblings, function($a, $b) {
+        if ($a->sorting < $b->sorting) {
+            return -1;
+        }
+        if ($a->sorting > $b->sorting) {
+            return 1;
+        }
+        $titlecomparison = strcmp($a->title, $b->title);
+        return $titlecomparison ?: ($a->id <=> $b->id);
+    });
+
+    $index = array_search($descriptor->id, array_column($siblings, 'id'));
+    $adjacentindex = $index + ($direction === 'up' ? -1 : 1);
+    if ($index === false || !isset($siblings[$adjacentindex])) {
+        $transaction->allow_commit();
+        return false;
+    }
+
+    $adjacent = $siblings[$adjacentindex];
+    $selectedsorting = $siblings[$index]->sorting;
+    $siblings[$index]->sorting = $adjacent->sorting;
+    $adjacent->sorting = $selectedsorting;
+    $DB->update_record(BLOCK_EXACOMP_DB_DESCRIPTORS, $siblings[$index]);
+    $DB->update_record(BLOCK_EXACOMP_DB_DESCRIPTORS, $adjacent);
+    $transaction->allow_commit();
+
+    return true;
+}
+
+/**
  * remove examples from pre-planning storage
  *
  * @param unknown $courseid
