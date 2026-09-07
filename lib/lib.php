@@ -12135,6 +12135,15 @@ function block_exacomp_check_competence_data_is_gained($competence_data, $course
         return $value >= 1;
     }
 
+    if ($scheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO) {
+        // block_exacomp_value_is_negative_by_assessment() has a known, pre-existing bug for
+        // BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO (it always returns "negative" for the whole 0/1
+        // value range, see the "TODO: is this ok condition?" comment there), so it cannot be
+        // used to determine "gained" for this scheme; the yes/no scale itself is unambiguous:
+        // 1 = yes (gained), 0 = no (not gained)
+        return $value >= 1;
+    }
+
     return !block_exacomp_value_is_negative_by_assessment($value, $comptype, true, $courseid);
 }
 
