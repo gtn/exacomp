@@ -7436,6 +7436,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		new Chart(ctx).Line(timelinedata, {
 				responsive: false, // can\'t be responsive, because Graph.js 1.0.2 does not work with hidden divs
+			scaleBeginAtZero: true, // Keep the cumulative-count axis anchored at zero, even when all values are positive.
 			bezierCurve : false
 		});
 
