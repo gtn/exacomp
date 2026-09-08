@@ -12078,10 +12078,10 @@ function block_exacomp_search_competence_grid_as_example_list($courseid, $q) {
  *   the teacher-only "additionalinfo" field) for a student evaluation is incorrect and was the
  *   root cause of wrong counts in mixed assessment configurations (e.g. "Mix assessment").
  *
- * NULL (not yet evaluated) never counts as gained. Note that block_exacomp_set_comp_eval()
- * already normalizes "0" (and negative values) for both teacher and student evaluations to NULL
- * before saving, so a stored/loaded value of 0 cannot occur here for non-example competence data;
- * it is treated identically to NULL for robustness.
+ * NULL (not yet evaluated) never counts as gained. Student values of "0" (and negative values)
+ * are normalized to NULL by block_exacomp_set_comp_eval(); teacher values of "0" may remain
+ * stored because zero is a valid lowest teacher value for some schemes. In either case, zero
+ * must not count as gained.
  *
  * @param \block_exacomp\comp_eval|\stdClass $competence_data must provide value, additionalinfo,
  *      role and (except for old cached/legacy callers) comptype

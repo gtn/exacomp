@@ -181,7 +181,7 @@ class block_exacomp_comp_eval_gained_testcase extends advanced_testcase {
 
         $courseid = $this->course->id;
 
-        // 0 (fail) and NULL (not evaluated) both must not be "gained"
+        // A zero teacher value is not gained, whether it is stored directly or represented as NULL.
         $this->assertFalse(block_exacomp_check_competence_data_is_gained(
             $this->make_eval(BLOCK_EXACOMP_ROLE_TEACHER, BLOCK_EXACOMP_TYPE_DESCRIPTOR, 0), $courseid));
         $this->assertFalse(block_exacomp_check_competence_data_is_gained(
@@ -205,7 +205,7 @@ class block_exacomp_comp_eval_gained_testcase extends advanced_testcase {
         $student = $this->getDataGenerator()->create_user();
 
         $descriptorids = [9001, 9002, 9003];
-        $teachervalues = [0, 1, 2]; // as in the bug report
+        $teachervalues = [0, 1, 2]; // zero remains a stored teacher value; negative values are cleared
         $studentvalues = [1, 2, 3]; // shifted by one compared to the (0-based) bug report example,
         // because the real value domain used by get_student_eval_items() is 1-based (0/NULL = not evaluated)
 
