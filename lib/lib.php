@@ -5845,6 +5845,86 @@ function block_exacomp_init_profile($courses, $userid) {
 }
 
 /**
+ * builds the competence profile reports (one course tab per exacomp-course, one per visible crosssubject,
+ * plus the "transferable skills"/global report) for one or several students at once.
+ *
+ * used by competence_profile.php for both the normal (tabbed) view and the print view, so that a single
+ * student and "all students" go through the exact same report-building code: competence_profile_course()
+ * itself is responsible for rendering one graph/table per student within each report part.
+ *
+ * @param block_exacomp_renderer $output
+ * @param array $students students to build the report(s) for, keyed by studentid
+ * @param bool $withoutHeaders whether competence_profile_course() should omit its own course/crosssubject headings
+ *                              (true when the caller already shows the title, e.g. as a tab)
+ * @return array list of ['id' => string, 'title' => string, 'content' => string]
+ */
+function block_exacomp_get_competence_profile_reports($output, array $students, bool $withoutHeaders) {
+    // every student can potentially have a different set of exacomp-enabled courses they are enrolled in,
+    // so we collect them per student and only feed a course's report the students actually enrolled in it
+    $studentCourses = []; // studentid => [courseid => course]
+    $allCourses = []; // courseid => course (union over all students)
+    foreach ($students as $student) {
+        $possible_courses = block_exacomp_get_exacomp_courses($student);
+        block_exacomp_init_profile($possible_courses, $student->id);
+        $studentCourses[$student->id] = $possible_courses;
+        foreach ($possible_courses as $course) {
+            $allCourses[$course->id] = $course;
+        }
+    }
+
+    $reports = [];
+
+    // one tab per course
+    foreach ($allCourses as $course) {
+        $courseStudents = array_filter($students, function($student) use ($studentCourses, $course) {
+            return array_key_exists($course->id, $studentCourses[$student->id]);
+        });
+        if (!$courseStudents) {
+            continue;
+        }
+        $cont = $output->competence_profile_course($course, $courseStudents, true, block_exacomp_get_grading_scheme($course->id), false, null, $withoutHeaders);
+        if ($cont) {
+            $reports[] = ['id' => 'course_' . $course->id, 'title' => $course->fullname, 'content' => $cont];
+        }
+    }
+
+    // one tab per crosssubject, only for the students that actually have access to it
+    // (crosssubject visibility can be shared, or student-specific)
+    $crosssubjects = []; // crosssubjid => crosssubj
+    $crosssubjectStudents = []; // crosssubjid => [studentid => student]
+    foreach ($allCourses as $course) {
+        foreach ($students as $student) {
+            if (!array_key_exists($course->id, $studentCourses[$student->id])) {
+                continue;
+            }
+            foreach (block_exacomp_get_cross_subjects_by_course($course->id, $student->id) as $crosssubj) {
+                $crosssubjects[$crosssubj->id] = $crosssubj;
+                $crosssubjectStudents[$crosssubj->id][$student->id] = $student;
+            }
+        }
+    }
+    foreach ($crosssubjects as $crosssubj) {
+        $cont = $output->competence_profile_course(-1, $crosssubjectStudents[$crosssubj->id], true,
+            block_exacomp_get_grading_scheme($crosssubj->id), false, $crosssubj, $withoutHeaders);
+        if ($cont) {
+            $reports[] = ['id' => 'crossubject_' . $crosssubj->id, 'title' => $crosssubj->title, 'content' => $cont];
+        }
+    }
+
+    // "Überfachliche Kompetenzen" / transferable skills (global report), combining data gathered above
+    // across all of a student's courses; which course object is passed in only matters for its grading scheme
+    if ($allCourses) {
+        $course = end($allCourses);
+        $cont = $output->competence_profile_course($course, $students, true, block_exacomp_get_grading_scheme($course->id), true, null, $withoutHeaders);
+        if ($cont) {
+            $reports[] = ['id' => 'global', 'title' => block_exacomp_get_string('transferable_skills'), 'content' => $cont];
+        }
+    }
+
+    return $reports;
+}
+
+/**
  * create tipp for competence overview
  *
  * @param unknown $compid

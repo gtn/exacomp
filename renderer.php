@@ -6266,47 +6266,66 @@ class block_exacomp_renderer extends plugin_renderer_base {
     //    }
 
     // prints e.g. the statistics in the competence profile... NOT able to handle generic grading schemes yet
+    /**
+     * @param $student stdClass|array a single student, or (for the "all students" case) an array of students,
+     *                                keyed by studentid. The four/five report parts (grid, radar, statistics,
+     *                                comparison, chronological) are each rendered once, with one graph/table per
+     *                                student inside them (preceded by the student's name when there is more than one).
+     */
     function competence_profile_course($course, $student, $showall = true, $max_scheme = 3, $forGlobalReport = false, $crosssubj = null, $withoutHeaders = false) {
         global $CFG;
-        static $allStats = null;
+        static $allStats = [];
         $content = '';
 
-        if ($allStats === null || ($course instanceof stdClass) && !array_key_exists($course->id, $allStats)) {
-            // keys: course->id | subject->id ==> niveau->id (assessment_diffLevel_options)  | grade options
-            $allStats[$course->id] = [];
-        }
+        $students = is_array($student) ? $student : [$student->id => $student];
+        $multi = count($students) > 1;
+        $student_heading = function($student) use ($multi) {
+            return $multi ? html_writer::tag('h5', fullname($student), array('class' => 'competence_profile_studentname')) : '';
+        };
 
         if ($forGlobalReport) { // GLOBAL REPORT
             // Grid view
-            $subjectGenericData = $this->competence_profile_grid(null, null, $student->id, $max_scheme);
-            $newSubjectData = block_exacomp_new_subject_data_for_competence_profile($subjectGenericData, $course->id);
-            if (count($newSubjectData)) {
-                $innersection = html_writer::tag('legend', block_exacomp_get_string('innersection1'),
-                    array('class' => 'competence_profile_insectitle'));
-                foreach ($newSubjectData as $sId => $subjectData) {
-                    $innersection .= html_writer::tag('div',
-                        html_writer::tag("h4", $subjectData->subject_title, array("class" => "")) .
-                        $this->competence_profile_grid(null, null, $student->id, $max_scheme,
-                            array($subjectGenericData[$sId]['table_column'], $subjectGenericData[$sId]['table_header'],
-                                $subjectData)),
-                        array('class' => 'container', 'id' => 'charts'));
+            $gridInner = '';
+            $anyGrid = false;
+            foreach ($students as $student) {
+                $subjectGenericData = $this->competence_profile_grid(null, null, $student->id, $max_scheme);
+                $newSubjectData = block_exacomp_new_subject_data_for_competence_profile($subjectGenericData, $course->id);
+                if (count($newSubjectData)) {
+                    $anyGrid = true;
+                    $gridInner .= $student_heading($student);
+                    foreach ($newSubjectData as $sId => $subjectData) {
+                        $gridInner .= html_writer::tag('div',
+                            html_writer::tag("h4", $subjectData->subject_title, array("class" => "")) .
+                            $this->competence_profile_grid(null, null, $student->id, $max_scheme,
+                                array($subjectGenericData[$sId]['table_column'], $subjectGenericData[$sId]['table_header'],
+                                    $subjectData)),
+                            array('class' => 'container', 'id' => 'charts'));
+                    }
                 }
+            }
+            if ($anyGrid) {
+                $innersection = html_writer::tag('legend', block_exacomp_get_string('innersection1'),
+                    array('class' => 'competence_profile_insectitle')) . $gridInner;
                 $content .= html_writer::tag('fieldset', $innersection, array('id' => 'toclose', 'name' => 'toclose',
                     'class' => ' competence_profile_innersection exa-collapsible exa-collapsible-open'));
             }
-            //$content .= html_writer::tag('fieldset', $innersection, array('id' => 'toclose', 'name' => 'toclose',
-            //        'class' => ' competence_profile_innersection exa-collapsible exa-collapsible-open'));
 
             // Statistics
-            // calculate global sums
-            $allStats = array_filter($allStats);
-            if (count($allStats)) {
+            // calculate global sums, per student
+            $statsInner = '';
+            $anyStats = false;
+            foreach ($students as $student) {
+                $studentAllStats = array_filter($allStats[$student->id] ?? []);
+                if (!count($studentAllStats)) {
+                    continue;
+                }
+                $anyStats = true;
                 $sums = array(
                     'descriptor_evaluations' => [],
                     'child_evaluations' => [],
                     'example_evaluations' => [],
                 );
-                foreach ($allStats as $cid => $subjects) {
+                foreach ($studentAllStats as $cid => $subjects) {
                     foreach ($subjects as $sid => $sops) {
                         foreach ($sops['stats'] as $statLevel => $statValues) {
                             foreach ($statValues as $row => $cols) {
@@ -6330,8 +6349,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         block_exacomp_get_assessment_example_scheme($course->id));
                 }
 
-                $innersection = html_writer::tag('legend', block_exacomp_get_string('innersection2'),
-                    array('class' => 'competence_profile_insectitle'));
+                $statsInner .= $student_heading($student);
                 if ($this->is_print_mode()) {
                     $tempTable = new html_table();
                     $tempTable->attributes['class'] = 'statistictables';
@@ -6345,12 +6363,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         $row->cells[] = $cell;
                     }
                     $tempTable->data = array($row);
-                    $innersection .= '<br>' . html_writer::table($tempTable);
+                    $statsInner .= '<br>' . html_writer::table($tempTable);
                 } else {
-                    $innersection .= html_writer::tag('div', implode(' ', $tables),
+                    $statsInner .= html_writer::tag('div', implode(' ', $tables),
                         array('class' => 'statistictables', 'exa-subjectid' => '-1',
                             'exa-courseid' => $course->id));
                 }
+            }
+            if ($anyStats) {
+                $innersection = html_writer::tag('legend', block_exacomp_get_string('innersection2'),
+                    array('class' => 'competence_profile_insectitle')) . $statsInner;
                 $content .= html_writer::tag('fieldset', $innersection,
                     array('class' => ' competence_profile_innersection exa-collapsible'));
             }
@@ -6361,7 +6383,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $crosssubj,
                     true,
                     array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES),
-                    $student->id,
+                    0,
                     false);
             } else { //if course
                 $courseid = $course->id;
@@ -6389,37 +6411,43 @@ class block_exacomp_renderer extends plugin_renderer_base {
             }
 
             if ($crosssubj) {
-                $grading = block_exacomp_get_comp_eval($crosssubj->courseid, BLOCK_EXACOMP_ROLE_TEACHER, $student->id, BLOCK_EXACOMP_TYPE_CROSSSUB, $crosssubj->id);
-                if ($grading) {
-                    $addtext = '';
-                    switch (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_CROSSSUB, $crosssubj->courseid)) {
-                        case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
-                            if (\block_exacomp\db_layer::property_exists($grading, 'additionalinfo')) {
-                                $addtext = block_exacomp_format_eval_value($grading->additionalinfo);
-                            } else {
-                                $addtext = block_exacomp_format_eval_value(null);
-                            }
-                            break;
-                        case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
-                            $value = @$grading->value === null ? -1 : @$grading->value;
-                            $teacher_eval_items = global_config::get_teacher_eval_items(g::$COURSE->id, false, BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE);
-                            if (isset($teacher_eval_items[$value])) {
-                                $addtext = $teacher_eval_items[$value];
-                            }
-                            break;
-                        case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
-                            $addtext = block_exacomp_format_eval_value($grading->value);
-                            break;
-                        case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
-                            if ($grading->value > 0) {
-                                $addtext = 'X';
-                            }
-                            break;
+                foreach ($students as $student) {
+                    $grading = block_exacomp_get_comp_eval($crosssubj->courseid, BLOCK_EXACOMP_ROLE_TEACHER, $student->id, BLOCK_EXACOMP_TYPE_CROSSSUB, $crosssubj->id);
+                    if ($grading) {
+                        $addtext = '';
+                        switch (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_CROSSSUB, $crosssubj->courseid)) {
+                            case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+                                if (\block_exacomp\db_layer::property_exists($grading, 'additionalinfo')) {
+                                    $addtext = block_exacomp_format_eval_value($grading->additionalinfo);
+                                } else {
+                                    $addtext = block_exacomp_format_eval_value(null);
+                                }
+                                break;
+                            case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+                                $value = @$grading->value === null ? -1 : @$grading->value;
+                                $teacher_eval_items = global_config::get_teacher_eval_items(g::$COURSE->id, false, BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE);
+                                if (isset($teacher_eval_items[$value])) {
+                                    $addtext = $teacher_eval_items[$value];
+                                }
+                                break;
+                            case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+                                $addtext = block_exacomp_format_eval_value($grading->value);
+                                break;
+                            case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+                                if ($grading->value > 0) {
+                                    $addtext = 'X';
+                                }
+                                break;
+                        }
+                    } else {
+                        $addtext = ''; // TODO: right?
                     }
-                } else {
-                    $addtext = ''; // TODO: right?
+                    $title = block_exacomp_get_string("topicgrading") . $addtext;
+                    if ($multi) {
+                        $title = fullname($student) . ': ' . $title;
+                    }
+                    $content .= html_writer::tag("h2", $title, array("class" => "competence_profile_coursetitle"));
                 }
-                $content .= html_writer::tag("h2", block_exacomp_get_string("topicgrading") . $addtext, array("class" => "competence_profile_coursetitle"));
                 $content .= html_writer::tag("br", "");
             }
 
@@ -6427,11 +6455,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $content .= html_writer::tag("h4", $subject->title, array("class" => "competence_profile_coursetitle"));
 
                 // Grid view
+                $innersection = '';
+                foreach ($students as $student) {
+                    $innersection .= $student_heading($student);
+                    $innersection .= html_writer::tag('div',
+                        $this->competence_profile_grid($courseid, $subject, $student->id, $max_scheme, null, $crosssubj),
+                        array('class' => 'container', 'id' => 'charts'));
+                }
                 $innersection = html_writer::tag('legend', block_exacomp_get_string('innersection1'),
-                    array('class' => 'competence_profile_insectitle'));
-                $innersection .= html_writer::tag('div',
-                    $this->competence_profile_grid($courseid, $subject, $student->id, $max_scheme, null, $crosssubj),
-                    array('class' => 'container', 'id' => 'charts'));
+                    array('class' => 'competence_profile_insectitle')) . $innersection;
                 $content .= html_writer::tag('fieldset', $innersection, array('id' => 'toclose', 'name' => 'toclose',
                     'class' => ' competence_profile_innersection exa-collapsible exa-collapsible-open'));
                 if ($this->is_print_mode()) {
@@ -6440,35 +6472,39 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                 // radar graphs - before statistics?
                 if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid)) {
-                    $radar_graph_content = html_writer::tag('legend', block_exacomp_get_string('radargraphtitle'),
-                        array('class' => 'competence_profile_insectitle'));
-                    $topics = block_exacomp_get_topics_for_radar_graph($courseid, $student->id, \block_exacomp\db_layer::property_exists($subject, 'id') ? $subject->id : 0);
-                    if (count($topics) < 3 || count($topics) > 13) {
-                        //print error
-                        $img = html_writer::div(html_writer::tag("img", "", array("src" => $CFG->wwwroot . "/blocks/exacomp/pix/graph_notavailable.png")));
-                        $radar_graph_content .= html_writer::div($img . block_exacomp_get_string('radargrapherror'), 'competence_profile_grapherror');
-                    } else {
-                        if ($this->is_print_mode()) {
-                            $imgWidth = 700;
-                            $imgHeight = 350; // legend is in picture!
-                            $radarParams = [
-                                'courseid' => $course->id,
-                                'studentid' => $student->id,
-                                'subjectid' => $subject->id,
-                                'width' => $imgWidth,
-                                'height' => $imgHeight,
-                                'graphAction' => 'competenceProfileRadar',
-                            ];
-                            $elementSrc = new moodle_url('/blocks/exacomp/pix/dynamic/radar.php', $radarParams);
-                            $radarImage = html_writer::img($elementSrc, '',
-                                ['width' => $imgWidth, 'height' => $imgHeight, 'border' => 0]);
-                            $radar_graph_content .= html_writer::div(html_writer::div($radarImage)); // divs - more for PDF
+                    $radar_graph_content = '';
+                    foreach ($students as $student) {
+                        $radar_graph_content .= $student_heading($student);
+                        $topics = block_exacomp_get_topics_for_radar_graph($courseid, $student->id, \block_exacomp\db_layer::property_exists($subject, 'id') ? $subject->id : 0);
+                        if (count($topics) < 3 || count($topics) > 13) {
+                            //print error
+                            $img = html_writer::div(html_writer::tag("img", "", array("src" => $CFG->wwwroot . "/blocks/exacomp/pix/graph_notavailable.png")));
+                            $radar_graph_content .= html_writer::div($img . block_exacomp_get_string('radargrapherror'), 'competence_profile_grapherror');
                         } else {
-                            $radar_graph = html_writer::div($this->radar_graph($topics), 'competence_profile_radargraph');
-                            $radar_graph_content .= html_writer::div($radar_graph, 'competence_profile_graphbox clearfix');
-                            $radar_graph_content .= html_writer::div($this->radar_graph_legend(), 'radargraph_legend');
+                            if ($this->is_print_mode()) {
+                                $imgWidth = 700;
+                                $imgHeight = 350; // legend is in picture!
+                                $radarParams = [
+                                    'courseid' => $course->id,
+                                    'studentid' => $student->id,
+                                    'subjectid' => $subject->id,
+                                    'width' => $imgWidth,
+                                    'height' => $imgHeight,
+                                    'graphAction' => 'competenceProfileRadar',
+                                ];
+                                $elementSrc = new moodle_url('/blocks/exacomp/pix/dynamic/radar.php', $radarParams);
+                                $radarImage = html_writer::img($elementSrc, '',
+                                    ['width' => $imgWidth, 'height' => $imgHeight, 'border' => 0]);
+                                $radar_graph_content .= html_writer::div(html_writer::div($radarImage)); // divs - more for PDF
+                            } else {
+                                $radar_graph = html_writer::div($this->radar_graph($topics), 'competence_profile_radargraph');
+                                $radar_graph_content .= html_writer::div($radar_graph, 'competence_profile_graphbox clearfix');
+                                $radar_graph_content .= html_writer::div($this->radar_graph_legend(), 'radargraph_legend');
+                            }
                         }
                     }
+                    $radar_graph_content = html_writer::tag('legend', block_exacomp_get_string('radargraphtitle'),
+                        array('class' => 'competence_profile_insectitle')) . $radar_graph_content;
                     $content .= html_writer::tag('fieldset', $radar_graph_content,
                         array('class' => ' competence_profile_innersection exa-collapsible'));
                 }
@@ -6478,45 +6514,49 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                 // Statistics
                 if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_SUBJECT, $courseid)) { //prints the statistic
-                    $stat = block_exacomp_get_evaluation_statistic_for_subject($courseid, $subject->id, $student->id, 0, 0, false, $crosssubj);
-                    if ($subject->isglobal) { // only isglobal subjects!
-                        //$allStats[$courseid][$subject->id]['subject'] = $subject;
-                        $allStats[$courseid][$subject->id]['stats'] = $stat;
-                    }
-                    $tables = array();
-                    $tables[] = $this->subject_statistic_table($courseid, $stat['descriptor_evaluations'],
-                        block_exacomp_get_string('descriptors'), block_exacomp_get_assessment_comp_diffLevel($courseid),
-                        block_exacomp_get_assessment_comp_scheme($courseid)); //print competencies
-                    $tables[] = $this->subject_statistic_table($courseid, $stat['child_evaluations'],
-                        block_exacomp_get_string('childcompetencies_compProfile'),
-                        block_exacomp_get_assessment_childcomp_diffLevel($courseid), block_exacomp_get_assessment_childcomp_scheme($courseid));
-                    if (block_exacomp_course_has_examples($courseid)) {
-                        $tables[] = $this->subject_statistic_table($courseid, $stat['example_evaluations'],
-                            block_exacomp_get_string('materials_compProfile'), block_exacomp_get_assessment_example_diffLevel($courseid),
-                            block_exacomp_get_assessment_example_scheme($courseid));
-                    }
-
-                    $innersection = html_writer::tag('legend', block_exacomp_get_string('innersection2'),
-                        array('class' => 'competence_profile_insectitle'));
-                    if ($this->is_print_mode()) {
-                        $tempTable = new html_table();
-                        $tempTable->attributes['class'] = 'statistictables';
-                        $tempTable->attributes['exa-subjectid'] = $subject->id;
-                        $tempTable->attributes['exa-courseid'] = $courseid;
-                        $row = new html_table_row();
-                        foreach ($tables as $tableItem) {
-                            $cell = new html_table_cell();
-                            $cell->attributes['width'] = '33%';
-                            $cell->text = $tableItem;
-                            $row->cells[] = $cell;
+                    $innersection = '';
+                    foreach ($students as $student) {
+                        $stat = block_exacomp_get_evaluation_statistic_for_subject($courseid, $subject->id, $student->id, 0, 0, false, $crosssubj);
+                        if ($subject->isglobal) { // only isglobal subjects!
+                            //$allStats[$student->id][$courseid][$subject->id]['subject'] = $subject;
+                            $allStats[$student->id][$courseid][$subject->id]['stats'] = $stat;
                         }
-                        $tempTable->data = array($row);
-                        $innersection .= '<br>' . html_writer::table($tempTable);
-                    } else {
-                        $innersection .= html_writer::tag('div', implode(' ', $tables),
-                            array('class' => 'statistictables', 'exa-subjectid' => $subject->id,
-                                'exa-courseid' => $courseid));
+                        $tables = array();
+                        $tables[] = $this->subject_statistic_table($courseid, $stat['descriptor_evaluations'],
+                            block_exacomp_get_string('descriptors'), block_exacomp_get_assessment_comp_diffLevel($courseid),
+                            block_exacomp_get_assessment_comp_scheme($courseid)); //print competencies
+                        $tables[] = $this->subject_statistic_table($courseid, $stat['child_evaluations'],
+                            block_exacomp_get_string('childcompetencies_compProfile'),
+                            block_exacomp_get_assessment_childcomp_diffLevel($courseid), block_exacomp_get_assessment_childcomp_scheme($courseid));
+                        if (block_exacomp_course_has_examples($courseid)) {
+                            $tables[] = $this->subject_statistic_table($courseid, $stat['example_evaluations'],
+                                block_exacomp_get_string('materials_compProfile'), block_exacomp_get_assessment_example_diffLevel($courseid),
+                                block_exacomp_get_assessment_example_scheme($courseid));
+                        }
+
+                        $innersection .= $student_heading($student);
+                        if ($this->is_print_mode()) {
+                            $tempTable = new html_table();
+                            $tempTable->attributes['class'] = 'statistictables';
+                            $tempTable->attributes['exa-subjectid'] = $subject->id;
+                            $tempTable->attributes['exa-courseid'] = $courseid;
+                            $row = new html_table_row();
+                            foreach ($tables as $tableItem) {
+                                $cell = new html_table_cell();
+                                $cell->attributes['width'] = '33%';
+                                $cell->text = $tableItem;
+                                $row->cells[] = $cell;
+                            }
+                            $tempTable->data = array($row);
+                            $innersection .= '<br>' . html_writer::table($tempTable);
+                        } else {
+                            $innersection .= html_writer::tag('div', implode(' ', $tables),
+                                array('class' => 'statistictables', 'exa-subjectid' => $subject->id,
+                                    'exa-courseid' => $courseid));
+                        }
                     }
+                    $innersection = html_writer::tag('legend', block_exacomp_get_string('innersection2'),
+                        array('class' => 'competence_profile_insectitle')) . $innersection;
                     $content .= html_writer::tag('fieldset', $innersection,
                         array('class' => ' competence_profile_innersection exa-collapsible'));
                 }
@@ -6525,11 +6565,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 }
 
                 // Comparison: Teacher-Student
-                list($student, $subject) = block_exacomp_get_data_for_profile_comparison($courseid, $subject, $student);
+                $innersection = '';
+                foreach ($students as $student) {
+                    list($student, $subject) = block_exacomp_get_data_for_profile_comparison($courseid, $subject, $student);
+                    $innersection .= $student_heading($student);
+                    $innersection .= html_writer::tag('div', $this->comparison_table($courseid, $subject, $student),
+                        array('class' => 'comparisondiv'));
+                }
                 $innersection = html_writer::tag('legend', block_exacomp_get_string('innersection3'),
-                    array('class' => 'competence_profile_insectitle'));
-                $innersection .= html_writer::tag('div', $this->comparison_table($courseid, $subject, $student),
-                    array('class' => 'comparisondiv'));
+                    array('class' => 'competence_profile_insectitle')) . $innersection;
                 $content .= html_writer::tag('fieldset', $innersection,
                     array('class' => ' competence_profile_innersection exa-collapsible'));
                 if ($this->is_print_mode()) {
@@ -6538,50 +6582,40 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                 // Chronological sequence of gained outcomes
                 $innersection = '';
-                if ($this->is_print_mode()) {
-                    $height = 300;
-                    $width = 600;
-                    if ($crosssubj) {
+                foreach ($students as $student) {
+                    $innersection .= $student_heading($student);
+                    if ($this->is_print_mode()) {
+                        $height = 300;
+                        $width = 600;
                         $elementSrc = new moodle_url('/blocks/exacomp/pix/dynamic/timeline_competenceprofile.php',
                             ['height' => $height,
                                 'width' => $width,
                                 'courseid' => $courseid,
                                 'studentid' => $student->id,
                             ]);
-                    } else {
-                        $elementSrc = new moodle_url('/blocks/exacomp/pix/dynamic/timeline_competenceprofile.php',
-                            ['height' => $height,
-                                'width' => $width,
-                                'courseid' => $courseid,
-                                'studentid' => $student->id,
-                            ]);
-                    }
 
-                    $tempTable = new html_table();
-                    $tempTable->attributes['class'] = 'competence_profile_timelinegraph';
-                    $row = new html_table_row();
-                    $cell = new html_table_cell();
-                    //$cell->attributes['width'] = $width;
-                    $cell->attributes['align'] = 'left';
-                    $text = html_writer::div(block_exacomp_trans(['de:Zeitlicher Ablauf des Kompetenzerwerbs',
-                        'en:Chronological sequence of gained outcomes']), 'competence_profile_insectitle');
-                    $text .= html_writer::img($elementSrc, '',
-                        ['width' => $width / 1.6, 'height' => $height / 1.6, 'border' => 0]); // TODO: why '/ 1.6' ?
-                    $cell->text = $text;
-                    $row->cells[] = $cell;
-                    $tempTable->data = array($row);
-                    $innersection .= html_writer::table($tempTable);
-                    //$innersection .= html_writer::div(html_writer::img($elementSrc, '',
-                    //        ['width' => $width, 'height' => $height, 'border' => 0]), 'competence_profile_timelinegraph');
-                } else {
-                    $innersection = html_writer::tag('legend', block_exacomp_trans(['de:Zeitlicher Ablauf des Kompetenzerwerbs',
-                        'en:Chronological sequence of gained outcomes']), array('class' => 'competence_profile_insectitle'));
-                    if ($crosssubj) {
-                        $innersection .= html_writer::div($this->timeline_graph($course, $student, false, $subject, $crosssubj), "competence_profile_timelinegraph");
+                        $tempTable = new html_table();
+                        $tempTable->attributes['class'] = 'competence_profile_timelinegraph';
+                        $row = new html_table_row();
+                        $cell = new html_table_cell();
+                        //$cell->attributes['width'] = $width;
+                        $cell->attributes['align'] = 'left';
+                        $text = html_writer::img($elementSrc, '',
+                            ['width' => $width / 1.6, 'height' => $height / 1.6, 'border' => 0]); // TODO: why '/ 1.6' ?
+                        $cell->text = $text;
+                        $row->cells[] = $cell;
+                        $tempTable->data = array($row);
+                        $innersection .= html_writer::table($tempTable);
                     } else {
-                        $innersection .= html_writer::div($this->timeline_graph($course, $student, false, $subject), "competence_profile_timelinegraph");
+                        if ($crosssubj) {
+                            $innersection .= html_writer::div($this->timeline_graph($course, $student, false, $subject, $crosssubj), "competence_profile_timelinegraph");
+                        } else {
+                            $innersection .= html_writer::div($this->timeline_graph($course, $student, false, $subject), "competence_profile_timelinegraph");
+                        }
                     }
                 }
+                $innersection = html_writer::tag('legend', block_exacomp_trans(['de:Zeitlicher Ablauf des Kompetenzerwerbs',
+                    'en:Chronological sequence of gained outcomes']), array('class' => 'competence_profile_insectitle')) . $innersection;
                 $content .= html_writer::tag('fieldset', $innersection,
                     array('class' => ' competence_profile_innersection exa-collapsible'));
                 if ($this->is_print_mode()) {
@@ -6625,6 +6659,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
         if ($subjectGenericData === null) {
             $subjectGenericData = array();
         }
+        // keyed by studentid first, so that rendering multiple students (e.g. "all students") in the
+        // same request does not mix up their generic/global subject data
+        if (!array_key_exists($studentid, $subjectGenericData)) {
+            $subjectGenericData[$studentid] = array();
+        }
 
         $content = '';
         $columnscounter = 0;
@@ -6641,23 +6680,23 @@ class block_exacomp_renderer extends plugin_renderer_base {
              */
             // aggregate all data to next generation of global report
             if (@$subject->isglobal) { // only isglobal?
-                if (!array_key_exists($subject->id, $subjectGenericData)) {
-                    $subjectGenericData[$subject->id] = array(
+                if (!array_key_exists($subject->id, $subjectGenericData[$studentid])) {
+                    $subjectGenericData[$studentid][$subject->id] = array(
                         'table_column' => $table_column,
                         'table_header' => $table_header,
                         'courses_table_content' => [],
                     );
                 }
-                if (!array_key_exists($courseid, $subjectGenericData[$subject->id]['courses_table_content'])) {
-                    $subjectGenericData[$subject->id]['courses_table_content'][$courseid] = $table_content;
+                if (!array_key_exists($courseid, $subjectGenericData[$studentid][$subject->id]['courses_table_content'])) {
+                    $subjectGenericData[$studentid][$subject->id]['courses_table_content'][$courseid] = $table_content;
                 }
             }
         } else if ($custom_data != null) {
             // show manual generated data (averages)
             list ($table_column, $table_header, $table_content) = $custom_data;
         } else {
-            // if no courseID - return ALL data of sybjects by courses
-            return $subjectGenericData;
+            // if no courseID - return ALL data of subjects by courses for this student
+            return $subjectGenericData[$studentid];
         }
 
         if ($spanning_niveaus == null) {
