@@ -113,12 +113,15 @@ echo $output->header_v2($page_identifier);
 if (!$isTeacher) {
     echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_profile($context, $courseid), $page_identifier);
 } else {
-    echo '<div style="padding-bottom: 15px;">';
+    echo '<div class="exacomp-header-edit">';
 
+    echo '<div style="padding-bottom: 5px;">';
     //print student selector (including the "all students" option)
     echo block_exacomp_get_string("choosestudent");
     echo $output->studentselector($coursestudents, $studentid, block_exacomp_renderer::STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
+    echo '</div>';
 
+    echo '<div style="padding-bottom: 15px;">';
     //print date range picker
     echo block_exacomp_get_string("choosedaterange");
     if ($periods = block_exacomp_get_exastud_periods_current_and_past_periods()) {
@@ -129,6 +132,7 @@ if (!$isTeacher) {
         echo html_writer::select($options, 'daterangeperiods', '', block_exacomp_get_string('periodselect'), []) . ' ';
     }
     echo $output->daterangepicker();
+    echo '</div>';
 
     echo '</div>';
 }
