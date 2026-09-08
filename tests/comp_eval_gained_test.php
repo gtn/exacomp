@@ -101,8 +101,8 @@ class block_exacomp_comp_eval_gained_testcase extends advanced_testcase {
 
     public function test_student_custom_verbose_scale_mix_assessment() {
         // "Mix assessment" self assessment style: 4 custom verbose values
-        // (does not apply / rather not true / rather applies / true), stored as 1..4,
-        // 0/NULL = not evaluated.
+        // (does not apply / rather not true / rather applies / true), stored as 1..4.
+        // Only 0/NULL and the lowest option (1) are not gained.
         set_config('assessment_SelfEval_useVerbose', 1, 'exacomp');
         set_config('assessment_selfEvalVerbose_comp_long', 'does not apply; rather not true; rather applies; true', 'exacomp');
 
@@ -112,7 +112,7 @@ class block_exacomp_comp_eval_gained_testcase extends advanced_testcase {
             $this->make_eval(BLOCK_EXACOMP_ROLE_STUDENT, BLOCK_EXACOMP_TYPE_DESCRIPTOR, null), $courseid));
         $this->assertFalse(block_exacomp_check_competence_data_is_gained(
             $this->make_eval(BLOCK_EXACOMP_ROLE_STUDENT, BLOCK_EXACOMP_TYPE_DESCRIPTOR, 1), $courseid));
-        $this->assertFalse(block_exacomp_check_competence_data_is_gained(
+        $this->assertTrue(block_exacomp_check_competence_data_is_gained(
             $this->make_eval(BLOCK_EXACOMP_ROLE_STUDENT, BLOCK_EXACOMP_TYPE_DESCRIPTOR, 2), $courseid));
         $this->assertTrue(block_exacomp_check_competence_data_is_gained(
             $this->make_eval(BLOCK_EXACOMP_ROLE_STUDENT, BLOCK_EXACOMP_TYPE_DESCRIPTOR, 3), $courseid));
@@ -192,7 +192,7 @@ class block_exacomp_comp_eval_gained_testcase extends advanced_testcase {
      * Full round trip through block_exacomp_set_comp_eval() / block_exacomp_get_comp_eval_gained(),
      * reproducing the "Mix assessment" scenario from the bug report:
      * Teacher: comp1=0, comp2=1, comp3=2 (Points, fail=0) => teacher count = 2
-     * Student: comp1=0, comp2=1, comp3=2 (custom verbose 1..4) => student count = 1 (only value 2+1=3 "rather applies" is gained)
+     * Student: comp1=0, comp2=1, comp3=2 (custom verbose 1..4) => student count = 2
      */
     public function test_set_and_get_comp_eval_gained_roundtrip() {
         set_config('assessment_comp_scheme', BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS, 'exacomp');
@@ -232,7 +232,7 @@ class block_exacomp_comp_eval_gained_testcase extends advanced_testcase {
         }
 
         $this->assertEquals(2, $teachergained);
-        $this->assertEquals(1, $studentgained);
+        $this->assertEquals(2, $studentgained);
     }
 
     public function test_missing_evaluations_are_not_gained() {

@@ -12100,13 +12100,12 @@ function block_exacomp_check_competence_data_is_gained($competence_data, $course
             return false; // not evaluated by the student yet
         }
 
-        // items are numbered 1..count (0/NULL means "not evaluated", see
-        // block_exacomp_set_comp_eval()); treat the (strictly) upper half of the scale as
-        // "gained" (e.g. for a 4-value scale: 3 and 4 are gained; for the default 3-value
-        // emoji scale: 2 and 3 are gained)
+        // Items are numbered 1..count (0/NULL means "not evaluated", see
+        // block_exacomp_set_comp_eval()). The lowest actual option is not gained;
+        // every higher option is gained.
         $items_count = count(\block_exacomp\global_config::get_student_eval_items(false, $comptype, false, $courseid));
 
-        return $items_count > 0 && $competence_data->value > ($items_count / 2);
+        return $items_count > 0 && $competence_data->value > 1;
     }
 
     // teacher (or system/auto-graded) evaluation: use the scheme configured for the actual
