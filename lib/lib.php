@@ -5859,12 +5859,27 @@ function block_exacomp_init_profile($courses, $userid) {
  * @return array list of ['id' => string, 'title' => string, 'content' => string]
  */
 function block_exacomp_get_competence_profile_reports($output, array $students, bool $withoutHeaders) {
+    global $USER;
+
     // every student can potentially have a different set of exacomp-enabled courses they are enrolled in,
     // so we collect them per student and only feed a course's report the students actually enrolled in it
     $studentCourses = []; // studentid => [courseid => course]
     $allCourses = []; // courseid => course (union over all students)
     foreach ($students as $student) {
         $possible_courses = block_exacomp_get_exacomp_courses($student);
+
+        // security: when the requesting user is looking at somebody else's profile (i.e. a teacher viewing
+        // a student), only ever include courses the requesting user actually teaches. Without this, a
+        // teacher could see a student's reports for unrelated courses (where the requester has no teaching
+        // capability at all) simply because that student happens to be enrolled in both courses. This does
+        // not restrict a user viewing their own profile (e.g. a student browsing their own transferable
+        // skills across all their courses).
+        if ($student->id != $USER->id) {
+            $possible_courses = array_filter($possible_courses, function($course) {
+                return block_exacomp_is_teacher($course->id);
+            });
+        }
+
         block_exacomp_init_profile($possible_courses, $student->id);
         $studentCourses[$student->id] = $possible_courses;
         foreach ($possible_courses as $course) {
