@@ -6305,7 +6305,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             }
             if ($anyGrid) {
                 $innersection = html_writer::tag('legend', block_exacomp_get_string('innersection1'),
-                    array('class' => 'competence_profile_insectitle')) . $gridInner;
+                    array('class' => 'competence_profile_insectitle')) . html_writer::tag('div', $gridInner);
                 $content .= html_writer::tag('fieldset', $innersection, array('id' => 'toclose', 'name' => 'toclose',
                     'class' => ' competence_profile_innersection exa-collapsible exa-collapsible-open'));
             }
@@ -6372,7 +6372,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             }
             if ($anyStats) {
                 $innersection = html_writer::tag('legend', block_exacomp_get_string('innersection2'),
-                    array('class' => 'competence_profile_insectitle')) . $statsInner;
+                    array('class' => 'competence_profile_insectitle')) . html_writer::tag('div', $statsInner);
                 $content .= html_writer::tag('fieldset', $innersection,
                     array('class' => ' competence_profile_innersection exa-collapsible'));
             }
@@ -6463,7 +6463,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         array('class' => 'container', 'id' => 'charts'));
                 }
                 $innersection = html_writer::tag('legend', block_exacomp_get_string('innersection1'),
-                    array('class' => 'competence_profile_insectitle')) . $innersection;
+                    array('class' => 'competence_profile_insectitle')) . html_writer::tag('div', $innersection);
                 $content .= html_writer::tag('fieldset', $innersection, array('id' => 'toclose', 'name' => 'toclose',
                     'class' => ' competence_profile_innersection exa-collapsible exa-collapsible-open'));
                 if ($this->is_print_mode()) {
@@ -6504,7 +6504,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         }
                     }
                     $radar_graph_content = html_writer::tag('legend', block_exacomp_get_string('radargraphtitle'),
-                        array('class' => 'competence_profile_insectitle')) . $radar_graph_content;
+                        array('class' => 'competence_profile_insectitle')) . html_writer::tag('div', $radar_graph_content);
                     $content .= html_writer::tag('fieldset', $radar_graph_content,
                         array('class' => ' competence_profile_innersection exa-collapsible'));
                 }
@@ -6556,7 +6556,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         }
                     }
                     $innersection = html_writer::tag('legend', block_exacomp_get_string('innersection2'),
-                        array('class' => 'competence_profile_insectitle')) . $innersection;
+                        array('class' => 'competence_profile_insectitle')) . html_writer::tag('div', $innersection);
                     $content .= html_writer::tag('fieldset', $innersection,
                         array('class' => ' competence_profile_innersection exa-collapsible'));
                 }
@@ -6573,7 +6573,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         array('class' => 'comparisondiv'));
                 }
                 $innersection = html_writer::tag('legend', block_exacomp_get_string('innersection3'),
-                    array('class' => 'competence_profile_insectitle')) . $innersection;
+                    array('class' => 'competence_profile_insectitle')) . html_writer::tag('div', $innersection);
                 $content .= html_writer::tag('fieldset', $innersection,
                     array('class' => ' competence_profile_innersection exa-collapsible'));
                 if ($this->is_print_mode()) {
@@ -6615,7 +6615,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     }
                 }
                 $innersection = html_writer::tag('legend', block_exacomp_trans(['de:Zeitlicher Ablauf des Kompetenzerwerbs',
-                    'en:Chronological sequence of gained outcomes']), array('class' => 'competence_profile_insectitle')) . $innersection;
+                    'en:Chronological sequence of gained outcomes']), array('class' => 'competence_profile_insectitle')) . html_writer::tag('div', $innersection);
                 $content .= html_writer::tag('fieldset', $innersection,
                     array('class' => ' competence_profile_innersection exa-collapsible'));
                 if ($this->is_print_mode()) {
@@ -6952,7 +6952,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     ]);*/
                 }
 
-                $topic_eval_cell->attributes['class'] = (($rowcontent->visible) ? '' : 'notvisible');
+                $topic_eval_cell->attributes['class'] = (($rowcontent->visible) ? '' : 'notvisible') . ' centered';
                 $topic_eval_cell->attributes['exa-timestamp'] = $rowcontent->timestamp;
                 $topic_eval_cell->attributes['align'] = 'center';
 

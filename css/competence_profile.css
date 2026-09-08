@@ -227,6 +227,19 @@
     padding: 5px;
 }
 
+#block_exacomp .compprofiletable td.centered {
+    width: 70px;
+    min-width: 70px;
+    height: 70px;
+    padding: 0;
+    vertical-align: middle;
+}
+
+#block_exacomp .compprofiletable td.centered img {
+    display: block;
+    margin: 0 auto;
+}
+
 #block_exacomp .header {
     background-color: #dcdcdc !important;
 }
