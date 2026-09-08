@@ -12055,14 +12055,96 @@ function block_exacomp_search_competence_grid_as_example_list($courseid, $q) {
     return $examples;
 }
 
+/**
+ * Decide if a single teacher- or student-evaluation of a competence(-like) item ("descriptor",
+ * "topic", "subject", "crosssubject", "child descriptor", "example", ...) counts as "gained".
+ *
+ * This is used e.g. by the "Zeitlicher Ablauf des Kompetenzerwerbs" (timeline) graph to count
+ * teacher- and student-gained items over time (see block_exacomp_get_comp_eval_gained() /
+ * block_exacomp_get_gained_competences()).
+ *
+ * Important: teacher and student evaluations are NOT interchangeable:
+ * - Teacher evaluations use the assessment scheme configured for the actual competence TYPE
+ *   (GRADE/VERBOSE/POINTS/YESNO/NONE, see block_exacomp_additional_grading()) and are stored
+ *   either in "value" (POINTS/VERBOSE/YESNO) or in "additionalinfo" (GRADE, see
+ *   block_exacomp_set_comp_eval() and the "$compAssessment == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE"
+ *   handling elsewhere in this file). The negative/positive threshold and direction (e.g.
+ *   "assessment_verbose_lowerisbetter") for the teacher scale is already correctly handled by
+ *   block_exacomp_value_is_negative_by_assessment().
+ * - Student self-evaluations always use "value" (never "additionalinfo") and are always on their
+ *   own scale (either the default emoji scale or a custom, admin-configured verbose scale, see
+ *   \block_exacomp\global_config::get_student_eval_items()), independent of the teacher's
+ *   assessment scheme for that competence type. Using the teacher scheme/threshold (or worse,
+ *   the teacher-only "additionalinfo" field) for a student evaluation is incorrect and was the
+ *   root cause of wrong counts in mixed assessment configurations (e.g. "Mix assessment").
+ *
+ * NULL (not yet evaluated) never counts as gained. Student values of "0" (and negative values)
+ * are normalized to NULL by block_exacomp_set_comp_eval(); teacher values of "0" may remain
+ * stored because zero is a valid lowest teacher value for some schemes. In either case, zero
+ * must not count as gained.
+ *
+ * @param \block_exacomp\comp_eval|\stdClass $competence_data must provide value, additionalinfo,
+ *      role and (except for old cached/legacy callers) comptype
+ * @param int $courseid
+ * @return bool
+ */
 function block_exacomp_check_competence_data_is_gained($competence_data, $courseid = 0) {
-    if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid)) {
-        $value = block_exacomp\global_config::get_additionalinfo_value_mapping($competence_data->additionalinfo);
+    // fallback to the descriptor type/teacher role for legacy callers that do not provide them
+    $comptype = isset($competence_data->comptype) ? $competence_data->comptype : BLOCK_EXACOMP_TYPE_DESCRIPTOR;
+    $role = isset($competence_data->role) ? $competence_data->role : BLOCK_EXACOMP_ROLE_TEACHER;
 
-        return $value >= 1;
-    } else {
-        return $competence_data->value >= 1;
+    if ($role == BLOCK_EXACOMP_ROLE_STUDENT) {
+        // student self-evaluations are stored in "value" and use their own (verbose or emoji)
+        // scale - not the teacher's assessment scheme/scale and never "additionalinfo"
+        if ($competence_data->value === null || $competence_data->value === '') {
+            return false; // not evaluated by the student yet
+        }
+
+        // items are numbered 1..count (0/NULL means "not evaluated", see
+        // block_exacomp_set_comp_eval()); treat the (strictly) upper half of the scale as
+        // "gained" (e.g. for a 4-value scale: 3 and 4 are gained; for the default 3-value
+        // emoji scale: 2 and 3 are gained)
+        $items_count = count(\block_exacomp\global_config::get_student_eval_items(false, $comptype, false, $courseid));
+
+        return $items_count > 0 && $competence_data->value > ($items_count / 2);
     }
+
+    // teacher (or system/auto-graded) evaluation: use the scheme configured for the actual
+    // competence type, not always the descriptor scheme
+    $scheme = block_exacomp_additional_grading($comptype, $courseid);
+
+    if ($scheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
+        // for the GRADE scheme, the actual grading is stored in "additionalinfo", not "value"
+        if (!$competence_data->additionalinfo) {
+            return false; // not evaluated yet
+        }
+
+        $value = \block_exacomp\global_config::get_additionalinfo_value_mapping($competence_data->additionalinfo);
+    } else {
+        if ($competence_data->value === null || $competence_data->value === '') {
+            return false; // not evaluated yet
+        }
+
+        $value = $competence_data->value;
+    }
+
+    if ($scheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE) {
+        // no assessment scheme configured for this competence type: block_exacomp_value_is_negative_by_assessment()
+        // always treats BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE as negative, so fall back to the
+        // previous (legacy) ">= 1" behaviour to keep this case working as before
+        return $value >= 1;
+    }
+
+    if ($scheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO) {
+        // block_exacomp_value_is_negative_by_assessment() has a known, pre-existing bug for
+        // BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO (it always returns "negative" for the whole 0/1
+        // value range, see the "TODO: is this ok condition?" comment there), so it cannot be
+        // used to determine "gained" for this scheme; the yes/no scale itself is unambiguous:
+        // 1 = yes (gained), 0 = no (not gained)
+        return $value >= 1;
+    }
+
+    return !block_exacomp_value_is_negative_by_assessment($value, $comptype, true, $courseid);
 }
 
 function block_exacomp_get_comp_eval_gained($courseid, $role, $userid, $comptype, $compid) {
