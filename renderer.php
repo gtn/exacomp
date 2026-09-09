@@ -152,7 +152,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         foreach ($schooltypetree as $schooltype) {
             $options[$schooltype->title] = array();
             foreach ($schooltype->subjects as $subject) {
-                $options[$schooltype->title][$subject->id] = $subject->title;
+                $options[$schooltype->title][$subject->id] = s($subject->title);
             }
 
             $array[] = $options;
@@ -314,7 +314,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $content .= html_writer::tag('li',
                 html_writer::link(
                     new block_exacomp\url(g::$PAGE->url, ['subjectid' => $subject->id, 'topicid' => BLOCK_EXACOMP_SHOW_ALL_TOPICS, 'colgroupid' => optional_param('colgroupid', 0, PARAM_INT)]),
-                    $subject->title . '<span class="no-br">' . $extra . '</span>', [
+                    s($subject->title) . '<span class="no-br">' . $extra . '</span>', [
                     'class' => (!$selectedTopic && $subject->id == $selectedSubject->id) ? 'type current' : 'type',
                     'title' => $popuptitle,
                 ])
@@ -346,7 +346,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         'subjectid' => $subject->id,
                         'topicid' => $topic->id,
                         'colgroupid' => optional_param('colgroupid', 0, PARAM_INT),
-                    ]), block_exacomp_get_topic_numbering($topic) . ' ' . $topic->title . '<span class="no-br">' . $extra . '</span>', array(
+                    ]), block_exacomp_get_topic_numbering($topic) . ' ' . s($topic->title) . '<span class="no-br">' . $extra . '</span>', array(
                         'class' => (($selectedTopic && $topic->id == $selectedTopic->id) ? 'current' : '') . ' ' . (($topic->visible) ? '' : 'hidden'),
                         'title' => $topic->description,
                     )));
@@ -479,20 +479,20 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         $cell = new html_table_cell();
         $cell->text = html_writer::span(block_exacomp_get_string('subject_singular'), 'exabis_comp_top_name')
-            . html_writer::div($schooltype, 'exabis_comp_top_value');
+            . html_writer::div(s($schooltype), 'exabis_comp_top_value');
 
         $row->cells[] = $cell;
 
         $cell = new html_table_cell();
         $cell->text = html_writer::span(block_exacomp_get_string('comp_field_idea'), 'exabis_comp_top_name')
-            . html_writer::div($subject ? (!empty($subject->numb) ? $subject->numb . " - " : '') . $subject->title : '', 'exabis_comp_top_value');
+            . html_writer::div($subject ? (!empty($subject->numb) ? s($subject->numb) . " - " : '') . s($subject->title) : '', 'exabis_comp_top_value');
 
         $row->cells[] = $cell;
 
         if ($descriptor) {
             $cell = new html_table_cell();
             $cell->text = html_writer::span(block_exacomp_get_string('comp'), 'exabis_comp_top_name')
-                . html_writer::div($descriptor->title, 'exabis_comp_top_value');
+                . html_writer::div(s($descriptor->title), 'exabis_comp_top_value');
 
             $row->cells[] = $cell;
         }
@@ -500,7 +500,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         if (block_exacomp_is_numbering_enabled()) {
             $cell = new html_table_cell();
             $cell->text = html_writer::span(block_exacomp_get_string('progress'), 'exabis_comp_top_name')
-                . html_writer::div($cat ? $cat->title : '', 'exabis_comp_top_value');
+                . html_writer::div($cat ? s($cat->title) : '', 'exabis_comp_top_value');
 
             $row->cells[] = $cell;
 
@@ -626,7 +626,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             $visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid);
                             $visible_css = block_exacomp_get_visible_css($visible, $role);
 
-                            $text = block_exacomp_get_descriptor_numbering($descriptor) . " " . $descriptor->title;
+                            $text = block_exacomp_get_descriptor_numbering($descriptor) . " " . s($descriptor->title);
                             if (array_key_exists($descriptor->topicid, $selection)) {
                                 if ($target == 'dakora') {
                                     $text = trim($text);
@@ -1151,7 +1151,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $firstCol->text .= block_exacomp_get_string('total');
                     $crossubjtitleRow->cells[] = $firstCol;
                     $crosstitleCell = new html_table_cell();
-                    $crosstitleCell->text = $crosssubjectObj->title;
+                    $crosstitleCell->text = s($crosssubjectObj->title);
                     $crossubjtitleRow->cells[] = $crosstitleCell;
                     $crossubjtitleRow->cells[] = new html_table_cell();
                     foreach ($students as $student) {
@@ -1401,7 +1401,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         $titleCell = new html_table_cell();
                         $titleCell->attributes['class'] = 'rg2-indent';
                         $titleCell->style = 'padding-left: 30px;';
-                        $titleCell->text = html_writer::div(html_writer::tag('span', $example->title), '', ['title' => $title]);
+                        $titleCell->text = html_writer::div(html_writer::tag('span', s($example->title)), '', ['title' => $title]);
 
                         if (!$this->is_print_mode()) {
 
@@ -1718,7 +1718,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 // $title->print_width = 5 + 25;
                 $title->attributes['print_width'] = 5 + 25;
 
-                $title->text = html_writer::tag("b", $subject->title);
+                $title->text = html_writer::tag("b", s($subject->title));
 
                 $subjectRow->cells[] = $title;
 
@@ -2667,7 +2667,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $nivText = [];
 
                 foreach ($descriptor->categories as $cat) {
-                    $nivText[] = $cat->title;
+                    $nivText[] = s($cat->title);
                 }
                 $nivCell->text = join(' ', $nivText);
 
@@ -3073,7 +3073,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         $titleCell = new html_table_cell();
                         $titleCell->attributes['class'] = 'rg2-indent';
                         $titleCell->style = 'padding-left: 30px;';
-                        $exampletitle = $example->title;
+                        $exampletitle = s($example->title);
                         if ($this->is_print_mode()) {
                             $exampletitle = str_repeat('&nbsp;', 12) . $exampletitle;
                         }
@@ -3255,7 +3255,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                         $nivText = [];
                         foreach ($example->taxonomies as $tax) {
-                            $nivText[] = $tax->title;
+                            $nivText[] = s($tax->title);
                         }
                         $nivCell->text = join(' ', $nivText);
                         $exampleRow->cells[] = $nivCell;
@@ -3536,7 +3536,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 if ($crosssubjid) {
                     $title->text = html_writer::tag("b", block_exacomp_get_string('comps_and_material'));
                 } else {
-                    $title->text = ($usesubjectgrading) ? '' : html_writer::tag("b", $subject->title);
+                    $title->text = ($usesubjectgrading) ? '' : html_writer::tag("b", s($subject->title));
                 }
 
                 // $title->print_width = 5 + 25;
@@ -3842,7 +3842,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         $titleCell = new html_table_cell();
                         $titleCell->attributes['class'] = 'rg2-indent';
                         $titleCell->style = 'padding-left: 30px;';
-                        $titleCell->text = html_writer::div(html_writer::tag('span', $example->title), '', ['title' => $title]);
+                        $titleCell->text = html_writer::div(html_writer::tag('span', s($example->title)), '', ['title' => $title]);
 
                         if (!$this->is_print_mode()) {
 
@@ -4185,7 +4185,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         if ($sourceid == BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER) {
             $info = block_exacomp_get_string('local');
         } else if ($sourceid && $source = $DB->get_record(BLOCK_EXACOMP_DB_DATASOURCES, array('id' => $sourceid))) {
-            $info = $source->name;
+            $info = s($source->name);
         }
         if (empty($info)) {
             $info = block_exacomp_get_string('unknown_src') . " ($sourceid)";
@@ -4205,7 +4205,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         $ret = '<div>';
         foreach ($sources as $source) {
-            $name = ($source->name ? $source->name : $source->source);
+            $name = s($source->name ? $source->name : $source->source);
             $ret .= $this->box(
             // "Zu löschende Daten, die von <strong>\"$name\"</strong> importiert wurden, " .
                 block_exacomp_get_string('source_delete_info', 'block_exacomp', $name) .
@@ -4874,7 +4874,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
             $cell = new html_table_cell();
             $cell->colspan = 1;
-            $cell->text = html_writer::tag('b', $levelstruct->level->title) . ' (' . $this->source_info($levelstruct->level->source) . ')';
+            $cell->text = html_writer::tag('b', s($levelstruct->level->title)) . ' (' . $this->source_info($levelstruct->level->source) . ')';
 
             $celltwo = new html_table_cell();
             $celltwo->colspan = 1;
@@ -4889,7 +4889,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             foreach ($levelstruct->schooltypes as $schooltypestruct) {
                 $row = new html_table_row();
                 $cell = new html_table_cell();
-                $cell->text = $schooltypestruct->schooltype->title;
+                $cell->text = s($schooltypestruct->schooltype->title);
                 $row->cells[] = $cell;
 
                 $cell = new html_table_cell();
@@ -5038,11 +5038,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 if ($currentsourse != $taxonomy->sourcename) {
                     $currentsourse = $taxonomy->sourcename;
                     $row = new html_table_row();
-                    $row->cells[] = html_writer::tag('strong', $currentsourse);
+                    $row->cells[] = html_writer::tag('strong', s($currentsourse));
                     $rows[] = $row;
                 }
                 $row = new html_table_row();
-                $row->cells[] = $taxonomy->title;
+                $row->cells[] = s($taxonomy->title);
                 $rows[] = $row;
             }
             $table->data = $rows;
@@ -5114,7 +5114,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $context = context_course::instance($badge->courseid);
                 $imageurl = moodle_url::make_pluginfile_url($context->id, 'badges', 'badgeimage', $badge->id, '/', 'f1', false);
                 $img = html_writer::empty_tag('img', array('src' => $imageurl, 'class' => 'badge-image'));
-                $innerdiv = html_writer::div($badge->name);
+                $innerdiv = html_writer::div(s($badge->name));
                 $div = html_writer::div($img . $innerdiv, '', array('style' => 'padding:10px;'));
                 $content .= $div;
             }
@@ -5127,7 +5127,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $context = context_course::instance($badge->courseid);
                     $imageurl = moodle_url::make_pluginfile_url($context->id, 'badges', 'badgeimage', $badge->id, '/', 'f1', false);
                     $img = html_writer::empty_tag('img', array('src' => $imageurl, 'class' => 'badge-image'));
-                    $innerdiv = html_writer::div($badge->name, "", array('style' => 'font-weight: bold;'));
+                    $innerdiv = html_writer::div(s($badge->name), "", array('style' => 'font-weight: bold;'));
                     $innerdiv2 = "";
                     if ($badge->descriptorStatus) {
                         $innerdiv2_content = "";
@@ -5208,7 +5208,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $cell = new html_table_cell();
                 // TODO: Hinweis ergänzen, wenn hidden?!?
                 $cell->text =
-                    html_writer::div(html_writer::tag('b', $schooltype->title) . ' (' . $this->source_info($schooltype->source) .
+                    html_writer::div(html_writer::tag('b', s($schooltype->title)) . ' (' . $this->source_info($schooltype->source) .
                         ')');
                 $cell->attributes['class'] = 'rg2-arrow';
 
@@ -5234,7 +5234,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $row->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rg2_class . ' exahighlight';
 
                     $cell = new html_table_cell();
-                    $cell->text = html_writer::div(html_writer::span($subject->title, 'rg2-arrow-highlight') .
+                    $cell->text = html_writer::div(html_writer::span(s($subject->title), 'rg2-arrow-highlight') .
                         // wenn different source than parent
                         ($subject->source != $schooltype->source ? ' (' . $this->source_info($subject->source) . ')' : ''));
                     $cell->attributes['class'] = 'rg2-arrow rg2-arrow-styled';
@@ -5368,7 +5368,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $title = $eduvidalTitles[$st->id];
                 }
             }
-            $options[$st->id] = $title;
+            $options[$st->id] = s($title);
         }
         return $options;
     }
@@ -5390,7 +5390,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $row->attributes['class'] = 'exabis_comp_teilcomp exahighlight rg2-level-0';
 
             $cell = new html_table_cell();
-            $cell->text = html_writer::div('<input type="checkbox" name="subjects[' . $subject->id . ']" value="' . $subject->id . '" />' . html_writer::tag('b', $subject->title));
+            $cell->text = html_writer::div('<input type="checkbox" name="subjects[' . $subject->id . ']" value="' . $subject->id . '" />' . html_writer::tag('b', s($subject->title)));
             $cell->attributes['class'] = 'rg2-arrow';
             $row->cells[] = $cell;
             $rows[] = $row;
@@ -5401,7 +5401,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                 $cell = new html_table_cell();
                 $cell->attributes['class'] = 'rg2-arrow rg2-indent';
-                $cell->text = html_writer::div('<input type="checkbox" name="topics[' . $topic->id . ']" value="' . $topic->id . '" ">' . $topic->numbering . ' ' . $topic->title, "desctitle");
+                $cell->text = html_writer::div('<input type="checkbox" name="topics[' . $topic->id . ']" value="' . $topic->id . '" ">' . $topic->numbering . ' ' . s($topic->title), "desctitle");
                 $row->cells[] = $cell;
 
                 $rows[] = $row;
@@ -5412,7 +5412,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                     $cell = new html_table_cell();
                     $cell->attributes['class'] = 'rg2-arrow rg2-indent';
-                    $cell->text = html_writer::div('<input type="checkbox" name="descriptors[' . $descriptor->id . ']" value="' . $descriptor->id . '" />' . $descriptor->numbering . ' ' . $descriptor->title, "desctitle");
+                    $cell->text = html_writer::div('<input type="checkbox" name="descriptors[' . $descriptor->id . ']" value="' . $descriptor->id . '" />' . $descriptor->numbering . ' ' . s($descriptor->title), "desctitle");
                     $row->cells[] = $cell;
 
                     $rows[] = $row;
@@ -5425,7 +5425,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                         $cell = new html_table_cell();
                         $cell->attributes['class'] = 'rg2-arrow rg2-indent';
-                        $cell->text = html_writer::div('<input type="checkbox" name="descriptors[' . $descriptor->id . ']" value="' . $descriptor->id . '" />' . $descriptor->numbering . ' ' . $descriptor->title, "desctitle");
+                        $cell->text = html_writer::div('<input type="checkbox" name="descriptors[' . $descriptor->id . ']" value="' . $descriptor->id . '" />' . $descriptor->numbering . ' ' . s($descriptor->title), "desctitle");
                         $row->cells[] = $cell;
 
                         $rows[] = $row;
@@ -5466,14 +5466,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $row = new html_table_row();
             $row->attributes['class'] = 'exahighlight deletion-table-level-0';
             $cell = new html_table_cell();
-            $cell->text = html_writer::tag('b', $edulevel->title) . ' (' . $this->source_info($edulevel->source) . ')';
+            $cell->text = html_writer::tag('b', s($edulevel->title)) . ' (' . $this->source_info($edulevel->source) . ')';
             $row->cells[] = $cell;
             $rows[] = $row;
             foreach ($edulevel->schooltypes as $schooltype) {
                 $row = new html_table_row();
                 $row->attributes['class'] = 'deletion-table-level-1';
                 $cell = new html_table_cell();
-                $cell->text = $schooltype->title;
+                $cell->text = s($schooltype->title);
                 $row->cells[] = $cell;
                 $rows[] = $row;
                 // from edit_config END
@@ -5507,7 +5507,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         (!$subject->can_delete ? ' class="be-sure"' : '') .
                         //(!$subject->can_delete ? ' disabled="disabled"' : '').
                         ' />' .
-                        html_writer::tag('b', $subject->title) . $notes);
+                        html_writer::tag('b', s($subject->title)) . $notes);
                     $cell->attributes['class'] = 'rg2-arrow';
                     $row->cells[] = $cell;
                     $rows[] = $row;
@@ -5543,7 +5543,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             (!$topic->can_delete ? ' class="be-sure"' : '') .
                             //(!$topic->can_delete ? ' disabled="disabled"' : '').
                             ' />' .
-                            $topic->numbering . ' ' . $topic->title . $notes,
+                            $topic->numbering . ' ' . s($topic->title) . $notes,
                             "desctitle");
                         $row->cells[] = $cell;
 
@@ -5574,7 +5574,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 (!$descriptor->can_delete ? ' class="be-sure"' : '') .
                                 //(!$descriptor->can_delete ? ' disabled="disabled"' : '').
                                 ' />' .
-                                $descriptor->numbering . ' ' . $descriptor->title . $notes,
+                                $descriptor->numbering . ' ' . s($descriptor->title) . $notes,
                                 "desctitle");
                             $row->cells[] = $cell;
 
@@ -5606,7 +5606,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     (!$child_descriptor->can_delete ? ' class="be-sure"' : '') .
                                     //(!$child_descriptor->can_delete ? ' disabled="disabled"' : '').
                                     ' />' .
-                                    $child_descriptor->numbering . ' ' . $child_descriptor->title . $notes,
+                                    $child_descriptor->numbering . ' ' . s($child_descriptor->title) . $notes,
                                     "desctitle");
                                 $row->cells[] = $cell;
 
@@ -5633,7 +5633,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                         (!$example->can_delete ? ' class="be-sure"' : '') .
                                         //(!$example->can_delete ? ' disabled="disabled"' : '').
                                         ' />' .
-                                        $example->numbering . ' ' . $example->title . $notes,
+                                        $example->numbering . ' ' . s($example->title) . $notes,
                                         "desctitle");
                                     $row->cells[] = $cell;
 
@@ -5662,7 +5662,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     (!$example->can_delete ? ' class="be-sure"' : '') .
                                     //(!$example->can_delete ? ' disabled="disabled"' : '').
                                     ' />' .
-                                    $example->numbering . ' ' . $example->title . $notes,
+                                    $example->numbering . ' ' . s($example->title) . $notes,
                                     "desctitle");
                                 $row->cells[] = $cell;
 
@@ -5704,14 +5704,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $row = new html_table_row();
             $row->attributes['class'] = 'exahighlight deletion-table-level-0';
             $cell = new html_table_cell();
-            $cell->text = html_writer::tag('b', $edulevel->title) . ' (' . $this->source_info($edulevel->source) . ')';
+            $cell->text = html_writer::tag('b', s($edulevel->title)) . ' (' . $this->source_info($edulevel->source) . ')';
             $row->cells[] = $cell;
             $rows[] = $row;
             foreach ($edulevel->schooltypes as $schooltype) {
                 $row = new html_table_row();
                 $row->attributes['class'] = 'deletion-table-level-1';
                 $cell = new html_table_cell();
-                $cell->text = $schooltype->title;
+                $cell->text = s($schooltype->title);
                 $row->cells[] = $cell;
                 $rows[] = $row;
                 // from edit_config END
@@ -5742,7 +5742,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			                                        value="' . $subject->id . '"' .
                         ($checked ? ' checked' : '') .
                         ' /> ' .
-                        html_writer::tag('span', $subject->title)
+                        html_writer::tag('span', s($subject->title))
                         . $preselect_because_disabled
                         . $preselect_because_missing_from_import);
                     $cell->attributes['class'] = 'rg2-arrow';
@@ -5777,7 +5777,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
             $outputnameCell = new html_table_cell();
             $outputnameCell->attributes['class'] = 'rg2-arrow rg2-indent';
-            $outputnameCell->text = html_writer::div($topic->title, "desctitle");
+            $outputnameCell->text = html_writer::div(s($topic->title), "desctitle");
             $topicRow->cells[] = $outputnameCell;
 
             $cell = new html_table_cell();
@@ -5860,8 +5860,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $cell = new html_table_cell();
             $cell2 = new html_table_cell();
             $moduleName = mb_strimwidth($module->name, 0, 33, "..."); // crop if > 30
-            $moduleLink = html_writer::link(block_exacomp_get_activityurl($module), $moduleName, ['title' => $module->name]);
-            $quizLink = html_writer::link(new moodle_url($CFG->wwwroot . "/blocks/exacomp/question_overview.php?courseid=" . $COURSE->id . "&moduleid=" . $module->id), $moduleName, ['title' => $module->name]);
+            $moduleLink = html_writer::link(block_exacomp_get_activityurl($module), s($moduleName), ['title' => $module->name]);
+            $quizLink = html_writer::link(new moodle_url($CFG->wwwroot . "/blocks/exacomp/question_overview.php?courseid=" . $COURSE->id . "&moduleid=" . $module->id), s($moduleName), ['title' => $module->name]);
             if (count($modules) > 5) {
                 $cell->attributes['class'] .= ' verticalCell ';
                 if ($module->modname == 'quiz') {
@@ -5895,7 +5895,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $row->attributes['class'] = 'ec_heading';
             $cell = new html_table_cell();
             $cell->colspan = count($modules) + 2;
-            $cell->text = html_writer::tag('b', $subject->title);
+            $cell->text = html_writer::tag('b', s($subject->title));
             $row->cells[] = $cell;
             $rows[] = $row;
             $this->topics_activities($rows, 0, $subject->topics, $modules, $courseid);
@@ -6031,7 +6031,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         $imageurl = moodle_url::make_pluginfile_url($context->id, 'badges', 'badgeimage', $badge->id, '/', 'f1', false);
         $content = html_writer::empty_tag('img', array('src' => $imageurl, 'class' => 'badge-image'));
-        $content .= html_writer::div($badge->name, '', array('style' => 'font-weight:bold;'));
+        $content .= html_writer::div(s($badge->name), '', array('style' => 'font-weight:bold;'));
 
         $badgeaction = 'badge';
         if ($CFG->version < 2019052000) { // for old moodles (before 3.7)
@@ -6078,7 +6078,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         if ($descriptors) {
             $li_desc = '';
             foreach ($descriptors as $descriptor) {
-                $li_desc .= html_writer::tag('li', $descriptor->title);
+                $li_desc .= html_writer::tag('li', s($descriptor->title));
             }
             $content .= html_writer::tag('ul', $li_desc);
         }
@@ -6105,12 +6105,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $row->attributes['class'] = 'ec_heading';
             $cell = new html_table_cell();
             //$cell->colspan = 2;
-            $cell->text = html_writer::tag('b', $subject->title);
+            $cell->text = html_writer::tag('b', s($subject->title));
             $row->cells[] = $cell;
 
             $cell = new html_table_cell();
             $cell->attributes['class'] = 'ec_tableheadwidth';
-            $cell->text = html_writer::link(new moodle_url('/badges/edit.php', array('id' => $badge->id, 'action' => $badgeaction)), $badge->name);
+            $cell->text = html_writer::link(new moodle_url('/badges/edit.php', array('id' => $badge->id, 'action' => $badgeaction)), s($badge->name));
             $row->cells[] = $cell;
             $rows[] = $row;
 
@@ -6452,7 +6452,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             }
 
             foreach ($competence_tree as $subject) {
-                $content .= html_writer::tag("h4", $subject->title, array("class" => "competence_profile_coursetitle"));
+                $content .= html_writer::tag("h4", s($subject->title), array("class" => "competence_profile_coursetitle"));
 
                 // Grid view
                 $innersection = '';
@@ -6647,7 +6647,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $cn = $course->fullname;
                 }
             }
-            $courseNameWrapped = html_writer::tag('h3', $cn, array('class' => 'competence_profile_coursename'));
+            $courseNameWrapped = html_writer::tag('h3', s($cn), array('class' => 'competence_profile_coursename'));
         }
         return $courseNameWrapped . html_writer::div($content, "competence_profile_coursedata");
     }
@@ -6725,7 +6725,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             if ($element->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS) {
 
                 $cell = new html_table_cell ();
-                $cell->text = $element->title;
+                $cell->text = s($element->title);
                 $cell->attributes['class'] = 'header';
                 $row->cells[] = $cell;
                 $columnscounter++;
@@ -6748,7 +6748,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         foreach ($table_content->content as $topic => $rowcontent) {
 
             $cell = new html_table_cell ();
-            $cell->text = block_exacomp_get_topic_numbering($topic) . " " . $table_column[$topic]->title;
+            $cell->text = block_exacomp_get_topic_numbering($topic) . " " . s($table_column[$topic]->title);
             $cell->attributes['class'] = (($rowcontent->visible) ? '' : 'notvisible');
             $row->cells[] = $cell;
 
@@ -7087,7 +7087,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         //first subject title cell
         $cell = new html_table_cell();
-        $cell->text = $subject->title; //TODO not hardcoded
+        $cell->text = s($subject->title); //TODO not hardcoded
         $cell->attributes['class'] = 'col-title';
         $cell->attributes['width'] = '45%';
         if ($this->is_print_mode()) {
@@ -7129,7 +7129,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
             $cell = new html_table_cell();
             $cell->attributes['class'] = 'col-title';
-            $cell->text = $topic->title
+            $cell->text = s($topic->title)
                 . $this->topic_3dchart_icon($topic->id, $student->id, $courseid);
             $row->cells[] = $cell;
 
@@ -7185,7 +7185,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $row->cells[] = $cell;
 
                 $cell = new html_table_cell();
-                $cell->text = $descriptor->title;
+                $cell->text = s($descriptor->title);
                 $cell->attributes['class'] = 'col-title';
                 $row->cells[] = $cell;
 
@@ -7272,7 +7272,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         $row->cells[] = $cell;
 
                         $cell = new html_table_cell();
-                        $cell->text = $example->title;
+                        $cell->text = s($example->title);
                         $cell->attributes['class'] = 'col-title';
                         $row->cells[] = $cell;
 
@@ -7544,7 +7544,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         foreach ($subjects as $subject) {
             if (isset($subject->crosssub_drafts)) {
                 $draft_content .= html_writer::start_tag('li');
-                $draft_content .= $subject->title;
+                $draft_content .= s($subject->title);
 
                 $drafts_exist = true;
                 $draft_content .= html_writer::start_tag('ul');
@@ -7559,7 +7559,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $text = str_replace(":", "\:", $text);
 
                     $draft_content .= html_writer::start_tag('li');
-                    $draft_content .= html_writer::span(html_writer::checkbox('draft[' . $draft->id . ']', $draft->id, false, $draft->title), '', array('title' => $text));
+                    $draft_content .= html_writer::span(html_writer::checkbox('draft[' . $draft->id . ']', $draft->id, false, s($draft->title)), '', array('title' => $text));
                     $draft_content .= html_writer::end_tag('li');
                 }
                 $draft_content .= html_writer::end_tag('ul');
@@ -7705,7 +7705,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $options = array();
         $options[0] = block_exacomp_get_string('nocrosssubsub');
         foreach ($subjects as $subject) {
-            $options[$subject->id] = $subject->title;
+            $options[$subject->id] = s($subject->title);
         }
 
         return html_writer::select($options, "subjectid", ($crosssubject) ? $crosssubject->subjectid : 0, false);
@@ -7723,7 +7723,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         if ($edit) {
             $cellText = html_writer::empty_tag('input', array('type' => 'text', 'value' => ($crosssubject) ? $crosssubject->title : '', 'name' => 'title'));
         } else {
-            $cellText = html_writer::tag('div', ($crosssubject) ? $crosssubject->title : '');
+            $cellText = html_writer::tag('div', ($crosssubject) ? s($crosssubject->title) : '');
         }
 
         $rows[] = [html_writer::span(block_exacomp_get_string('crosssubject'), 'exabis_comp_top_name'), $cellText];
@@ -7737,7 +7737,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         if ($edit) {
             $cellText = $this->crosssub_subject_dropdown($crosssubject);
         } else {
-            $cellText = html_writer::tag('b', $subject_title);
+            $cellText = html_writer::tag('b', s($subject_title));
         }
 
         $rows[] = [html_writer::span(block_exacomp_get_string('subject_singular'), 'exabis_comp_top_name'), $cellText];
@@ -7806,7 +7806,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             echo "i'm in";
             // 	        $html_tree .= html_writer::start_tag("li",array('class' => ("rg2-level-4 rg2")));
             $html_tree .= html_writer::start_tag("li");
-            $html_tree .= $crosssubject->title;
+            $html_tree .= s($crosssubject->title);
 
             $examples = block_exacomp_get_examples_for_crosssubject($crosssubject->id);
             foreach ($examples as $example) {
@@ -7844,7 +7844,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 //                 }
 
                 //                 $html_tree .= html_writer::tag("li", $example->title.$exampleIcons);
-                $html_tree .= html_writer::tag("li", $example->title . $exampleIcons);
+                $html_tree .= html_writer::tag("li", s($example->title) . $exampleIcons);
             }
             $html_tree .= html_writer::end_tag("li");
         }
@@ -7861,7 +7861,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         foreach ($tree as $skey => $subject) {
             if ($subject->associated == 1 || ($isTeacher && $editmode == 1)) {
                 $html_tree .= html_writer::start_tag("li", array('class' => ($subject->associated == 1) ? "associated" : ""));
-                $html_tree .= $subject->title;
+                $html_tree .= s($subject->title);
 
                 if (!empty($subject->topics)) {
                     $html_tree .= html_writer::start_tag("ul");
@@ -7871,7 +7871,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                     if ($topic->associated == 1 || ($isTeacher && $editmode == 1)) {
                         $html_tree .= html_writer::start_tag("li", array('class' => ($topic->associated == 1) ? "associated" : ""));
-                        $html_tree .= block_exacomp_get_topic_numbering($topic->id) . ' ' . $topic->title;
+                        $html_tree .= block_exacomp_get_topic_numbering($topic->id) . ' ' . s($topic->title);
 
                         if (!empty($topic->descriptors)) {
                             $html_tree .= html_writer::start_tag("ul");
@@ -7902,7 +7902,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     private function competence_for_list_tree($descriptor, $isTeacher, $editmode, $show_examples) {
 
         $html_tree = html_writer::start_tag("li", array('class' => ($descriptor->associated == 1) ? "associated" : ""));
-        $title = block_exacomp_get_descriptor_numbering($descriptor) . ' ' . $descriptor->title;
+        $title = block_exacomp_get_descriptor_numbering($descriptor) . ' ' . s($descriptor->title);
 
         if ($isTeacher && $editmode == 1) {
             $html_tree .= html_writer::checkbox("descriptor[]", $descriptor->id, $descriptor->direct_associated, $title);
@@ -7964,7 +7964,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         }
                     }
 
-                    $html_tree .= html_writer::tag("li", $example->title . $exampleIcons, array('class' => ($example->associated == 1) ? "associated" : ""));
+                    $html_tree .= html_writer::tag("li", s($example->title) . $exampleIcons, array('class' => ($example->associated == 1) ? "associated" : ""));
                 }
             }
         }
@@ -7995,7 +7995,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         }
 
         foreach ($examples as $example) {
-            $content .= html_writer::div($example->title, 'fc-event', array('exampleid' => $example->exampleid));
+            $content .= html_writer::div(s($example->title), 'fc-event', array('exampleid' => $example->exampleid));
         }
 
         return html_writer::div($content, '', array('id' => 'external-events'));
@@ -8048,7 +8048,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $content = html_writer::tag('h4', block_exacomp_get_string('example_trash'));
 
         foreach ($trash_examples as $example) {
-            $content .= html_writer::div($example->title, 'fc-event');
+            $content .= html_writer::div(s($example->title), 'fc-event');
         }
 
         if ($persistent_trash) {
@@ -8159,7 +8159,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             $input_taxonomies .= '</optgroup>';
                         }
                         $currentsourse = $taxonomy->sourcename;
-                        $input_taxonomies .= '<optgroup label="' . $currentsourse . '">';
+                        $input_taxonomies .= '<optgroup label="' . s($currentsourse) . '">';
                     }
                     $attributes = array();
                     $attributes['value'] = $taxonomy->id;
@@ -8170,7 +8170,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         $attributes['selected'] = 'selected';
                     }
                     $input_taxonomies .= html_writer::tag('option',
-                        $taxonomy->title,
+                        s($taxonomy->title),
                         $attributes);
                     $firstgroup = true;
                 }
@@ -8254,7 +8254,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
             // example title + links + icons
             $content .= '<td valign="top">';
-            $content .= $example->title . ' ' . $exampleIcons;
+            $content .= s($example->title) . ' ' . $exampleIcons;
             $example_parent_names = block_exacomp_build_example_parent_names($courseId, $example->id, $example);
             $content .= '</td>';
             // activity: done or not
@@ -8302,7 +8302,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $content .= html_writer::start_tag('li');
             $content .= html_writer::empty_tag('input', array('type' => 'checkbox', 'id' => 'group_examp_mm', 'groupid' => $group->id));
             $content .= html_writer::link(new moodle_url('/blocks/exacomp/weekly_schedule.php', array('courseid' => $COURSE->id, 'studentid' => 0)),
-                $group->name, array('target' => '_blank', 'title' => block_exacomp_get_string('to_weekly_schedule')));
+                s($group->name), array('target' => '_blank', 'title' => block_exacomp_get_string('to_weekly_schedule')));
             $content .= html_writer::end_tag('li');
         }
 
@@ -8401,7 +8401,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         }
 
         foreach ($course_crosssubs as $crosssub) {
-            $content .= html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id)), $crosssub->title);
+            $content .= html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id)), s($crosssub->title));
             $content .= html_writer::empty_tag('br');
         }
 
@@ -8430,7 +8430,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             }
 
             $title = clone $item_title_cell;
-            $title->text = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id)), $crosssub->title);
+            $title->text = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id)), s($crosssub->title));
             $table->data[] = [
                 $title,
                 html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id, 'editmode' => 1)), $this->pix_icon("i/edit", block_exacomp_get_string("edit")),
@@ -8464,7 +8464,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             }
 
             $title = clone $item_title_cell;
-            $title->text = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id)), $crosssub->title);
+            $title->text = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id)), s($crosssub->title));
             $table->data[] = [
                 $title,
                 html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id, 'editmode' => 1)), $this->pix_icon("i/edit", block_exacomp_get_string("edit"))) .
@@ -8499,7 +8499,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         foreach ($subjects as $subject) {
             $title = new html_table_cell;
-            $title->text = '<div>' . $subject->title . '</div>';
+            $title->text = '<div>' . s($subject->title) . '</div>';
             $title->attributes['class'] = 'rg2-indent rg2-arrow ';
             $title->colspan = 2;
 
@@ -8532,7 +8532,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                     //                    $crosssubj->creatorid = 3;
                     $title = clone $item_title_cell;
-                    $title->text = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssubj->id)), $crosssubj->title);
+                    $title->text = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssubj->id)), s($crosssubj->title));
                     $row = new html_table_row([
                         $title,
                         ($crosssubj->has_capability(BLOCK_EXACOMP_CAP_MODIFY) ? html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssubj->id, 'editmode' => 1)),
@@ -8627,7 +8627,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         //add local groups:
         if (is_array($groups) && count($groups) > 0) {
             foreach ($groups as $group) {
-                $studentsAssociativeArray[-($group->id + 1)] = $group->name;
+                $studentsAssociativeArray[-($group->id + 1)] = s($group->name);
             }
         }
 
@@ -8734,7 +8734,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             //add local groups:
                             $groups = groups_get_all_groups($courseid);
                             foreach ($groups as $group) {
-                                $studentsAssociativeArray[-($group->id + 1)] = $group->name;
+                                $studentsAssociativeArray[-($group->id + 1)] = s($group->name);
                             }
                             foreach ($students as $student) {
                                 $studentsAssociativeArray[$student->id] = fullname($student);
@@ -8826,7 +8826,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             $studentsAssociativeArray[0] = block_exacomp_get_string('all_students');
                             $groups = groups_get_all_groups($courseid);
                             foreach ($groups as $group) {
-                                $studentsAssociativeArray[-($group->id + 1)] = $group->name;
+                                $studentsAssociativeArray[-($group->id + 1)] = s($group->name);
                             }
                             foreach ($students as $student) {
                                 $studentsAssociativeArray[$student->id] = fullname($student);
@@ -8884,7 +8884,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         $studentsAssociativeArray[0] = block_exacomp_get_string('all_students');
                         $groups = groups_get_all_groups($courseid);
                         foreach ($groups as $group) {
-                            $studentsAssociativeArray[-($group->id + 1)] = $group->name;
+                            $studentsAssociativeArray[-($group->id + 1)] = s($group->name);
                         }
                         foreach ($students as $student) {
                             $studentsAssociativeArray[$student->id] = fullname($student);
