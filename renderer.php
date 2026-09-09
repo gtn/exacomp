@@ -374,8 +374,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         foreach ($niveaus as $niveau) {
             if (block_exacomp_is_teacher() || block_exacomp_is_niveau_visible($COURSE->id, $selectedTopic, g::$USER->id, $niveau->id)) {
-                $title = isset($niveau->cattitle) ? $niveau->cattitle : $niveau->title;
+                $title = isset($niveau->cattitle) ? s($niveau->cattitle) : s($niveau->title);
                 $subtitle = $selectedTopic ? $niveau->get_subtitle($selectedTopic->subjid) : null;
+                if ($subtitle !== null) {
+                    $subtitle = s($subtitle);
+                }
 
                 $extra = '';
                 if ($this->is_edit_mode() && ($niveau->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM || (is_object($selectedSubject) && \block_exacomp\db_layer::property_exists($selectedSubject, "is_editable") && $selectedSubject->is_editable))) {

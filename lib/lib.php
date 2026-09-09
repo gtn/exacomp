@@ -3942,12 +3942,14 @@ function block_exacomp_get_grading_scheme($courseid) {
  */
 function block_exacomp_get_output_fields($topic) {
     $output_id = '';
-    //$output_title = $topic->title;
-    $output_title = nl2br($topic->title);
-    $remove = array("\n", "\r\n", "\r", "<p>", "</p>", "<h1>", "</h1>", "<br>", "<br />", "<br/>");
-    $output_title = str_replace($remove, ' ', $output_title); // new lines to space
+    // Strip any HTML markup entirely (titles are meant to be flattened to a single plain-text
+    // line here), collapse newlines/whitespace, then HTML-escape the result so it can be safely
+    // concatenated into HTML output by callers without further escaping.
+    $output_title = strip_tags($topic->title);
+    $output_title = str_replace(array("\n", "\r\n", "\r"), ' ', $output_title); // new lines to space
     $output_title = preg_replace('!\s+!', ' ', $output_title); // multiple spaces to single
     $output_title = fix_utf8($output_title);
+    $output_title = s($output_title);
     //if (preg_match('!^([^\s]*[0-9][^\s]*+)\s+(.*)$!iu', $output_title, $matches)) {
     //    //$output_id = $matches[1];
     //    $output_id = '';
