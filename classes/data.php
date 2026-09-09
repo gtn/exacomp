@@ -2666,6 +2666,16 @@ class data_importer extends data {
             }
         }
 
+        // Imported data comes from an uploaded/downloaded XML file and is not passed through any
+        // moodleform (which would normally apply PARAM_TEXT via setType()). Sanitize the plain-text
+        // label fields here so that imported titles/names cannot smuggle raw HTML/JS (e.g. via
+        // <img onerror=...>) into the database, matching what the manual admin/teacher forms enforce.
+        foreach (['title', 'name', 'author'] as $textfield) {
+            if (isset($item->$textfield) && is_string($item->$textfield)) {
+                $item->$textfield = clean_param($item->$textfield, PARAM_TEXT);
+            }
+        }
+
         if ($dbItem = g::$DB->get_record($table, $where)) {
             $item->id = $dbItem->id;
             if ($item->source == self::$import_source_local_id) {
