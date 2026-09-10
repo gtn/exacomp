@@ -441,6 +441,13 @@ switch ($action) {
             block_exacomp_example_down($exampleid, $descrid);
         }
         die('ok');
+    case('descriptor-sorting'):
+        $descriptorid = required_param('descriptorid', PARAM_INT);
+        $direction = required_param('direction', PARAM_ALPHA);
+        $topicid = required_param('topicid', PARAM_INT);
+
+        block_exacomp_descriptor_order($descriptorid, $direction, $courseid, $topicid);
+        die('ok');
     case 'delete-descriptor':
         if (!$isTeacher) {
             print_error('noteacher');

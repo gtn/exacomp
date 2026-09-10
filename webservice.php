@@ -188,9 +188,20 @@ class block_exacomp_simple_service {
         } else {
             $html_content = '';
             $html_header = '';
-            $student = $DB->get_record('user', array('id' => $studentid));
+
+            // check permission for viewing student's profile: studentid must be an actual student of this course
+            $coursestudents = \block_exacomp\permissions::get_course_students($courseid);
+            if (!array_key_exists($studentid, $coursestudents)) {
+                print_error("nopermissions", "", "", "Show student profile");
+            }
+            $student = $coursestudents[$studentid];
 
             $possible_courses = block_exacomp_get_exacomp_courses($student);
+            // security: only show courses the requesting user actually teaches, so a teacher can't pull
+            // a student's data for unrelated courses just because that student is also enrolled there
+            $possible_courses = array_filter($possible_courses, function($course) {
+                return block_exacomp_is_teacher($course->id);
+            });
             block_exacomp_init_profile($possible_courses, $student->id);
             $html_content .= $output->competence_profile_metadata($student);
             //$html_header .= $output->competence_profile_metadata($student); // TODO: ??

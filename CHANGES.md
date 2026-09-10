@@ -1,3 +1,9 @@
+### v5.1 (2026090800) ###
+* Competence profile improvements: select all students, hide usernames in collapsed views, and improve layout/date selection.
+* Fixed competence-acquisition timeline calculations for teacher and student assessments
+* Added ordering controls for parent and custom child descriptors.
+* Secured competence-profile webservice access by validating course and student permissions.
+
 ### v5.1 (2026070800) ###
 * Migrate assessment preconfigurations from XML to DB. Allow editing and adding of assessment preconfigurations in the settings page.
 * PHP 8.1 deprecation fixes

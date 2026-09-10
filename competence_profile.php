@@ -32,10 +32,30 @@ $context = context_course::instance($courseid);
 $isTeacher = block_exacomp_is_teacher($context);
 
 $studentid = block_exacomp_get_studentid();
-
-if ($studentid < 0) {
-    $studentid = 0;
+if ($studentid == 0) {
+    $studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
 }
+
+if (!$isTeacher) {
+    $studentid = $USER->id;
+}
+
+// resolve the student(s) to build the profile report(s) for: either a single selected student, or (mirroring
+// the "all students" dropdown option of assign_competencies.php) every student of the course at once. In the
+// "all students" case, competence_profile_course() renders each report part (grid, radar, statistics,
+// comparison, chronological) once, with one graph/table per student inside it.
+$coursestudents = $isTeacher ? \block_exacomp\permissions::get_course_students($courseid) : [$USER->id => $USER];
+
+if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
+    $students = $coursestudents;
+} else {
+    // check permission for viewing student's profile
+    if (!array_key_exists($studentid, $coursestudents)) {
+        print_error("nopermissions", "", "", "Show student profile");
+    }
+    $students = [$studentid => $coursestudents[$studentid]];
+}
+
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_competence_profile_profile';
 
@@ -43,36 +63,25 @@ $output = block_exacomp_get_renderer();
 
 if (optional_param('print', false, PARAM_BOOL)) {
     $output->print = true;
-    if (!$isTeacher) {
-        $studentid = $USER->id;
+    $html_header = '';
+    $html_tables = [];
 
+    if (!$isTeacher) {
         $html_tables[] = $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_profile($context, $courseid), $page_identifier);
     } else {
         $html_content = '';
-        $html_header = '';
-        $student = $DB->get_record('user', array('id' => $studentid));
 
-        $possible_courses = block_exacomp_get_exacomp_courses($student);
-        block_exacomp_init_profile($possible_courses, $student->id);
-        $html_content .= $output->competence_profile_metadata($student);
-        //$html_header .= $output->competence_profile_metadata($student); // TODO: ??
-        $usebadges = get_config('exacomp', 'usebadges');
-        //         $profile_settings = block_exacomp_get_profile_settings($studentid);
-        $items = array();
-        $user_courses = array();
-        foreach ($possible_courses as $course) {
-            $user_courses[$course->id] = $course;
+        if (count($students) == 1) {
+            $html_content .= $output->competence_profile_metadata(reset($students));
         }
-        if (!empty($user_courses)) {
+
+        $reports = block_exacomp_get_competence_profile_reports($output, $students, false);
+        if ($reports) {
             $html_content .= html_writer::tag('h3', block_exacomp_get_string('my_comps'), array('class' => 'competence_profile_sectiontitle'));
         }
-        foreach ($user_courses as $course) {
-            $html_content .= $output->competence_profile_course($course, $student, true, block_exacomp_get_grading_scheme($course->id));
+        foreach ($reports as $report) {
+            $html_content .= $report['content'];
         }
-
-        // Überfachliche Kompetenzen
-        // used last course from foreach! TODO: check it!
-        $html_content .= $output->competence_profile_course($course, $student, true, block_exacomp_get_grading_scheme($course->id), true); //prints global values
 
         $html_tables[] = $html_content;
     }
@@ -102,46 +111,31 @@ echo $output->header_v2($page_identifier);
 /* CONTENT REGION */
 
 if (!$isTeacher) {
-    $studentid = $USER->id;
     echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_profile($context, $courseid), $page_identifier);
 } else {
+    echo '<div class="exacomp-header-edit">';
 
-    $coursestudents = \block_exacomp\permissions::get_course_students($courseid);
+    echo '<div style="padding-bottom: 5px;">';
+    //print student selector (including the "all students" option)
+    echo block_exacomp_get_string("choosestudent");
+    echo $output->studentselector($coursestudents, $studentid, block_exacomp_renderer::STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
+    echo '</div>';
 
     echo '<div style="padding-bottom: 15px;">';
-    if ($studentid == 0 || $studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
-        echo html_writer::tag("p", block_exacomp_get_string("select_student"));
-        //print student selector
-        echo block_exacomp_get_string("choosestudent");
-        echo $output->studentselector($coursestudents, $studentid);
-        echo $output->footer();
-        exit;
-
-    } else {
-        //check permission for viewing students profile
-        if (!array_key_exists($studentid, $coursestudents)) {
-            print_error("nopermissions", "", "", "Show student profile");
+    //print date range picker
+    echo block_exacomp_get_string("choosedaterange");
+    if ($periods = block_exacomp_get_exastud_periods_current_and_past_periods()) {
+        $options = [];
+        foreach ($periods as $period) {
+            $options[$period->starttime . '-' . $period->endtime] = $period->description;
         }
-
-        //print student selector
-        echo block_exacomp_get_string("choosestudent");
-        echo $output->studentselector($coursestudents, $studentid);
-
-        //print date range picker
-        echo block_exacomp_get_string("choosedaterange");
-        if ($periods = block_exacomp_get_exastud_periods_current_and_past_periods()) {
-            $options = [];
-            foreach ($periods as $period) {
-                $options[$period->starttime . '-' . $period->endtime] = $period->description;
-            }
-            echo html_writer::select($options, 'daterangeperiods', '', block_exacomp_get_string('periodselect'), []) . ' ';
-        }
-        echo $output->daterangepicker();
+        echo html_writer::select($options, 'daterangeperiods', '', block_exacomp_get_string('periodselect'), []) . ' ';
     }
+    echo $output->daterangepicker();
+    echo '</div>';
 
     echo '</div>';
 }
-$student = $DB->get_record('user', array('id' => $studentid));
 
 $printUrl = $PAGE->url->out(false, array('studentid' => $studentid, 'print' => 1));
 echo html_writer::div(html_writer::link($printUrl,
@@ -153,25 +147,11 @@ echo html_writer::div(html_writer::link($printUrl,
         //'onclick' => 'window.open(location.href+\'&print=1\'); return false;',
     ]), 'button-box');
 
-$possible_courses = block_exacomp_get_exacomp_courses($student);
-
-block_exacomp_init_profile($possible_courses, $student->id);
-
-echo $output->competence_profile_metadata($student);
+if (count($students) == 1) {
+    echo $output->competence_profile_metadata(reset($students));
+}
 
 //echo html_writer::start_div('competence_profile_overview clearfix');
-
-$usebadges = get_config('exacomp', 'usebadges');
-
-// $profile_settings = block_exacomp_get_profile_settings($studentid);
-
-$items = array();
-
-$user_courses = array();
-
-foreach ($possible_courses as $course) {
-    $user_courses[$course->id] = $course;
-}
 
 echo html_writer::tag('h3', block_exacomp_get_string('my_comps'), array('class' => 'competence_profile_sectiontitle'));
 
@@ -179,37 +159,9 @@ echo html_writer::start_div('exacomp_tabbed');
 $reportTabs = [];
 $reportContents = [];
 
-// courses
-foreach ($user_courses as $course) {
-    //if selected
-    $cont = $output->competence_profile_course($course, $student, true, block_exacomp_get_grading_scheme($course->id), false, null, true); //prints the actual content
-    if ($cont) {
-        $reportTabs[] = '<li class="nav-item"><a href="#exacomp_tabbed_course_' . $course->id . '">' . $course->fullname . '</a></li>';
-        $reportContents[] = html_writer::div($cont, '', ['id' => 'exacomp_tabbed_course_' . $course->id]);
-    }
-}
-
-// Add crosssubjects
-$crosssubjects = array();
-foreach ($user_courses as $course) {
-    $crosssubjects[] = block_exacomp_get_cross_subjects_by_course($course->id, $student->id);
-}
-foreach ($crosssubjects as $crosssubjectsOfCourse) {
-    foreach ($crosssubjectsOfCourse as $crosssubj) {
-        $cont = $output->competence_profile_course(-1, $student, true, block_exacomp_get_grading_scheme($crosssubj->id), false, $crosssubj, true);
-        if ($cont) {
-            $reportTabs[] = '<li class="nav-item"><a href="#exacomp_tabbed_crossubject_' . $crosssubj->id . '">' . $crosssubj->title . '</a></li>';
-            $reportContents[] = html_writer::div($cont, '', ['id' => 'exacomp_tabbed_crossubject_' . $crosssubj->id]);
-        }
-    }
-}
-
-// Überfachliche Kompetenzen
-// used last course from foreach! TODO: check it!
-$cont = $output->competence_profile_course($course, $student, true, block_exacomp_get_grading_scheme($course->id), true, null, true); //prints global values
-if ($cont) {
-    $reportTabs[] = '<li class="nav-item"><a href="#exacomp_tabbed_global">' . block_exacomp_get_string('transferable_skills') . '</a></li>';
-    $reportContents[] = html_writer::div($cont, '', ['id' => 'exacomp_tabbed_global']);
+foreach (block_exacomp_get_competence_profile_reports($output, $students, true) as $report) {
+    $reportTabs[] = '<li class="nav-item"><a href="#exacomp_tabbed_' . $report['id'] . '">' . $report['title'] . '</a></li>';
+    $reportContents[] = html_writer::div($report['content'], '', ['id' => 'exacomp_tabbed_' . $report['id']]);
 }
 
 // echo tabbed content
@@ -229,5 +181,3 @@ echo html_writer::end_div(); // end .exacomp_tabbed
 
 /* END CONTENT REGION */
 echo $output->footer();
-
-

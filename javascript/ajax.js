@@ -1044,6 +1044,19 @@
     });
   });
 
+  $(document).on('click', 'a[exa-type=descriptor-sorting]', function (event) {
+    event.preventDefault();
+
+    block_exacomp.call_ajax({
+      action: 'descriptor-sorting',
+      direction: this.getAttribute('exa-direction'),
+      descriptorid: this.getAttribute('exa-descriptorid'),
+      topicid: this.getAttribute('exa-topicid'),
+    }).done(function () {
+      location.reload();
+    });
+  });
+
 
   $(document).on('click', '#hide-example', function (event) {
     event.preventDefault();
@@ -1442,4 +1455,3 @@
   };
 
 })(jQueryExacomp);
-

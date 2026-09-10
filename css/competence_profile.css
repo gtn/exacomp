@@ -227,6 +227,19 @@
     padding: 5px;
 }
 
+#block_exacomp .compprofiletable td.centered {
+    width: 70px;
+    min-width: 70px;
+    height: 70px;
+    padding: 0;
+    vertical-align: middle;
+}
+
+#block_exacomp .compprofiletable td.centered img {
+    display: block;
+    margin: 0 auto;
+}
+
 #block_exacomp .header {
     background-color: #dcdcdc !important;
 }
@@ -257,6 +270,20 @@
 
 #block_exacomp .exa-collapsible-open .competence_profile_insectitle {
     background: rgba(0, 0, 0, 0) url("../pix/pfeil_hide.png") no-repeat scroll 0;
+}
+
+/* student name shown above each graph/table when a report part contains data for multiple students (e.g. "all students") */
+#block_exacomp .competence_profile_studentname {
+    margin: 15px 0 5px 0;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+    font-weight: bold;
+}
+
+#block_exacomp .competence_profile_innersection > .competence_profile_studentname:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
 }
 
 #block_exacomp .competence_profile_coursedata th {

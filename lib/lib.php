@@ -3942,12 +3942,14 @@ function block_exacomp_get_grading_scheme($courseid) {
  */
 function block_exacomp_get_output_fields($topic) {
     $output_id = '';
-    //$output_title = $topic->title;
-    $output_title = nl2br($topic->title);
-    $remove = array("\n", "\r\n", "\r", "<p>", "</p>", "<h1>", "</h1>", "<br>", "<br />", "<br/>");
-    $output_title = str_replace($remove, ' ', $output_title); // new lines to space
+    // Strip any HTML markup entirely (titles are meant to be flattened to a single plain-text
+    // line here), collapse newlines/whitespace, then HTML-escape the result so it can be safely
+    // concatenated into HTML output by callers without further escaping.
+    $output_title = strip_tags($topic->title);
+    $output_title = str_replace(array("\n", "\r\n", "\r"), ' ', $output_title); // new lines to space
     $output_title = preg_replace('!\s+!', ' ', $output_title); // multiple spaces to single
     $output_title = fix_utf8($output_title);
+    $output_title = s($output_title);
     //if (preg_match('!^([^\s]*[0-9][^\s]*+)\s+(.*)$!iu', $output_title, $matches)) {
     //    //$output_id = $matches[1];
     //    $output_id = '';
@@ -5842,6 +5844,101 @@ function block_exacomp_init_profile($courses, $userid) {
             $DB->insert_record(BLOCK_EXACOMP_DB_PROFILESETTINGS, $insert);
         }
     }
+}
+
+/**
+ * builds the competence profile reports (one course tab per exacomp-course, one per visible crosssubject,
+ * plus the "transferable skills"/global report) for one or several students at once.
+ *
+ * used by competence_profile.php for both the normal (tabbed) view and the print view, so that a single
+ * student and "all students" go through the exact same report-building code: competence_profile_course()
+ * itself is responsible for rendering one graph/table per student within each report part.
+ *
+ * @param block_exacomp_renderer $output
+ * @param array $students students to build the report(s) for, keyed by studentid
+ * @param bool $withoutHeaders whether competence_profile_course() should omit its own course/crosssubject headings
+ *                              (true when the caller already shows the title, e.g. as a tab)
+ * @return array list of ['id' => string, 'title' => string, 'content' => string]
+ */
+function block_exacomp_get_competence_profile_reports($output, array $students, bool $withoutHeaders) {
+    global $USER;
+
+    // every student can potentially have a different set of exacomp-enabled courses they are enrolled in,
+    // so we collect them per student and only feed a course's report the students actually enrolled in it
+    $studentCourses = []; // studentid => [courseid => course]
+    $allCourses = []; // courseid => course (union over all students)
+    foreach ($students as $student) {
+        $possible_courses = block_exacomp_get_exacomp_courses($student);
+
+        // security: when the requesting user is looking at somebody else's profile (i.e. a teacher viewing
+        // a student), only ever include courses the requesting user actually teaches. Without this, a
+        // teacher could see a student's reports for unrelated courses (where the requester has no teaching
+        // capability at all) simply because that student happens to be enrolled in both courses. This does
+        // not restrict a user viewing their own profile (e.g. a student browsing their own transferable
+        // skills across all their courses).
+        if ($student->id != $USER->id) {
+            $possible_courses = array_filter($possible_courses, function($course) {
+                return block_exacomp_is_teacher($course->id);
+            });
+        }
+
+        block_exacomp_init_profile($possible_courses, $student->id);
+        $studentCourses[$student->id] = $possible_courses;
+        foreach ($possible_courses as $course) {
+            $allCourses[$course->id] = $course;
+        }
+    }
+
+    $reports = [];
+
+    // one tab per course
+    foreach ($allCourses as $course) {
+        $courseStudents = array_filter($students, function($student) use ($studentCourses, $course) {
+            return array_key_exists($course->id, $studentCourses[$student->id]);
+        });
+        if (!$courseStudents) {
+            continue;
+        }
+        $cont = $output->competence_profile_course($course, $courseStudents, true, block_exacomp_get_grading_scheme($course->id), false, null, $withoutHeaders);
+        if ($cont) {
+            $reports[] = ['id' => 'course_' . $course->id, 'title' => $course->fullname, 'content' => $cont];
+        }
+    }
+
+    // one tab per crosssubject, only for the students that actually have access to it
+    // (crosssubject visibility can be shared, or student-specific)
+    $crosssubjects = []; // crosssubjid => crosssubj
+    $crosssubjectStudents = []; // crosssubjid => [studentid => student]
+    foreach ($allCourses as $course) {
+        foreach ($students as $student) {
+            if (!array_key_exists($course->id, $studentCourses[$student->id])) {
+                continue;
+            }
+            foreach (block_exacomp_get_cross_subjects_by_course($course->id, $student->id) as $crosssubj) {
+                $crosssubjects[$crosssubj->id] = $crosssubj;
+                $crosssubjectStudents[$crosssubj->id][$student->id] = $student;
+            }
+        }
+    }
+    foreach ($crosssubjects as $crosssubj) {
+        $cont = $output->competence_profile_course(-1, $crosssubjectStudents[$crosssubj->id], true,
+            block_exacomp_get_grading_scheme($crosssubj->id), false, $crosssubj, $withoutHeaders);
+        if ($cont) {
+            $reports[] = ['id' => 'crossubject_' . $crosssubj->id, 'title' => $crosssubj->title, 'content' => $cont];
+        }
+    }
+
+    // "Überfachliche Kompetenzen" / transferable skills (global report), combining data gathered above
+    // across all of a student's courses; which course object is passed in only matters for its grading scheme
+    if ($allCourses) {
+        $course = end($allCourses);
+        $cont = $output->competence_profile_course($course, $students, true, block_exacomp_get_grading_scheme($course->id), true, null, $withoutHeaders);
+        if ($cont) {
+            $reports[] = ['id' => 'global', 'title' => block_exacomp_get_string('transferable_skills'), 'content' => $cont];
+        }
+    }
+
+    return $reports;
 }
 
 /**
@@ -9319,6 +9416,89 @@ function block_exacomp_example_order($exampleid, $descrid, $operator = "<") {
 }
 
 /**
+ * Change the order of a custom descriptor among its eligible siblings.
+ *
+ * @param int $descriptorid
+ * @param string $direction
+ * @param int $courseid
+ * @param int $topicid
+ * @return bool
+ * @throws block_exacomp_permission_exception
+ */
+function block_exacomp_descriptor_order($descriptorid, $direction, $courseid, $topicid) {
+    global $DB;
+
+    if (!in_array($direction, ['up', 'down'], true)) {
+        throw new \moodle_exception('invalidparameter', 'block_exacomp');
+    }
+
+    $descriptor = \block_exacomp\descriptor::get($descriptorid, null, MUST_EXIST);
+    if ($descriptor->source != BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR) {
+        throw new block_exacomp_permission_exception();
+    }
+    if (!block_exacomp_is_editingteacher($courseid)) {
+        throw new block_exacomp_permission_exception('User is no editing teacher');
+    }
+    block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_MODIFY, $descriptor);
+    if (!in_array($courseid, block_exacomp_get_courseids_by_descriptor($descriptor->id))) {
+        throw new block_exacomp_permission_exception('No course descriptor');
+    }
+
+    $transaction = $DB->start_delegated_transaction();
+    if ($descriptor->parentid) {
+        $siblings = array_values($DB->get_records(BLOCK_EXACOMP_DB_DESCRIPTORS, [
+            'parentid' => $descriptor->parentid,
+            'source' => BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR,
+        ]));
+    } else {
+        if (!$DB->record_exists(BLOCK_EXACOMP_DB_DESCTOPICS, [
+            'descrid' => $descriptor->id,
+            'topicid' => $topicid,
+        ])) {
+            throw new block_exacomp_permission_exception('No topic descriptor');
+        }
+
+        $sql = 'SELECT DISTINCT d.*
+                  FROM {' . BLOCK_EXACOMP_DB_DESCRIPTORS . '} d
+                  JOIN {' . BLOCK_EXACOMP_DB_DESCTOPICS . '} dt ON dt.descrid = d.id
+                 WHERE d.parentid = 0
+                   AND d.source = ?
+                   AND dt.topicid = ?';
+        $siblings = array_values($DB->get_records_sql($sql, [
+            BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR,
+            $topicid,
+        ]));
+    }
+    usort($siblings, function($a, $b) {
+        if ($a->sorting < $b->sorting) {
+            return -1;
+        }
+        if ($a->sorting > $b->sorting) {
+            return 1;
+        }
+        $titlecomparison = strcmp($a->title, $b->title);
+        return $titlecomparison ?: ($a->id <=> $b->id);
+    });
+
+    $index = array_search($descriptor->id, array_column($siblings, 'id'));
+    $adjacentindex = $index + ($direction === 'up' ? -1 : 1);
+    if ($index === false || !isset($siblings[$adjacentindex])) {
+        $transaction->allow_commit();
+        return false;
+    }
+
+    $adjacent = $siblings[$adjacentindex];
+    $selectedsorting = $siblings[$index]->sorting;
+    $siblings[$index]->sorting = $adjacent->sorting;
+    $adjacent->sorting = $selectedsorting;
+    $DB->update_record(BLOCK_EXACOMP_DB_DESCRIPTORS, $siblings[$index]);
+    $DB->update_record(BLOCK_EXACOMP_DB_DESCRIPTORS, $adjacent);
+    $transaction->allow_commit();
+
+    return true;
+}
+
+/**
  * remove examples from pre-planning storage
  *
  * @param unknown $courseid
@@ -11972,14 +12152,95 @@ function block_exacomp_search_competence_grid_as_example_list($courseid, $q) {
     return $examples;
 }
 
+/**
+ * Decide if a single teacher- or student-evaluation of a competence(-like) item ("descriptor",
+ * "topic", "subject", "crosssubject", "child descriptor", "example", ...) counts as "gained".
+ *
+ * This is used e.g. by the "Zeitlicher Ablauf des Kompetenzerwerbs" (timeline) graph to count
+ * teacher- and student-gained items over time (see block_exacomp_get_comp_eval_gained() /
+ * block_exacomp_get_gained_competences()).
+ *
+ * Important: teacher and student evaluations are NOT interchangeable:
+ * - Teacher evaluations use the assessment scheme configured for the actual competence TYPE
+ *   (GRADE/VERBOSE/POINTS/YESNO/NONE, see block_exacomp_additional_grading()) and are stored
+ *   either in "value" (POINTS/VERBOSE/YESNO) or in "additionalinfo" (GRADE, see
+ *   block_exacomp_set_comp_eval() and the "$compAssessment == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE"
+ *   handling elsewhere in this file). The negative/positive threshold and direction (e.g.
+ *   "assessment_verbose_lowerisbetter") for the teacher scale is already correctly handled by
+ *   block_exacomp_value_is_negative_by_assessment().
+ * - Student self-evaluations always use "value" (never "additionalinfo") and are always on their
+ *   own scale (either the default emoji scale or a custom, admin-configured verbose scale, see
+ *   \block_exacomp\global_config::get_student_eval_items()), independent of the teacher's
+ *   assessment scheme for that competence type. Using the teacher scheme/threshold (or worse,
+ *   the teacher-only "additionalinfo" field) for a student evaluation is incorrect and was the
+ *   root cause of wrong counts in mixed assessment configurations (e.g. "Mix assessment").
+ *
+ * NULL (not yet evaluated) never counts as gained. Student values of "0" (and negative values)
+ * are normalized to NULL by block_exacomp_set_comp_eval(); teacher values of "0" may remain
+ * stored because zero is a valid lowest teacher value for some schemes. In either case, zero
+ * must not count as gained.
+ *
+ * @param \block_exacomp\comp_eval|\stdClass $competence_data must provide value, additionalinfo,
+ *      role and (except for old cached/legacy callers) comptype
+ * @param int $courseid
+ * @return bool
+ */
 function block_exacomp_check_competence_data_is_gained($competence_data, $courseid = 0) {
-    if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid)) {
-        $value = block_exacomp\global_config::get_additionalinfo_value_mapping($competence_data->additionalinfo);
+    // fallback to the descriptor type/teacher role for legacy callers that do not provide them
+    $comptype = isset($competence_data->comptype) ? $competence_data->comptype : BLOCK_EXACOMP_TYPE_DESCRIPTOR;
+    $role = isset($competence_data->role) ? $competence_data->role : BLOCK_EXACOMP_ROLE_TEACHER;
 
-        return $value >= 1;
-    } else {
-        return $competence_data->value >= 1;
+    if ($role == BLOCK_EXACOMP_ROLE_STUDENT) {
+        // student self-evaluations are stored in "value" and use their own (verbose or emoji)
+        // scale - not the teacher's assessment scheme/scale and never "additionalinfo"
+        if ($competence_data->value === null || $competence_data->value === '') {
+            return false; // not evaluated by the student yet
+        }
+
+        // Items are numbered 1..count (0/NULL means "not evaluated", see
+        // block_exacomp_set_comp_eval()). The lowest actual option is not gained;
+        // every higher option is gained.
+        $items_count = count(\block_exacomp\global_config::get_student_eval_items(false, $comptype, false, $courseid));
+
+        return $items_count > 0 && $competence_data->value > 1;
     }
+
+    // teacher (or system/auto-graded) evaluation: use the scheme configured for the actual
+    // competence type, not always the descriptor scheme
+    $scheme = block_exacomp_additional_grading($comptype, $courseid);
+
+    if ($scheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
+        // for the GRADE scheme, the actual grading is stored in "additionalinfo", not "value"
+        if (!$competence_data->additionalinfo) {
+            return false; // not evaluated yet
+        }
+
+        $value = \block_exacomp\global_config::get_additionalinfo_value_mapping($competence_data->additionalinfo);
+    } else {
+        if ($competence_data->value === null || $competence_data->value === '') {
+            return false; // not evaluated yet
+        }
+
+        $value = $competence_data->value;
+    }
+
+    if ($scheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE) {
+        // no assessment scheme configured for this competence type: block_exacomp_value_is_negative_by_assessment()
+        // always treats BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE as negative, so fall back to the
+        // previous (legacy) ">= 1" behaviour to keep this case working as before
+        return $value >= 1;
+    }
+
+    if ($scheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO) {
+        // block_exacomp_value_is_negative_by_assessment() has a known, pre-existing bug for
+        // BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO (it always returns "negative" for the whole 0/1
+        // value range, see the "TODO: is this ok condition?" comment there), so it cannot be
+        // used to determine "gained" for this scheme; the yes/no scale itself is unambiguous:
+        // 1 = yes (gained), 0 = no (not gained)
+        return $value >= 1;
+    }
+
+    return !block_exacomp_value_is_negative_by_assessment($value, $comptype, true, $courseid);
 }
 
 function block_exacomp_get_comp_eval_gained($courseid, $role, $userid, $comptype, $compid) {
