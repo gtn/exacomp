@@ -1870,6 +1870,10 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Übersicht über die Kompetenzen und Aufgaben',
         'Comparison: Teacher-Student',
     ],
+    'innersection4' => [
+        'Zeitlicher Ablauf des Kompetenzerwerbs',
+        'Chronological sequence of gained outcomes',
+    ],
     'childcompetencies_compProfile' => [
         'Teilkompetenzen',
         'Child competencies',

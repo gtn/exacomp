@@ -512,6 +512,7 @@ $string['my_badges'] = 'My Badges';
 $string['innersection1'] = 'Grid view';
 $string['innersection2'] = 'Statistics';
 $string['innersection3'] = 'Comparison: Teacher-Student';
+$string['innersection4'] = 'Chronological sequence of gained outcomes';
 $string['childcompetencies_compProfile'] = 'Child competencies';
 $string['materials_compProfile'] = 'Materials';
 
