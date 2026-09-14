@@ -22,7 +22,7 @@ class ComposerStaticInit6e8509137f55e9c1d129d7c0d0cb2345
         'P' => 
         array (
             'PhpOffice\\PhpWord\\' => 18,
-            'PhpOffice\\' => 10,
+            'PhpOffice\\Math\\' => 15,
         ),
         'F' => 
         array (
@@ -45,11 +45,11 @@ class ComposerStaticInit6e8509137f55e9c1d129d7c0d0cb2345
         ),
         'PhpOffice\\PhpWord\\' => 
         array (
-            0 => __DIR__ . '/..' . '/phpoffice/PhpWord',
+            0 => __DIR__ . '/..' . '/phpoffice/phpword/src/PhpWord',
         ),
-        'PhpOffice\\' => 
+        'PhpOffice\\Math\\' => 
         array (
-            0 => __DIR__ . '/..' . '/phpoffice',
+            0 => __DIR__ . '/..' . '/phpoffice/math/src/Math',
         ),
         'Firebase\\JWT\\' => 
         array (
