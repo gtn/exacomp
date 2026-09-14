@@ -1055,8 +1055,8 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor {
         $this->tempDocumentMainPart = $part;
     }
 
-    function setValues($data) {
-        foreach ($data as $key => $value) {
+    function setValues($values, int $limit = self::MAXIMUM_REPLACEMENTS_DEFAULT): void {
+        foreach ($values as $key => $value) {
             $this->setValue($key, $value);
             /*
              * $value = ;
@@ -1066,7 +1066,7 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor {
         }
     }
 
-    function setValue($search, $replace, $limit = self::MAXIMUM_REPLACEMENTS_DEFAULT) {
+    function setValue($search, $replace, $limit = self::MAXIMUM_REPLACEMENTS_DEFAULT): void {
         $replace = $this->escape($replace);
         $replace = str_replace([
             "\r",
@@ -1076,7 +1076,7 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor {
             '</w:t><w:br/><w:t>',
         ], $replace);
 
-        return $this->setValueRaw($search, $replace, $limit);
+        $this->setValueRaw($search, $replace, $limit);
     }
 
     function setValueRaw($search, $replace, $limit = self::MAXIMUM_REPLACEMENTS_DEFAULT) {
@@ -1170,7 +1170,7 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor {
         $this->tempDocumentMainPart = $result;
     }
 
-    function deleteRow($search) {
+    function deleteRow($search): void {
         $this->cloneRow($search, 0);
     }
 
