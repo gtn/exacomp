@@ -6617,8 +6617,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         }
                     }
                 }
-                $innersection = html_writer::tag('legend', block_exacomp_trans(['de:Zeitlicher Ablauf des Kompetenzerwerbs',
-                    'en:Chronological sequence of gained outcomes']), array('class' => 'competence_profile_insectitle')) . html_writer::tag('div', $innersection);
+                $innersection = html_writer::tag('legend', block_exacomp_get_string('innersection4'),
+                    array('class' => 'competence_profile_insectitle')) . html_writer::tag('div', $innersection);
                 $content .= html_writer::tag('fieldset', $innersection,
                     array('class' => ' competence_profile_innersection exa-collapsible'));
                 if ($this->is_print_mode()) {

@@ -518,6 +518,7 @@ $string['my_badges'] = 'Mes badges';
 $string['innersection1'] = 'Vue d\'ensemble de la grille';
 $string['innersection2'] = 'Statistiques';
 $string['innersection3'] = 'Vue d\'ensemble des compétences et des tâches';
+$string['innersection4'] = 'Déroulement chronologique de l\'acquisition des compétences';
 $string['childcompetencies_compProfile'] = 'Sous-compétences';
 $string['materials_compProfile'] = 'Ressources pédagogiques';
 

@@ -518,6 +518,7 @@ $string['my_badges'] = 'Meine Auszeichnungen';
 $string['innersection1'] = 'Rasterübersicht';
 $string['innersection2'] = 'Statistik';
 $string['innersection3'] = 'Übersicht über die Kompetenzen und Aufgaben';
+$string['innersection4'] = 'Zeitlicher Ablauf des Kompetenzerwerbs';
 $string['childcompetencies_compProfile'] = 'Teilkompetenzen';
 $string['materials_compProfile'] = 'Lernmaterialien';
 
