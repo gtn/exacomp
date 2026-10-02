@@ -18,6 +18,12 @@ namespace block_exacomp\externallib;
 
 defined('MOODLE_INTERNAL') || die();
 
+// This file is also a legacy entry point and may be loaded directly, bypassing
+// Moodle's normal class autoloader. Make its parent dependency self-contained.
+if (!class_exists(base::class, false)) {
+    require __DIR__ . '/base.php';
+}
+
 require_once $CFG->dirroot . '/mod/assign/locallib.php';
 require_once $CFG->dirroot . '/mod/assign/submission/file/locallib.php';
 require_once $CFG->dirroot . '/lib/filelib.php';

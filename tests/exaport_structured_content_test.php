@@ -44,7 +44,6 @@ final class exaport_structured_content_test extends \advanced_testcase {
     }
 
     private function invoke_private_externallib_method(string $method, array $arguments) {
-        require_once __DIR__ . '/../classes/externallib/base.php';
         $reflection = new \ReflectionMethod(\block_exacomp\externallib\externallib::class, $method);
         $reflection->setAccessible(true);
         return $reflection->invokeArgs(null, $arguments);
