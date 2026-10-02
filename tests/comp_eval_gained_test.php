@@ -24,6 +24,8 @@
  * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU GPL v3 or later
  */
 
+namespace block_exacomp;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -32,9 +34,9 @@ require_once($CFG->dirroot . '/blocks/exacomp/lib/lib.php');
 /**
  * @group block_exacomp
  */
-class block_exacomp_comp_eval_gained_testcase extends advanced_testcase {
+final class comp_eval_gained_test extends \advanced_testcase {
 
-    /** @var stdClass */
+    /** @var \stdClass */
     protected $course;
 
     protected function setUp(): void {
