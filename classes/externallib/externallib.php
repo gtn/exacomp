@@ -56,6 +56,114 @@ use user_picture;
 class externallib extends base {
 
     /**
+     * Return Exaport's structured-only compatibility projection for an item.
+     *
+     * Parent url/attachment and the old item_file area are deliberately not
+     * fallbacks here. Exaport owns block/file ordering and authorised URL
+     * generation, so all Exacomp item readers use its public serializer.
+     */
+    private static function exaport_item_content(stdClass $item, $token = null) {
+        global $CFG;
+
+        require_once $CFG->dirroot . '/blocks/exaport/inc.php';
+        return (array)block_exaport_get_item_content_webservice_data($item, $token);
+    }
+
+    /** Convert Exaport's flat structured-file projection to Exacomp's schema. */
+    private static function exaport_student_files(array $content) {
+        $result = [];
+        foreach (($content['files'] ?? []) as $index => $file) {
+            $file = (array)$file;
+            $result[] = [
+                'id' => (int)($file['id'] ?? 0),
+                'file' => (string)($file['url'] ?? $file['file'] ?? ''),
+                'mimetype' => (string)($file['mimetype'] ?? ''),
+                'filename' => (string)($file['filename'] ?? ''),
+                'isimage' => !empty($file['isimage']),
+                'fileindex' => (string)($file['id'] ?? $index),
+            ];
+        }
+        return $result;
+    }
+
+    /**
+     * Replace the content represented by the old singular submission inputs.
+     *
+     * The old operation replaced the submission, therefore its structured
+     * equivalent removes all prior content blocks before adding one link or
+     * one file block. This avoids retaining a stale link when changing type.
+     */
+    private static function replace_exaport_item_content(stdClass $item, $url, array $draftfiles, $replace = true) {
+        global $CFG;
+
+        require_once $CFG->dirroot . '/blocks/exaport/inc.php';
+        if ($replace) {
+            block_exaport_delete_item_content($item->id);
+        }
+        if ($draftfiles) {
+            $block = block_exaport_create_file_content_block($item->id);
+            $blockid = is_object($block) ? $block->id : $block;
+            $fs = get_file_storage();
+            $context = context_user::instance($item->userid);
+            foreach ($draftfiles as $draftfile) {
+                $record = [
+                    'contextid' => $context->id,
+                    'component' => 'block_exaport',
+                    'filearea' => 'item_content_file',
+                    'itemid' => $blockid,
+                    'filepath' => $draftfile->get_filepath(),
+                    'filename' => $draftfile->get_filename(),
+                    'timecreated' => time(),
+                    'timemodified' => time(),
+                ];
+                $fs->create_file_from_storedfile($record, $draftfile);
+                $draftfile->delete();
+            }
+        } else if ($url !== null && $url !== '') {
+            block_exaport_create_link_content_block($item->id, $url);
+        }
+    }
+
+    /** Find uploaded draft files without reading any Exaport legacy file area. */
+    private static function exaport_draft_files($userid, array $draftitemids, array $filenames = []) {
+        $fs = get_file_storage();
+        $context = context_user::instance($userid);
+        $result = [];
+        foreach ($draftitemids as $index => $draftitemid) {
+            if (!$draftitemid) {
+                continue;
+            }
+            if (!empty($filenames[$index])) {
+                $file = $fs->get_file($context->id, 'user', 'draft', $draftitemid, '/', $filenames[$index]);
+            } else {
+                $file = current($fs->get_area_files($context->id, 'user', 'draft', $draftitemid,
+                    'filepath ASC, filename ASC, id ASC', false));
+            }
+            if ($file) {
+                $result[] = $file;
+            }
+        }
+        return $result;
+    }
+
+    /** Delete selected files from authoritative structured file blocks. */
+    private static function remove_exaport_item_files(stdClass $item, array $fileids) {
+        if (!$fileids) {
+            return;
+        }
+        foreach (block_exaport_get_item_content_blocks($item->id) as $block) {
+            if ($block->type !== 'file') {
+                continue;
+            }
+            foreach (block_exaport_get_item_content_files($item->userid, $block->id) as $file) {
+                if (in_array($file->get_id(), $fileids)) {
+                    $file->delete();
+                }
+            }
+        }
+    }
+
+    /**
      * Returns description of method parameters
      *
      * @return external_function_parameters
@@ -1321,16 +1429,14 @@ class externallib extends base {
             //check if the item is already graded
             $itemexample = $DB->get_record_sql("SELECT id, exacomp_record_id, itemid, status, MAX(timecreated) from {" . BLOCK_EXACOMP_DB_ITEM_MM . "} ie WHERE itemid = ?", array($itemid));
             if ($itemexample->status == 0) {
-                //delete item and all associated content
+                require_once $CFG->dirroot . '/blocks/exaport/inc.php';
+                $transaction = $DB->start_delegated_transaction();
+                // Exaport owns structured blocks, both structured file areas,
+                // categories, views and comments. Remove Exacomp's association
+                // first in the same transaction, then let Exaport delete item.
                 $DB->delete_records(BLOCK_EXACOMP_DB_ITEM_MM, array('id' => $itemexample->id));
-                $DB->delete_records('block_exaportitem', array('id' => $itemid));
-                if ($item->type == 'file') {
-                    require_once $CFG->dirroot . '/blocks/exaport/inc.php';
-                    block_exaport_file_remove($item);
-                }
-
-                $DB->delete_records('block_exaportitemcomm', array('itemid' => $itemid));
-                $DB->delete_records('block_exaportviewblock', array('itemid' => $itemid));
+                block_exaport_delete_item($item);
+                $transaction->allow_commit();
 
                 return array("success" => true);
             }
@@ -1465,7 +1571,7 @@ class externallib extends base {
             "id" => $itemid,
             "userid" => $userid,
         );
-        $item = $DB->get_record("block_exaportitem", $conditions, 'id,userid,type,name,intro,url,courseid', MUST_EXIST);
+        $item = $DB->get_record("block_exaportitem", $conditions, 'id,userid,type,name,intro,courseid', MUST_EXIST);
         $itemexample = $DB->get_record(BLOCK_EXACOMP_DB_ITEM_MM, array(
             "itemid" => $itemid,
         ));
@@ -1485,16 +1591,15 @@ class externallib extends base {
         $item->studentvalue = isset ($itemexample->studentvalue) ? $itemexample->studentvalue : 0;
         $item->status = isset ($itemexample->status) ? $itemexample->status : 0;
 
-        if ($item->type == 'file') {
-            // TODO: move code into exaport\api
-            require_once $CFG->dirroot . '/blocks/exaport/inc.php';
-
-            $item->userid = $userid;
-            if ($file = block_exaport_get_item_single_file($item)) {
-                $item->file = ("{$CFG->wwwroot}/blocks/exaport/portfoliofile.php?access=portfolio/id/" . $userid . "&itemid=" . $itemid . "&wstoken=" . static::wstoken());
-                $item->isimage = $file->is_valid_image();
-                $item->filename = $file->get_filename();
-            }
+        $content = static::exaport_item_content($item, static::wstoken());
+        $item->url = (string)($content['url'] ?? '');
+        $files = static::exaport_student_files($content);
+        if ($files) {
+            // This legacy response can represent only one file: use the first
+            // file in Exaport's canonical block/file order.
+            $item->file = $files[0]['file'];
+            $item->isimage = $files[0]['isimage'];
+            $item->filename = $files[0]['filename'];
         }
 
         $item->studentcomment = '';
@@ -1698,6 +1803,7 @@ class externallib extends base {
             }
         }
         require_once $CFG->dirroot . '/blocks/exaport/inc.php';
+        $transaction = $DB->start_delegated_transaction();
 
         if ($insert) {
             //store item in eLOVE portfolio category
@@ -1716,7 +1822,7 @@ class externallib extends base {
             }
 
             // Create portfolio item (categoryid deprecated, use m:n table instead).
-            $itemid = $DB->insert_record("block_exaportitem", array('userid' => $USER->id, 'name' => $exampletitle, 'url' => $url, 'intro' => $effort, 'type' => $type, 'timemodified' => time()));
+            $itemid = $DB->insert_record("block_exaportitem", array('userid' => $USER->id, 'name' => $exampletitle, 'url' => '', 'attachment' => '', 'intro' => $effort, 'type' => $type, 'timemodified' => time()));
             $DB->insert_record('block_exaportitemcate', ['itemid' => $itemid, 'cateid' => $subject_category->id]);
             //autogenerate a published view for the new item
             $dbView = new stdClass();
@@ -1747,38 +1853,20 @@ class externallib extends base {
         } else {
             $item = $DB->get_record('block_exaportitem', array('id' => $itemid));
             $item->name = $title;
-            if ($url != '') {
-                $item->url = $url;
-            }
+            $item->url = '';
+            $item->attachment = '';
             $item->intro = $effort;
             $item->timemodified = time();
 
-            if ($type == 'file') {
-                block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)));
-            }
 
             $DB->update_record('block_exaportitem', $item);
         }
 
-        //if a file is added we need to copy the file from the user/draft filearea to block_exaport/item_file with the itemid from above
-        if ($type == "file") {
-            $context = context_user::instance($USER->id);
-            $fs = get_file_storage();
-            try {
-                $old = $fs->get_file($context->id, "user", "draft", $fileitemid, "/", $filename);
-
-                if ($old) {
-                    $file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_file',
-                        'itemid' => $itemid, 'filepath' => '/', 'filename' => $old->get_filename(),
-                        'timecreated' => time(), 'timemodified' => time());
-                    $fs->create_file_from_storedfile($file_record, $old->get_id());
-
-                    $old->delete();
-                }
-            } catch (Exception $e) {
-                //some problem with the file occured
-            }
-        }
+        $draftfiles = $type == 'file'
+            ? static::exaport_draft_files($USER->id, [$fileitemid], [$filename])
+            : [];
+        $item = $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
+        static::replace_exaport_item_content($item, $type == 'file' ? '' : $url, $draftfiles);
 
         if ($insert) {
             $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $exampleid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0, 'studentvalue' => $studentvalue));
@@ -1796,6 +1884,8 @@ class externallib extends base {
         }
         // studentvalue has to be stored in exameval
         block_exacomp_set_user_example($USER->id, $exampleid, $courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentvalue);
+
+        $transaction->allow_commit();
 
         return array("success" => true, "itemid" => $itemid);
     }
@@ -6781,6 +6871,7 @@ class externallib extends base {
             }
         }
         require_once $CFG->dirroot . '/blocks/exaport/inc.php';
+        $transaction = $DB->start_delegated_transaction();
 
         if ($insert) {
             //store item in the right portfolio category
@@ -6805,7 +6896,7 @@ class externallib extends base {
 
             // Create portfolio item (categoryid deprecated, use m:n table instead).
             $itemid = $DB->insert_record("block_exaportitem",
-                array('userid' => $USER->id, 'name' => $exampletitle, 'intro' => '', 'url' => $url, 'type' => $type, 'timemodified' => time(), 'teachervalue' => null, 'studentvalue' => null,
+                array('userid' => $USER->id, 'name' => $exampletitle, 'intro' => '', 'url' => '', 'attachment' => '', 'type' => $type, 'timemodified' => time(), 'teachervalue' => null, 'studentvalue' => null,
                     'courseid' => $courseid));
             $DB->insert_record('block_exaportitemcate', ['itemid' => $itemid, 'cateid' => $subject_category->id]);
             //autogenerate a published view for the new item
@@ -6831,43 +6922,19 @@ class externallib extends base {
         } else {
             $item = $DB->get_record('block_exaportitem', array('id' => $itemid));
 
-            $item->url = $url;
+            $item->url = '';
+            $item->attachment = '';
             $item->timemodified = time();
 
-            if ($type == 'file') {
-                block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)));
-            }
 
             $DB->update_record('block_exaportitem', $item);
         }
 
-        //if a file is added we need to copy the file from the user/private filearea to block_exaport/item_file with the itemid from above
-        if ($type == "file") {
-            $context = context_user::instance($USER->id);
-            $fs = get_file_storage();
-            try {
-                $fileitemids = explode(',', $fileitemids);
-                $filenames = explode(',', $filenames);
-
-                if ($fileitemids) {
-                    $i = 0; //for getting the names
-                    foreach ($fileitemids as $fileitemid) {
-                        $filename = $filenames[$i];
-                        $i++;
-                        $old = $fs->get_file($context->id, "user", "draft", $fileitemid, "/", $filename);
-                        if ($old) {
-                            $file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_file',
-                                'itemid' => $itemid, 'filepath' => '/', 'filename' => $old->get_filename(),
-                                'timecreated' => time(), 'timemodified' => time());
-                            $fs->create_file_from_storedfile($file_record, $old->get_id());
-                            $old->delete();
-                        }
-                    }
-                }
-            } catch (Exception $e) {
-                //some problem with the file occured
-            }
-        }
+        $draftids = $fileitemids !== '' ? explode(',', $fileitemids) : [];
+        $draftnames = $filenames !== null && $filenames !== '' ? explode(',', $filenames) : [];
+        $draftfiles = static::exaport_draft_files($USER->id, $draftids, $draftnames);
+        $item = $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
+        static::replace_exaport_item_content($item, $type == 'file' ? '' : $url, $draftfiles);
 
         if ($insert) {
             $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $exampleid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0));
@@ -6888,6 +6955,8 @@ class externallib extends base {
         $customdata = ['block' => 'exacomp', 'app' => 'dakora', 'type' => 'submit_example', 'itemid' => $itemid, 'itemuserid' => $item->userid, 'exampleid' => $exampleid];
         block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, time(), $studentcomment, $customdata);
         example_submitted::log(['objectid' => $exampleid, 'courseid' => $courseid]);
+
+        $transaction->allow_commit();
 
         return array("success" => true, "itemid" => $itemid);
 
@@ -6969,6 +7038,7 @@ class externallib extends base {
             }
         }
         require_once $CFG->dirroot . '/blocks/exaport/inc.php';
+        $transaction = $DB->start_delegated_transaction();
 
         $customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'courseid' => $courseid, 'itemid' => $itemid, 'itemuserid' => $USER->id];
         foreach ($descriptorgradings as $descriptorgrading) {
@@ -6977,23 +7047,6 @@ class externallib extends base {
             ]);
         }
 
-        // remove files specifically marked for deletion by user:
-        // for deleting a file that already exists, itemid cannot be used, but pathnamehash. "get_file()" actually gets the pathnamehash and uses this to get the file
-        // use get_file_by_hash() instead, for deleting already existing files.
-        // TODO: could this be used to remove files this user doesn't have access to? HACKABLE
-        // solution: get itemid -> get item -> check if this user is the creator of this item -> only then allow deletion
-        if ($removefiles) {
-            $fs = get_file_storage();
-            $removefiles = explode(',', $removefiles);
-            $context = context_user::instance($USER->id);
-            $files = $fs->get_area_files($context->id, "block_exaport", "item_file", $itemid, "", false);
-
-            foreach ($files as $file) {
-                if (in_array($file->get_id(), $removefiles)) {
-                    $file->delete();
-                }
-            }
-        }
 
         if ($insert) {
             //store item in the right portfolio category
@@ -7034,7 +7087,7 @@ class externallib extends base {
 
             // Create portfolio item (categoryid deprecated, use m:n table instead).
             $itemid = $DB->insert_record("block_exaportitem",
-                array('userid' => $USER->id, 'name' => $comptitle, 'intro' => $solutiondescription, 'url' => $url, 'type' => $type, 'timemodified' => time(), 'courseid' => $courseid));
+                array('userid' => $USER->id, 'name' => $comptitle, 'intro' => $solutiondescription, 'url' => '', 'attachment' => '', 'type' => $type, 'timemodified' => time(), 'courseid' => $courseid));
             $DB->insert_record('block_exaportitemcate', ['itemid' => $itemid, 'cateid' => $subject_category->id]);
             //autogenerate a published view for the new item
             $dbView = new stdClass();
@@ -7060,7 +7113,8 @@ class externallib extends base {
             $item = $DB->get_record('block_exaportitem', array('id' => $itemid));
 
             $item->name = $itemtitle;
-            $item->url = $url;
+            $item->url = '';
+            $item->attachment = '';
             $item->timemodified = time();
             $item->type = $type;
             $item->intro = $solutiondescription;
@@ -7073,34 +7127,14 @@ class externallib extends base {
             $DB->update_record('block_exaportitem', $item);
         }
 
-        //if a file is added we need to copy the file from the user/private filearea to block_exaport/item_file with the itemid from above
-        if ($type == "file" && $fileitemids) {
-            $context = context_user::instance($USER->id);
-            $fs = get_file_storage();
-            $fileitemids = explode(',', $fileitemids);
-
-            if ($fileitemids) {
-                foreach ($fileitemids as $file_i => $fileitemid) {
-                    $old = current($fs->get_area_files($context->id, "user", "draft", $fileitemid, "", false));
-                    if ($old) {
-                        $file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_file',
-                            'itemid' => $itemid, 'filepath' => '/', 'filename' => $old->get_filename(),
-                            'timecreated' => time(), 'timemodified' => time());
-
-                        try {
-                            $fs->create_file_from_storedfile($file_record, $old);
-                        } catch (\stored_file_creation_exception $e) {
-                            // error while saving the file, maybe the name already exists?
-
-                            // try again with different name
-                            $file_record['filename'] = preg_replace('!(\.[^\.]+)$!', ' - Kopie$1', $file_record['filename']);
-                            $fs->create_file_from_storedfile($file_record, $old);
-                        }
-                        $old->delete();
-                    }
-                }
-            }
-        }
+        $draftids = $fileitemids !== '' ? explode(',', $fileitemids) : [];
+        $draftfiles = static::exaport_draft_files($USER->id, $draftids);
+        $item = $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
+        static::remove_exaport_item_files($item, $removefiles !== '' ? explode(',', $removefiles) : []);
+        // DiggrPlus historically appended uploads to an in-progress item. Keep
+        // existing structured blocks on update; the singular writers above
+        // retain their replace-all policy.
+        static::replace_exaport_item_content($item, $url, $draftfiles, $insert);
 
         //calculate status of item: 0 means no submit, 1 means student has submitted, 2 means there exists a teachervalue and the item is completed
         // status=submit since the teacher cannot have graded an item, that has not been submitted by a student before.
@@ -7176,6 +7210,8 @@ class externallib extends base {
                 $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_COLLABORATOR_MM, array('userid' => $collabuserid, 'itemid' => $itemid));
             }
         }
+
+        $transaction->allow_commit();
 
         return array("success" => true, "itemid" => $itemid);
     }
@@ -9491,34 +9527,18 @@ class externallib extends base {
             $data['status'] = isset ($itemInformation->status) ? $itemInformation->status : -1;
             $data['name'] = $itemInformation->name;
             $data['type'] = $itemInformation->type;
-            $data['url'] = $itemInformation->url;
+            $content = static::exaport_item_content($itemInformation, static::wstoken());
+            $data['url'] = (string)($content['url'] ?? '');
             $data['teacheritemvalue'] = isset ($itemInformation->teachervalue) ? $itemInformation->teachervalue : -1;
             //$data['additionalinfo'] = isset ($itemInformation->additionalinfo) ? $itemInformation->additionalinfo : -1;
             $data['additionalinfo'] = isset ($exampleEvaluation->additionalinfo) ? $exampleEvaluation->additionalinfo : -1;
             $data['studentfiles'] = $studentfiles;
 
-            require_once $CFG->dirroot . '/blocks/exaport/inc.php';
-            if ($files = block_exaport_get_item_files($itemInformation)) {
-                /*
-	             * $fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
-	             * 'userid' => $userid,
-	             * 'itemid' => $itemInformation->id,
-	             * 'wstoken' => static::wstoken(),
-	             * ]);
-	             */
-                // TODO: moodle_url contains encoding errors which lead to problems in dakora
-                foreach ($files as $fileindex => $file) {
-                    if ($file != null) {
-                        $fileurl = $CFG->wwwroot . "/blocks/exaport/portfoliofile.php?" . "userid=" . $userid . "&itemid=" . $itemInformation->id . "&wstoken=" . static::wstoken();
-                        $filedata['file'] = $fileurl;
-                        $filedata['mimetype'] = $file->get_mimetype();
-                        $filedata['filename'] = $file->get_filename();
-                        $filedata['fileindex'] = $fileindex;
-                        $studentfiles[] = $filedata;
-                    }
-                }
-                $data['studentfiles'] = $studentfiles;
+            foreach (static::exaport_student_files($content) as $file) {
+                unset($file['id'], $file['isimage']);
+                $studentfiles[] = $file;
             }
+            $data['studentfiles'] = $studentfiles;
             $data['studentcomment'] = '';
             $data['teachercomment'] = '';
             //$data['teacherfile'] = [];
@@ -12840,31 +12860,15 @@ class externallib extends base {
         $item->studentvalue = isset ($item->studentvalue) ? $item->studentvalue : 0;
         $item->status = isset ($item->status) ? $item->status : 0;
 
-        if ($item->type == 'file') {
-
-            // Stattdessen: block_exaport_get_item_files ??    Im Dakora webservice wird das verwendet.
-
-            // TODO: move code into exaport\api
-            require_once $CFG->dirroot . '/blocks/exaport/inc.php';
-
-            $item->userid = $userid;
-            // dont' use block_exaport_get_item_files, because this can also return only one file!
-            if ($files = block_exaport_get_files($item, 'item_file')) {
-                $studentfiles = [];
-                foreach ($files as $fileindex => $file) {
-                    $fileurl = $CFG->wwwroot . "/blocks/exaport/portfoliofile.php?" . "userid=" . $userid . "&itemid=" . $item->id . "&wstoken=" . $wstoken . "&inst=" . $fileindex .
-                        // used only that file links are unique
-                        '&contenthash=' . $file->get_contenthash();
-                    $filedata['id'] = $file->get_id();
-                    $filedata['file'] = $fileurl;
-                    $filedata['mimetype'] = $file->get_mimetype();
-                    $filedata['filename'] = $file->get_filename();
-                    $filedata['isimage'] = $file->is_valid_image();
-                    $filedata['fileindex'] = $fileindex;
-                    $studentfiles[] = $filedata;
-                }
-                $item->studentfiles = $studentfiles;
+        $content = static::exaport_item_content($item, $wstoken);
+        $item->url = (string)($content['url'] ?? '');
+        $studentfiles = static::exaport_student_files($content);
+        if ($studentfiles) {
+            foreach ($studentfiles as &$studentfile) {
+                unset($studentfile['isimage']);
             }
+            unset($studentfile);
+            $item->studentfiles = $studentfiles;
         }
 
         $item->studentcomment = '';
