@@ -25,8 +25,25 @@ file ordering, selecting the first non-empty link, flattening file blocks, and
 generating token-authorised `webservice/pluginfile.php` URLs. Exacomp does not
 reimplement those rules.
 
+The serializer's flat `files` entries must expose the stored-file `id`, URL,
+filename, MIME type, and `isimage` flag. Exacomp returns that stored-file ID as
+both the DiggrPlus deletion identity (`studentfiles[].id`) and `fileindex`.
+Parent item IDs, content-block IDs, and stored-file IDs are not interchangeable.
+Deleting or replacing content passes the complete, trusted parent item to
+Exaport so it can resolve the owner's user context and remove every structured
+file area belonging to the blocks.
+
 The two singular submission APIs replace all structured blocks when updating,
 matching their former replace-one-link/file semantics. DiggrPlus historically
 appended files to an in-progress submission, so an update adds a new structured
 file block without deleting existing blocks. Creation always starts with one
 new content block.
+
+## Deployment contract
+
+Deploy the matching Exaport structured-content release before this Exacomp
+release. Exacomp deliberately fails if Exaport's structured serializer, block
+creation/import, or deletion helpers are unavailable; there is no fallback to
+legacy parent fields or the `item_file` area. DiggrPlus can then be deployed (or
+left unchanged) because its existing `studentfiles[].id` removal request is the
+stored-file ID expected by Exacomp.

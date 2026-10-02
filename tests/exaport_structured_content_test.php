@@ -35,6 +35,8 @@ final class exaport_structured_content_test extends \advanced_testcase {
         $this->assertStringNotContainsString('block_exaport_file_remove(', $source);
         $this->assertStringContainsString('block_exaport_import_stored_file_into_content_block(', $source);
         $this->assertStringContainsString('block_exaport_create_link_content_block(', $source);
+        $this->assertStringContainsString('block_exaport_delete_item_content($item)', $source);
+        $this->assertStringNotContainsString('block_exaport_delete_item_content($item->id)', $source);
         $this->assertStringContainsString('block_exaport_delete_item(', $source);
     }
 
