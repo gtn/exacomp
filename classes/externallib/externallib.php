@@ -18,7 +18,6 @@ namespace block_exacomp\externallib;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once __DIR__ . '/base.php';
 require_once $CFG->dirroot . '/mod/assign/locallib.php';
 require_once $CFG->dirroot . '/mod/assign/submission/file/locallib.php';
 require_once $CFG->dirroot . '/lib/filelib.php';
@@ -54,7 +53,7 @@ use moodle_url;
 use stdClass;
 use user_picture;
 
-class externallib extends base {
+class externallib extends \block_exacomp\externallib\base {
 
     /**
      * Return Exaport's structured-only compatibility projection for an item.
