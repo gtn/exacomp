@@ -18,6 +18,7 @@ namespace block_exacomp\externallib;
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once __DIR__ . '/base.php';
 require_once $CFG->dirroot . '/mod/assign/locallib.php';
 require_once $CFG->dirroot . '/mod/assign/submission/file/locallib.php';
 require_once $CFG->dirroot . '/lib/filelib.php';
