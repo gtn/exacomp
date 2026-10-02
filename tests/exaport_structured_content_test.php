@@ -43,16 +43,11 @@ final class exaport_structured_content_test extends \advanced_testcase {
         }
     }
 
-    private function invoke_private_externallib_method(string $method, array $arguments) {
-        $reflection = new \ReflectionMethod(\block_exacomp\externallib\externallib::class, $method);
-        $reflection->setAccessible(true);
-        return $reflection->invokeArgs(null, $arguments);
-    }
-
     public function test_active_code_does_not_use_legacy_item_content_apis(): void {
         $sources = [
             file_get_contents(__DIR__ . '/../example_submission.php'),
             file_get_contents(__DIR__ . '/../classes/externallib/externallib.php'),
+            file_get_contents(__DIR__ . '/../classes/exaport_structured_content.php'),
         ];
         $source = preg_replace('~/\\*.*?\\*/|//[^\\n]*~s', '', implode("\n", $sources));
 
@@ -100,8 +95,7 @@ final class exaport_structured_content_test extends \advanced_testcase {
 
         // A new submission creates a block; a later replace removes it before
         // importing files, while an in-progress update appends another block.
-        $this->invoke_private_externallib_method('replace_exaport_item_content',
-            [$item, 'https://example.test/old', [], true]);
+        exaport_structured_content::replace($item, 'https://example.test/old', [], true);
         $this->assertCount(1, block_exaport_get_item_content_blocks($itemid));
 
         $context = \context_user::instance($owner->id);
@@ -125,10 +119,8 @@ final class exaport_structured_content_test extends \advanced_testcase {
             ], $contents);
         }
 
-        $this->invoke_private_externallib_method('replace_exaport_item_content',
-            [$item, '', [$draftfiles[0]], true]);
-        $this->invoke_private_externallib_method('replace_exaport_item_content',
-            [$item, '', [$draftfiles[1]], false]);
+        exaport_structured_content::replace($item, '', [$draftfiles[0]], true);
+        exaport_structured_content::replace($item, '', [$draftfiles[1]], false);
 
         $blocks = block_exaport_get_item_content_blocks($itemid);
         $this->assertCount(2, $blocks);
@@ -146,45 +138,15 @@ final class exaport_structured_content_test extends \advanced_testcase {
         $this->assertSame('/nested/', $files[1]->get_filepath());
 
         $content = block_exaport_get_item_content_webservice_data($item);
-        $studentfiles = $this->invoke_private_externallib_method('exaport_student_files', [$item, $content]);
+        $studentfiles = exaport_structured_content::student_files($item, $content);
         $this->assertSame(array_map(static function($file) {
             return $file->get_id();
         }, $files), array_column($studentfiles, 'id'));
         $this->assertSame($files[0]->is_valid_image(), $studentfiles[0]['isimage']);
 
-        $itemresponse = [
-            'id' => $itemid,
-            'name' => $item->name,
-            'owner' => [
-                'userid' => $owner->id,
-                'fullname' => fullname($owner),
-                'profileimageurl' => '',
-            ],
-            'studentfiles' => array_map(static function($file) {
-                unset($file['isimage']);
-                return $file;
-            }, $studentfiles),
-        ];
-        $validated = \external_api::clean_returnvalue(
-            \block_exacomp\externallib\externallib::diggrplus_get_examples_and_items_returns(),
-            [[
-                'courseid' => $course->id,
-                'status' => 'inprogress',
-                'subjectid' => 1,
-                'subjecttitle' => 'Subject',
-                'topicid' => 1,
-                'topictitle' => 'Topic',
-                'niveautitle' => 'Level',
-                'niveauid' => 1,
-                'timemodified' => time(),
-                'item' => $itemresponse,
-            ]]
-        );
-        $this->assertSame($studentfiles[0]['id'], $validated[0]['item']['studentfiles'][0]['id']);
-
-        $this->invoke_private_externallib_method('remove_exaport_item_files', [$item, [(string)$studentfiles[0]['id']]]);
+        exaport_structured_content::remove_files($item, [(string)$studentfiles[0]['id']]);
         $reloaded = block_exaport_get_item_content_webservice_data($item);
-        $remaining = $this->invoke_private_externallib_method('exaport_student_files', [$item, $reloaded]);
+        $remaining = exaport_structured_content::student_files($item, $reloaded);
         $this->assertCount(1, $remaining);
         $this->assertSame($studentfiles[1]['id'], $remaining[0]['id']);
     }

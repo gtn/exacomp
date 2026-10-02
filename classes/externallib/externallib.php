@@ -18,12 +18,6 @@ namespace block_exacomp\externallib;
 
 defined('MOODLE_INTERNAL') || die();
 
-// This file is also a legacy entry point and may be loaded directly, bypassing
-// Moodle's normal class autoloader. Make its parent dependency self-contained.
-if (!class_exists(base::class, false)) {
-    require __DIR__ . '/base.php';
-}
-
 require_once $CFG->dirroot . '/mod/assign/locallib.php';
 require_once $CFG->dirroot . '/mod/assign/submission/file/locallib.php';
 require_once $CFG->dirroot . '/lib/filelib.php';
@@ -86,81 +80,6 @@ class externallib extends base {
         }
     }
 
-    /** Convert Exaport's flat structured-file projection to Exacomp's schema. */
-    private static function exaport_student_files(stdClass $item, array $content) {
-        self::require_structured_exaport_api([
-            'block_exaport_get_item_content_blocks',
-            'block_exaport_get_item_content_files',
-        ]);
-
-        // The web-service projection intentionally omits stored-file IDs. Resolve
-        // them from the same canonical block/file ordering rather than using an
-        // array offset as a deletion identifier.
-        $storedfiles = [];
-        foreach (block_exaport_get_item_content_blocks((int)$item->id) as $block) {
-            if (($block->type ?? '') !== 'file') {
-                continue;
-            }
-            foreach (block_exaport_get_item_content_files((int)$item->userid, (int)$block->id) as $storedfile) {
-                $storedfiles[] = $storedfile;
-            }
-        }
-
-        $files = array_values($content['files'] ?? []);
-        if (count($storedfiles) !== count($files)) {
-            throw new \coding_exception('Exaport structured file metadata does not match stored files.');
-        }
-
-        $result = [];
-        foreach ($files as $index => $file) {
-            $file = (array)$file;
-            $storedfile = $storedfiles[$index];
-            if ($storedfile->get_filename() !== (string)($file['filename'] ?? '') ||
-                    $storedfile->get_mimetype() !== (string)($file['mimetype'] ?? '')) {
-                throw new \coding_exception('Exaport structured file order does not match stored files.');
-            }
-            $fileid = (int)$storedfile->get_id();
-            $result[] = [
-                'id' => $fileid,
-                'file' => (string)($file['url'] ?? $file['file'] ?? ''),
-                'mimetype' => (string)($file['mimetype'] ?? ''),
-                'filename' => (string)($file['filename'] ?? ''),
-                'isimage' => $storedfile->is_valid_image(),
-                'fileindex' => (string)$fileid,
-            ];
-        }
-        return $result;
-    }
-
-    /**
-     * Replace the content represented by the old singular submission inputs.
-     *
-     * The old operation replaced the submission, therefore its structured
-     * equivalent removes all prior content blocks before adding one link or
-     * one file block. This avoids retaining a stale link when changing type.
-     */
-    private static function replace_exaport_item_content(stdClass $item, $url, array $draftfiles, $replace = true) {
-        global $CFG;
-
-        require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
-        require_once $CFG->dirroot . '/blocks/exaport/inc.php';
-        self::require_structured_exaport_api([
-            'block_exaport_delete_item_content',
-            'block_exaport_create_link_content_block',
-            'block_exaport_import_stored_file_into_content_block',
-        ]);
-        if ($replace) {
-            block_exaport_delete_item_content($item);
-        }
-        if ($draftfiles) {
-            foreach ($draftfiles as $draftfile) {
-                block_exaport_import_stored_file_into_content_block($item, $draftfile);
-            }
-        } else if ($url !== null && $url !== '') {
-            block_exaport_create_link_content_block($item->id, $item->name, $url);
-        }
-    }
-
     /** Find uploaded draft files without reading any Exaport legacy file area. */
     private static function exaport_draft_files($userid, array $draftitemids, array $filenames = []) {
         $fs = get_file_storage();
@@ -183,34 +102,6 @@ class externallib extends base {
             }
         }
         return $result;
-    }
-
-    /** Delete selected files from authoritative structured file blocks. */
-    private static function remove_exaport_item_files(stdClass $item, array $fileids) {
-        if (!$fileids) {
-            return;
-        }
-        self::require_structured_exaport_api([
-            'block_exaport_get_item_content_blocks',
-            'block_exaport_get_item_content_files',
-        ]);
-        $fileids = array_fill_keys(array_filter(array_map(static function($fileid) {
-            $fileid = (string)$fileid;
-            return preg_match('/^[1-9][0-9]*$/D', $fileid) ? (int)$fileid : 0;
-        }, $fileids)), true);
-        if (!$fileids) {
-            return;
-        }
-        foreach (block_exaport_get_item_content_blocks($item->id) as $block) {
-            if ($block->type !== 'file') {
-                continue;
-            }
-            foreach (block_exaport_get_item_content_files($item->userid, $block->id) as $file) {
-                if (isset($fileids[$file->get_id()])) {
-                    $file->delete();
-                }
-            }
-        }
     }
 
     /**
@@ -1644,7 +1535,7 @@ class externallib extends base {
 
         $content = static::exaport_item_content($item, static::wstoken());
         $item->url = (string)($content['url'] ?? '');
-        $files = static::exaport_student_files($item, $content);
+        $files = \block_exacomp\exaport_structured_content::student_files($item, $content);
         if ($files) {
             // This legacy response can represent only one file: use the first
             // file in Exaport's canonical block/file order.
@@ -1917,7 +1808,7 @@ class externallib extends base {
             ? static::exaport_draft_files($USER->id, [$fileitemid], [$filename])
             : [];
         $item = $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
-        static::replace_exaport_item_content($item, $type == 'file' ? '' : $url, $draftfiles);
+        \block_exacomp\exaport_structured_content::replace($item, $type == 'file' ? '' : $url, $draftfiles);
 
         if ($insert) {
             $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $exampleid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0, 'studentvalue' => $studentvalue));
@@ -6985,7 +6876,7 @@ class externallib extends base {
         $draftnames = $filenames !== null && $filenames !== '' ? explode(',', $filenames) : [];
         $draftfiles = static::exaport_draft_files($USER->id, $draftids, $draftnames);
         $item = $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
-        static::replace_exaport_item_content($item, $type == 'file' ? '' : $url, $draftfiles);
+        \block_exacomp\exaport_structured_content::replace($item, $type == 'file' ? '' : $url, $draftfiles);
 
         if ($insert) {
             $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $exampleid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0));
@@ -7181,11 +7072,11 @@ class externallib extends base {
         $draftids = $fileitemids !== '' ? explode(',', $fileitemids) : [];
         $draftfiles = static::exaport_draft_files($USER->id, $draftids);
         $item = $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
-        static::remove_exaport_item_files($item, $removefiles !== '' ? explode(',', $removefiles) : []);
+        \block_exacomp\exaport_structured_content::remove_files($item, $removefiles !== '' ? explode(',', $removefiles) : []);
         // DiggrPlus historically appended uploads to an in-progress item. Keep
         // existing structured blocks on update; the singular writers above
         // retain their replace-all policy.
-        static::replace_exaport_item_content($item, $url, $draftfiles, $insert);
+        \block_exacomp\exaport_structured_content::replace($item, $url, $draftfiles, $insert);
 
         //calculate status of item: 0 means no submit, 1 means student has submitted, 2 means there exists a teachervalue and the item is completed
         // status=submit since the teacher cannot have graded an item, that has not been submitted by a student before.
@@ -9585,7 +9476,7 @@ class externallib extends base {
             $data['additionalinfo'] = isset ($exampleEvaluation->additionalinfo) ? $exampleEvaluation->additionalinfo : -1;
             $data['studentfiles'] = $studentfiles;
 
-            foreach (static::exaport_student_files($itemInformation, $content) as $file) {
+            foreach (\block_exacomp\exaport_structured_content::student_files($itemInformation, $content) as $file) {
                 unset($file['id'], $file['isimage']);
                 $studentfiles[] = $file;
             }
@@ -12913,7 +12804,7 @@ class externallib extends base {
 
         $content = static::exaport_item_content($item, $wstoken);
         $item->url = (string)($content['url'] ?? '');
-        $studentfiles = static::exaport_student_files($item, $content);
+        $studentfiles = \block_exacomp\exaport_structured_content::student_files($item, $content);
         if ($studentfiles) {
             foreach ($studentfiles as &$studentfile) {
                 unset($studentfile['isimage']);
