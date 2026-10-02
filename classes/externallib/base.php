@@ -23,7 +23,30 @@ use invalid_parameter_exception;
 defined('MOODLE_INTERNAL') || die();
 
 require_once __DIR__ . '/../../inc.php';
-require_once $CFG->libdir . '/externallib.php';
+
+// Moodle 4.2 moved the external API classes into the core_external namespace.
+// Loading lib/externallib.php solely for its legacy aliases is not safe in a
+// non-isolated PHPUnit process, so provide those aliases locally on new Moodle
+// versions while retaining the old bootstrap for Moodle 3.11.
+if (class_exists(\core_external\external_api::class)) {
+    $externalclasses = [
+        'external_api' => \core_external\external_api::class,
+        'external_files' => \core_external\external_files::class,
+        'external_format_value' => \core_external\external_format_value::class,
+        'external_function_parameters' => \core_external\external_function_parameters::class,
+        'external_multiple_structure' => \core_external\external_multiple_structure::class,
+        'external_single_structure' => \core_external\external_single_structure::class,
+        'external_util' => \core_external\util::class,
+        'external_value' => \core_external\external_value::class,
+    ];
+    foreach ($externalclasses as $legacyclass => $namespacedclass) {
+        if (!class_exists($legacyclass, false)) {
+            class_alias($namespacedclass, $legacyclass);
+        }
+    }
+} else {
+    require_once $CFG->libdir . '/externallib.php';
+}
 
 class base extends \external_api {
     static function require_can_access_course($courseid, $allcrosssubjects = 0) {
