@@ -13,6 +13,9 @@ namespace block_exacomp;
 
 use block_exacomp\externallib\externallib;
 
+global $CFG;
+require_once $CFG->dirroot . '/blocks/exacomp/classes/externallib/base.php';
+
 /**
  * Focused regression tests for Exaport's structured item-content boundary.
  *
