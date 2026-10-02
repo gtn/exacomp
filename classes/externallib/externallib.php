@@ -81,17 +81,46 @@ class externallib extends base {
     }
 
     /** Convert Exaport's flat structured-file projection to Exacomp's schema. */
-    private static function exaport_student_files(array $content) {
+    private static function exaport_student_files(stdClass $item, array $content) {
+        self::require_structured_exaport_api([
+            'block_exaport_get_item_content_blocks',
+            'block_exaport_get_item_content_files',
+        ]);
+
+        // The web-service projection intentionally omits stored-file IDs. Resolve
+        // them from the same canonical block/file ordering rather than using an
+        // array offset as a deletion identifier.
+        $storedfiles = [];
+        foreach (block_exaport_get_item_content_blocks((int)$item->id) as $block) {
+            if (($block->type ?? '') !== 'file') {
+                continue;
+            }
+            foreach (block_exaport_get_item_content_files((int)$item->userid, (int)$block->id) as $storedfile) {
+                $storedfiles[] = $storedfile;
+            }
+        }
+
+        $files = array_values($content['files'] ?? []);
+        if (count($storedfiles) !== count($files)) {
+            throw new \coding_exception('Exaport structured file metadata does not match stored files.');
+        }
+
         $result = [];
-        foreach (($content['files'] ?? []) as $index => $file) {
+        foreach ($files as $index => $file) {
             $file = (array)$file;
+            $storedfile = $storedfiles[$index];
+            if ($storedfile->get_filename() !== (string)($file['filename'] ?? '') ||
+                    $storedfile->get_mimetype() !== (string)($file['mimetype'] ?? '')) {
+                throw new \coding_exception('Exaport structured file order does not match stored files.');
+            }
+            $fileid = (int)$storedfile->get_id();
             $result[] = [
-                'id' => (int)($file['id'] ?? 0),
+                'id' => $fileid,
                 'file' => (string)($file['url'] ?? $file['file'] ?? ''),
                 'mimetype' => (string)($file['mimetype'] ?? ''),
                 'filename' => (string)($file['filename'] ?? ''),
-                'isimage' => !empty($file['isimage']),
-                'fileindex' => (string)($file['id'] ?? $index),
+                'isimage' => $storedfile->is_valid_image(),
+                'fileindex' => (string)$fileid,
             ];
         }
         return $result;
@@ -115,7 +144,7 @@ class externallib extends base {
             'block_exaport_import_stored_file_into_content_block',
         ]);
         if ($replace) {
-            block_exaport_delete_item_content($item->id);
+            block_exaport_delete_item_content($item);
         }
         if ($draftfiles) {
             foreach ($draftfiles as $draftfile) {
@@ -155,12 +184,23 @@ class externallib extends base {
         if (!$fileids) {
             return;
         }
+        self::require_structured_exaport_api([
+            'block_exaport_get_item_content_blocks',
+            'block_exaport_get_item_content_files',
+        ]);
+        $fileids = array_fill_keys(array_filter(array_map(static function($fileid) {
+            $fileid = (string)$fileid;
+            return preg_match('/^[1-9][0-9]*$/D', $fileid) ? (int)$fileid : 0;
+        }, $fileids)), true);
+        if (!$fileids) {
+            return;
+        }
         foreach (block_exaport_get_item_content_blocks($item->id) as $block) {
             if ($block->type !== 'file') {
                 continue;
             }
             foreach (block_exaport_get_item_content_files($item->userid, $block->id) as $file) {
-                if (in_array($file->get_id(), $fileids)) {
+                if (isset($fileids[$file->get_id()])) {
                     $file->delete();
                 }
             }
@@ -1598,7 +1638,7 @@ class externallib extends base {
 
         $content = static::exaport_item_content($item, static::wstoken());
         $item->url = (string)($content['url'] ?? '');
-        $files = static::exaport_student_files($content);
+        $files = static::exaport_student_files($item, $content);
         if ($files) {
             // This legacy response can represent only one file: use the first
             // file in Exaport's canonical block/file order.
@@ -6998,7 +7038,7 @@ class externallib extends base {
             'itemtitle' => new external_value(PARAM_TEXT, 'name of the item (for examples, the exampletitle is fitting, but for topics, using the topic would not be very useful', VALUE_DEFAULT, ''),
             'collabuserids' => new external_value(PARAM_TEXT, 'userids of collaborators separated by comma', VALUE_DEFAULT, ''),
             'submit' => new external_value(PARAM_INT, '1 for submitting definitely (submitted), 0 for only creating/updating the item (inprogress)', VALUE_DEFAULT, 0),
-            'removefiles' => new external_value(PARAM_TEXT, 'fileindizes/pathnamehashes of the files that should be removed, separated by comma'),
+            'removefiles' => new external_value(PARAM_TEXT, 'stored-file IDs of the files that should be removed, separated by comma'),
             'solutiondescription' => new external_value(PARAM_TEXT, 'description of what the student has done'),
             'descriptorgradings' => new external_multiple_structure(
                 new external_single_structure(
@@ -7673,7 +7713,7 @@ class externallib extends base {
                     'filename' => new external_value(PARAM_TEXT, 'filename'),
                     'file' => new external_value(PARAM_URL, 'file url'),
                     'mimetype' => new external_value(PARAM_TEXT, 'mime type for file'),
-                    'fileindex' => new external_value(PARAM_TEXT, 'fileindex, used for deleting this file'),
+                    'fileindex' => new external_value(PARAM_TEXT, 'stored-file ID, used for deleting this file'),
                 )), "files of the student's submission", VALUE_OPTIONAL),
                 'collaborators' => new external_multiple_structure(new external_single_structure(array(
                     'userid' => new external_value(PARAM_INT, 'userid of collaborator'),
@@ -7995,7 +8035,7 @@ class externallib extends base {
                     'filename' => new external_value(PARAM_TEXT, 'filename'),
                     'file' => new external_value(PARAM_URL, 'file url'),
                     'mimetype' => new external_value(PARAM_TEXT, 'mime type for file'),
-                    'fileindex' => new external_value(PARAM_TEXT, 'fileindex, used for deleting this file'),
+                    'fileindex' => new external_value(PARAM_TEXT, 'stored-file ID, used for deleting this file'),
                 )), "files of the student's submission", VALUE_OPTIONAL),
                 'collaborators' => new external_multiple_structure(new external_single_structure(array(
                     'userid' => new external_value(PARAM_INT, 'userid of collaborator'),
@@ -9486,7 +9526,7 @@ class externallib extends base {
                 'filename' => new external_value(PARAM_TEXT, 'title of item'),
                 'file' => new external_value(PARAM_URL, 'file url'),
                 'mimetype' => new external_value(PARAM_TEXT, 'mime type for file'),
-                'fileindex' => new external_value(PARAM_TEXT, 'mime type for file'),
+                'fileindex' => new external_value(PARAM_TEXT, 'stored-file ID, used for deleting this file'),
             ), '', VALUE_OPTIONAL),
             'studentcomment' => new external_value(PARAM_TEXT, 'student comment'),
             'teacheritemvalue' => new external_value(PARAM_INT, 'item teacher grading'),
@@ -9496,7 +9536,7 @@ class externallib extends base {
                 'filename' => new external_value(PARAM_TEXT, 'title of item'),
                 'file' => new external_value(PARAM_URL, 'file url'),
                 'mimetype' => new external_value(PARAM_TEXT, 'mime type for file'),
-                'fileindex' => new external_value(PARAM_TEXT, 'mime type for file'),
+                'fileindex' => new external_value(PARAM_TEXT, 'stored-file ID, used for deleting this file'),
             ))),
             'activityid' => new external_value(PARAM_INT, 'activityid'),
             'activitytitle' => new external_value(PARAM_TEXT, 'activity title', VALUE_OPTIONAL),
@@ -9539,7 +9579,7 @@ class externallib extends base {
             $data['additionalinfo'] = isset ($exampleEvaluation->additionalinfo) ? $exampleEvaluation->additionalinfo : -1;
             $data['studentfiles'] = $studentfiles;
 
-            foreach (static::exaport_student_files($content) as $file) {
+            foreach (static::exaport_student_files($itemInformation, $content) as $file) {
                 unset($file['id'], $file['isimage']);
                 $studentfiles[] = $file;
             }
@@ -12867,7 +12907,7 @@ class externallib extends base {
 
         $content = static::exaport_item_content($item, $wstoken);
         $item->url = (string)($content['url'] ?? '');
-        $studentfiles = static::exaport_student_files($content);
+        $studentfiles = static::exaport_student_files($item, $content);
         if ($studentfiles) {
             foreach ($studentfiles as &$studentfile) {
                 unset($studentfile['isimage']);
@@ -15365,7 +15405,7 @@ class externallib extends base {
                     'filename' => new external_value(PARAM_TEXT, 'filename'),
                     'file' => new external_value(PARAM_URL, 'file url'),
                     'mimetype' => new external_value(PARAM_TEXT, 'mime type for file'),
-                    'fileindex' => new external_value(PARAM_TEXT, 'fileindex, used for deleting this file'),
+                    'fileindex' => new external_value(PARAM_TEXT, 'stored-file ID, used for deleting this file'),
                 )), "files of the student's submission", VALUE_OPTIONAL),
                 'collaborators' => new external_multiple_structure(new external_single_structure(array(
                     'userid' => new external_value(PARAM_INT, 'userid of collaborator'),
