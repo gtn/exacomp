@@ -52,13 +52,31 @@ final class exaport_structured_content_test extends \advanced_testcase {
     }
 
     public function test_active_code_does_not_use_legacy_item_content_apis(): void {
-        $source = file_get_contents(__DIR__ . '/../classes/externallib/externallib.php');
-        $source = preg_replace('~/\\*.*?\\*/|//[^\\n]*~s', '', $source);
+        $sources = [
+            file_get_contents(__DIR__ . '/../example_submission.php'),
+            file_get_contents(__DIR__ . '/../classes/externallib/externallib.php'),
+        ];
+        $source = preg_replace('~/\\*.*?\\*/|//[^\\n]*~s', '', implode("\n", $sources));
 
         $this->assertStringNotContainsString("'filearea' => 'item_file'", $source);
         $this->assertStringNotContainsString('block_exaport_get_item_single_file(', $source);
         $this->assertStringNotContainsString('block_exaport_get_item_files(', $source);
         $this->assertStringNotContainsString('block_exaport_get_files(', $source);
         $this->assertStringNotContainsString('block_exaport_file_remove(', $source);
+        $this->assertStringContainsString('block_exaport_import_stored_file_into_content_block(', $source);
+        $this->assertStringContainsString('block_exaport_create_link_content_block(', $source);
+        $this->assertStringContainsString('block_exaport_delete_item(', $source);
+    }
+
+    public function test_browser_submission_is_atomic_and_keeps_parent_content_empty(): void {
+        $source = file_get_contents(__DIR__ . '/../example_submission.php');
+
+        $this->assertStringContainsString("'url' => '', 'attachment' => ''", $source);
+        $this->assertStringContainsString('$DB->start_delegated_transaction()', $source);
+        $this->assertStringContainsString('$transaction->allow_commit()', $source);
+        $this->assertLessThan(
+            strpos($source, 'block_exacomp_notify_all_teachers_about_submission('),
+            strpos($source, '$transaction->allow_commit()')
+        );
     }
 }

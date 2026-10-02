@@ -65,8 +65,19 @@ class externallib extends base {
     private static function exaport_item_content(stdClass $item, $token = null) {
         global $CFG;
 
+        require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
         require_once $CFG->dirroot . '/blocks/exaport/inc.php';
+        self::require_structured_exaport_api(['block_exaport_get_item_content_webservice_data']);
         return (array)block_exaport_get_item_content_webservice_data($item, $token);
+    }
+
+    /** Fail explicitly instead of writing new content through Exaport's legacy API. */
+    private static function require_structured_exaport_api(array $functions) {
+        foreach ($functions as $function) {
+            if (!function_exists($function)) {
+                throw new moodle_exception('Exaport is too old: the structured item-content API is required.');
+            }
+        }
     }
 
     /** Convert Exaport's flat structured-file projection to Exacomp's schema. */
@@ -96,31 +107,22 @@ class externallib extends base {
     private static function replace_exaport_item_content(stdClass $item, $url, array $draftfiles, $replace = true) {
         global $CFG;
 
+        require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
         require_once $CFG->dirroot . '/blocks/exaport/inc.php';
+        self::require_structured_exaport_api([
+            'block_exaport_delete_item_content',
+            'block_exaport_create_link_content_block',
+            'block_exaport_import_stored_file_into_content_block',
+        ]);
         if ($replace) {
             block_exaport_delete_item_content($item->id);
         }
         if ($draftfiles) {
-            $block = block_exaport_create_file_content_block($item->id);
-            $blockid = is_object($block) ? $block->id : $block;
-            $fs = get_file_storage();
-            $context = context_user::instance($item->userid);
             foreach ($draftfiles as $draftfile) {
-                $record = [
-                    'contextid' => $context->id,
-                    'component' => 'block_exaport',
-                    'filearea' => 'item_content_file',
-                    'itemid' => $blockid,
-                    'filepath' => $draftfile->get_filepath(),
-                    'filename' => $draftfile->get_filename(),
-                    'timecreated' => time(),
-                    'timemodified' => time(),
-                ];
-                $fs->create_file_from_storedfile($record, $draftfile);
-                $draftfile->delete();
+                block_exaport_import_stored_file_into_content_block($item, $draftfile);
             }
         } else if ($url !== null && $url !== '') {
-            block_exaport_create_link_content_block($item->id, $url);
+            block_exaport_create_link_content_block($item->id, $item->name, $url);
         }
     }
 
@@ -135,12 +137,14 @@ class externallib extends base {
             }
             if (!empty($filenames[$index])) {
                 $file = $fs->get_file($context->id, 'user', 'draft', $draftitemid, '/', $filenames[$index]);
+                if ($file) {
+                    $result[] = $file;
+                }
             } else {
-                $file = current($fs->get_area_files($context->id, 'user', 'draft', $draftitemid,
-                    'filepath ASC, filename ASC, id ASC', false));
-            }
-            if ($file) {
-                $result[] = $file;
+                foreach ($fs->get_area_files($context->id, 'user', 'draft', $draftitemid,
+                    'filepath ASC, filename ASC, id ASC', false) as $file) {
+                    $result[] = $file;
+                }
             }
         }
         return $result;
@@ -1429,7 +1433,8 @@ class externallib extends base {
             //check if the item is already graded
             $itemexample = $DB->get_record_sql("SELECT id, exacomp_record_id, itemid, status, MAX(timecreated) from {" . BLOCK_EXACOMP_DB_ITEM_MM . "} ie WHERE itemid = ?", array($itemid));
             if ($itemexample->status == 0) {
-                require_once $CFG->dirroot . '/blocks/exaport/inc.php';
+                require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
+                self::require_structured_exaport_api(['block_exaport_delete_item']);
                 $transaction = $DB->start_delegated_transaction();
                 // Exaport owns structured blocks, both structured file areas,
                 // categories, views and comments. Remove Exacomp's association

@@ -18,6 +18,14 @@ use block_exacomp\event\example_submitted;
 
 require __DIR__ . '/inc.php';
 require_once __DIR__ . '/example_submission_form.php';
+require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
+
+foreach (['block_exaport_create_link_content_block',
+             'block_exaport_import_stored_file_into_content_block'] as $function) {
+    if (!function_exists($function)) {
+        throw new moodle_exception('Exaport is too old: the structured item-content API is required.');
+    }
+}
 
 $courseid = required_param('courseid', PARAM_INT);
 $exampleid = required_param('exampleid', PARAM_INT);
@@ -81,6 +89,24 @@ if ($formdata = $form->get_data()) {
     require_sesskey();
     $type = 'file';
 
+    // Validate the replacement before changing any existing portfolio data.
+    if (!empty($formdata->url)) {
+        $formdata->url = (filter_var($formdata->url, FILTER_VALIDATE_URL) == true)
+            ? $formdata->url : "http://" . $formdata->url;
+        $type = 'url';
+    }
+    $draftfiles = [];
+    if ($type === 'file' && !empty($formdata->file)) {
+        $usercontext = context_user::instance($USER->id);
+        $draftfiles = get_file_storage()->get_area_files($usercontext->id, 'user', 'draft',
+            $formdata->file, 'filepath ASC, filename ASC, id ASC', false);
+    }
+    if ($type === 'file' && !$draftfiles) {
+        throw new moodle_exception('No uploaded file was found for this submission.');
+    }
+
+    $transaction = $DB->start_delegated_transaction();
+
     //store item in the right portfolio category
     $course_category = block_exaport_get_user_category($course->fullname, $USER->id);
 
@@ -95,13 +121,10 @@ if ($formdata = $form->get_data()) {
         $subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
     }
 
-    if (!empty($formdata->url)) {
-        $formdata->url = (filter_var($formdata->url, FILTER_VALIDATE_URL) == true) ? $formdata->url : "http://" . $formdata->url;
-    }
-
     // Create portfolio item (categoryid is deprecated, category assigned via block_exaportitemcate).
     $itemid = $DB->insert_record("block_exaportitem",
-        array('userid' => $USER->id, 'name' => $formdata->name, 'url' => $formdata->url, 'intro' => $formdata->intro, 'type' => $type, 'timemodified' => time(), 'courseid' => $courseid));
+        array('userid' => $USER->id, 'name' => $formdata->name, 'url' => '', 'attachment' => '',
+            'intro' => $formdata->intro, 'type' => $type, 'timemodified' => time(), 'courseid' => $courseid));
     // Assign item to category via m:n table.
     $DB->insert_record('block_exaportitemcate', array('itemid' => $itemid, 'cateid' => $subject_category->id));
     //autogenerate a published view for the new item
@@ -126,21 +149,17 @@ if ($formdata = $form->get_data()) {
     // add item to view
     $DB->insert_record('block_exaportviewblock', array('viewid' => $dbView->id, 'positionx' => 1, 'positiony' => 1, 'type' => 'item', 'itemid' => $itemid));
 
-    if (isset($formdata->file)) {
-        $filename = $form->get_new_filename('file');
-        $context = context_user::instance($USER->id);
-        try {
-            $form->save_stored_file('file', $context->id, 'block_exaport', 'item_file', $itemid, '/', $filename, true);
-        } catch (Exception $e) {
-            //some problem with the file occured
+    $item = $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
+    if ($type === 'url') {
+        block_exaport_create_link_content_block($itemid, $formdata->name, $formdata->url);
+    } else {
+        foreach ($draftfiles as $draftfile) {
+            // Exaport creates the block and keys item_content_file by that block's id.
+            block_exaport_import_stored_file_into_content_block($item, $draftfile);
         }
     }
     $timecreated = time();
     $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $exampleid, 'itemid' => $itemid, 'timecreated' => $timecreated, 'status' => 0));
-
-    block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, $timecreated);
-
-    example_submitted::log(['objectid' => $exampleid, 'courseid' => $courseid]);
 
     // add "activity" relations to competences: TODO: is this ok?
     $competences = $DB->get_records('block_exacompdescrexamp_mm', ['exampid' => $exampleid]);
@@ -149,6 +168,12 @@ if ($formdata = $form->get_data()) {
             $DB->insert_record(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array('compid' => $comp->descrid, 'comptype' => 0, 'eportfolioitem' => 1, 'activityid' => $itemid));
         }
     }
+
+    $transaction->allow_commit();
+
+    // Do irreversible side effects only after the item and all relations exist.
+    block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, $timecreated);
+    example_submitted::log(['objectid' => $exampleid, 'courseid' => $courseid]);
 
     echo $output->popup_close_and_reload();
     exit;
