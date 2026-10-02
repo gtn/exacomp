@@ -115,7 +115,9 @@ class externallib extends base {
             'block_exaport_import_stored_file_into_content_block',
         ]);
         if ($replace) {
-            block_exaport_delete_item_content($item->id);
+            // Exaport needs the trusted parent item to resolve the owner context
+            // while deleting both structured block file areas.
+            block_exaport_delete_item_content($item);
         }
         if ($draftfiles) {
             foreach ($draftfiles as $draftfile) {
