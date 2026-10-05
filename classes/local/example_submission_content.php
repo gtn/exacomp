@@ -26,12 +26,12 @@ final class example_submission_content {
         }
 
         $draftfiles = [];
-        if ($type === 'file' && !empty($draftitemid)) {
+        if (!empty($draftitemid)) {
             $usercontext = \context_user::instance($userid);
             $draftfiles = \get_file_storage()->get_area_files($usercontext->id, 'user', 'draft',
                 $draftitemid, 'filepath ASC, filename ASC, id ASC', false);
         }
-        if ($type === 'file' && !$draftfiles) {
+        if (!empty($draftitemid) && !$draftfiles) {
             throw new \moodle_exception('No uploaded file was found for this submission.');
         }
 
@@ -50,12 +50,11 @@ final class example_submission_content {
      * @param \stdClass $selection
      */
     public static function store(\stdClass $item, $name, \stdClass $selection) {
-        if ($selection->type === 'url') {
+        if (!empty($selection->url)) {
             \block_exaport_create_link_content_block($item->id, $name, $selection->url);
-        } else {
-            foreach ($selection->draftfiles as $draftfile) {
-                \block_exaport_import_stored_file_into_content_block($item, $draftfile);
-            }
+        }
+        foreach ($selection->draftfiles as $draftfile) {
+            \block_exaport_import_stored_file_into_content_block($item, $draftfile);
         }
     }
 }
