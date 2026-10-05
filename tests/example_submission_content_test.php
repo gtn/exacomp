@@ -48,32 +48,17 @@ final class example_submission_content_test extends \advanced_testcase {
         $this->assertSame('file submission', $files[0]->get_content());
     }
 
-    public function test_submission_without_file_or_url_is_rejected_without_persisting_item(): void {
+    public function test_submission_without_file_or_url_creates_item_with_description(): void {
         global $DB;
 
-        $before = [
-            'items' => $DB->count_records('block_exaportitem'),
-            'blocks' => $DB->count_records('block_exaportitemblock'),
-            'itemcategories' => $DB->count_records('block_exaportitemcate'),
-            'exampleitems' => $DB->count_records('block_exacompitem_mm'),
-            'views' => $DB->count_records('block_exaportview'),
-            'viewblocks' => $DB->count_records('block_exaportviewblock'),
-        ];
+        $description = 'Description-only example submission';
+        $selection = \block_exacomp\local\example_submission_content::select($this->user->id, 0, '');
+        $item = $this->create_item($description);
+        \block_exacomp\local\example_submission_content::store($item, $item->name, $selection);
 
-        $rejected = false;
-        try {
-            \block_exacomp\local\example_submission_content::select($this->user->id, 0, '');
-        } catch (\moodle_exception $exception) {
-            $rejected = true;
-        }
-
-        $this->assertTrue($rejected, 'A submission without a file or URL must be rejected.');
-        $this->assertSame($before['items'], $DB->count_records('block_exaportitem'));
-        $this->assertSame($before['blocks'], $DB->count_records('block_exaportitemblock'));
-        $this->assertSame($before['itemcategories'], $DB->count_records('block_exaportitemcate'));
-        $this->assertSame($before['exampleitems'], $DB->count_records('block_exacompitem_mm'));
-        $this->assertSame($before['views'], $DB->count_records('block_exaportview'));
-        $this->assertSame($before['viewblocks'], $DB->count_records('block_exaportviewblock'));
+        $saveditem = $DB->get_record('block_exaportitem', ['id' => $item->id], '*', MUST_EXIST);
+        $this->assertSame($description, $saveditem->intro);
+        $this->assertSame([], $this->get_blocks($item->id));
     }
 
     public function test_file_and_url_submission_keeps_both_inputs(): void {
@@ -124,7 +109,7 @@ final class example_submission_content_test extends \advanced_testcase {
      *
      * @return \stdClass
      */
-    private function create_item(): \stdClass {
+    private function create_item(string $intro = ''): \stdClass {
         global $DB;
 
         $itemid = $DB->insert_record('block_exaportitem', [
@@ -132,7 +117,7 @@ final class example_submission_content_test extends \advanced_testcase {
             'name' => 'Example submission',
             'url' => '',
             'attachment' => '',
-            'intro' => '',
+            'intro' => $intro,
             'type' => 'file',
             'timemodified' => time(),
             'courseid' => $this->course->id,
