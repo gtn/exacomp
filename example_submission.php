@@ -88,7 +88,8 @@ $form = new block_exacomp_example_submission_form($_SERVER['REQUEST_URI'],
 
 if ($formdata = $form->get_data()) {
     require_sesskey();
-    $submissioncontent = example_submission_content::select($USER->id, $formdata->file, $formdata->url);
+    $submissioncontent = example_submission_content::select(
+        $USER->id, $formdata->file ?? 0, $formdata->url ?? '');
     $type = $submissioncontent->type;
     $formdata->url = $submissioncontent->url;
 
