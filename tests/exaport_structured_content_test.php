@@ -44,6 +44,8 @@ final class exaport_structured_content_test extends \advanced_testcase {
         $source = file_get_contents(__DIR__ . '/../example_submission.php');
 
         $this->assertStringContainsString("'url' => '', 'attachment' => ''", $source);
+        $this->assertStringContainsString('example_submission_content::select(', $source);
+        $this->assertStringContainsString('example_submission_content::store(', $source);
         $this->assertStringContainsString('$DB->start_delegated_transaction()', $source);
         $this->assertStringContainsString('$transaction->allow_commit()', $source);
         $this->assertLessThan(
