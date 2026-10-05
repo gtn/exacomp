@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 use block_exacomp\event\example_submitted;
+use block_exacomp\local\example_submission_content;
 
 require __DIR__ . '/inc.php';
 require_once __DIR__ . '/example_submission_form.php';
@@ -87,23 +88,9 @@ $form = new block_exacomp_example_submission_form($_SERVER['REQUEST_URI'],
 
 if ($formdata = $form->get_data()) {
     require_sesskey();
-    $type = 'file';
-
-    // Validate the replacement before changing any existing portfolio data.
-    if (!empty($formdata->url)) {
-        $formdata->url = (filter_var($formdata->url, FILTER_VALIDATE_URL) == true)
-            ? $formdata->url : "http://" . $formdata->url;
-        $type = 'url';
-    }
-    $draftfiles = [];
-    if ($type === 'file' && !empty($formdata->file)) {
-        $usercontext = context_user::instance($USER->id);
-        $draftfiles = get_file_storage()->get_area_files($usercontext->id, 'user', 'draft',
-            $formdata->file, 'filepath ASC, filename ASC, id ASC', false);
-    }
-    if ($type === 'file' && !$draftfiles) {
-        throw new moodle_exception('No uploaded file was found for this submission.');
-    }
+    $submissioncontent = example_submission_content::select($USER->id, $formdata->file, $formdata->url);
+    $type = $submissioncontent->type;
+    $formdata->url = $submissioncontent->url;
 
     $transaction = $DB->start_delegated_transaction();
 
@@ -150,14 +137,7 @@ if ($formdata = $form->get_data()) {
     $DB->insert_record('block_exaportviewblock', array('viewid' => $dbView->id, 'positionx' => 1, 'positiony' => 1, 'type' => 'item', 'itemid' => $itemid));
 
     $item = $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
-    if ($type === 'url') {
-        block_exaport_create_link_content_block($itemid, $formdata->name, $formdata->url);
-    } else {
-        foreach ($draftfiles as $draftfile) {
-            // Exaport creates the block and keys item_content_file by that block's id.
-            block_exaport_import_stored_file_into_content_block($item, $draftfile);
-        }
-    }
+    example_submission_content::store($item, $formdata->name, $submissioncontent);
     $timecreated = time();
     $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $exampleid, 'itemid' => $itemid, 'timecreated' => $timecreated, 'status' => 0));
 
