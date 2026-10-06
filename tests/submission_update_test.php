@@ -9,6 +9,8 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once $CFG->dirroot . '/blocks/exacomp/lib/lib.php';
+require_once $CFG->dirroot . '/blocks/exacomp/classes/externallib/base.php';
+require_once $CFG->dirroot . '/blocks/exacomp/classes/externallib/externallib.php';
 require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
 
 /**
