@@ -247,7 +247,12 @@ final class submission_update_test extends \advanced_testcase {
      * @return int draft item id
      */
     private function create_draft_file(\stdClass $user, string $filename, string $content): int {
+        // file_get_unused_draft_itemid() refuses guests and uses the current user.
+        global $USER;
+        $previoususer = $USER;
+        $this->setUser($user);
         $draftitemid = \file_get_unused_draft_itemid();
+        $this->setUser($previoususer);
         \get_file_storage()->create_file_from_string([
             'contextid' => \context_user::instance($user->id)->id,
             'component' => 'user',
