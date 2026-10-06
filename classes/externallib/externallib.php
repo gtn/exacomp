@@ -128,25 +128,55 @@ class externallib extends base {
         }
     }
 
-    /** Find uploaded draft files without reading any Exaport legacy file area. */
-    private static function exaport_draft_files($userid, array $draftitemids, array $filenames = []) {
+    /**
+     * Load an Exaport item owned by the calling user.
+     *
+     * Updates must never touch another user's portfolio, so fail before anything is changed.
+     */
+    private static function require_own_exaport_item($itemid) {
+        global $DB, $USER;
+
+        $item = $DB->get_record('block_exaportitem', ['id' => $itemid, 'userid' => $USER->id]);
+        if (!$item) {
+            throw new block_exacomp_permission_exception("Item '$itemid' not found");
+        }
+        return $item;
+    }
+
+    /**
+     * Find uploaded draft files without reading any Exaport legacy file area.
+     *
+     * With $strict, a referenced draft area or file that cannot be found is an error
+     * instead of being silently skipped, so that callers do not replace existing
+     * content with nothing.
+     */
+    private static function exaport_draft_files($userid, array $draftitemids, array $filenames = [], $strict = false) {
         $fs = get_file_storage();
         $context = context_user::instance($userid);
         $result = [];
         foreach ($draftitemids as $index => $draftitemid) {
             if (!$draftitemid) {
+                if ($strict && !empty($filenames[$index])) {
+                    throw new invalid_parameter_exception('Draft file not found');
+                }
                 continue;
             }
+            $found = false;
             if (!empty($filenames[$index])) {
                 $file = $fs->get_file($context->id, 'user', 'draft', $draftitemid, '/', $filenames[$index]);
                 if ($file) {
                     $result[] = $file;
+                    $found = true;
                 }
             } else {
                 foreach ($fs->get_area_files($context->id, 'user', 'draft', $draftitemid,
                     'filepath ASC, filename ASC, id ASC', false) as $file) {
                     $result[] = $file;
+                    $found = true;
                 }
+            }
+            if ($strict && !$found) {
+                throw new invalid_parameter_exception('Draft file not found');
             }
         }
         return $result;
@@ -1809,6 +1839,13 @@ class externallib extends base {
                 $insert = false;
             }
         }
+        if (!$insert) {
+            // ownership and input are verified before anything is changed or deleted
+            $item = static::require_own_exaport_item($itemid);
+        }
+        $draftfiles = $type == 'file'
+            ? static::exaport_draft_files($USER->id, [$fileitemid], [$filename], !$insert)
+            : [];
         require_once $CFG->dirroot . '/blocks/exaport/inc.php';
         $transaction = $DB->start_delegated_transaction();
 
@@ -1858,22 +1895,27 @@ class externallib extends base {
                 $DB->insert_record('block_exacompcompactiv_mm', array('compid' => $comp->descrid, 'comptype' => 0, 'eportfolioitem' => 1, 'activityid' => $itemid));
             }
         } else {
-            $item = $DB->get_record('block_exaportitem', array('id' => $itemid));
-            $item->name = $title;
-            $item->url = '';
-            $item->attachment = '';
-            $item->intro = $effort;
-            $item->timemodified = time();
+            try {
+                $item->name = $title;
+                $item->url = '';
+                $item->attachment = '';
+                $item->intro = $effort;
+                $item->timemodified = time();
 
 
-            $DB->update_record('block_exaportitem', $item);
+                $DB->update_record('block_exaportitem', $item);
+
+                $item = $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
+                static::replace_exaport_item_content($item, $type == 'file' ? '' : $url, $draftfiles);
+            } catch (\Throwable $e) {
+                $transaction->rollback($e);
+            }
         }
 
-        $draftfiles = $type == 'file'
-            ? static::exaport_draft_files($USER->id, [$fileitemid], [$filename])
-            : [];
-        $item = $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
-        static::replace_exaport_item_content($item, $type == 'file' ? '' : $url, $draftfiles);
+        if ($insert) {
+            $item = $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
+            static::replace_exaport_item_content($item, $type == 'file' ? '' : $url, $draftfiles);
+        }
 
         if ($insert) {
             $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $exampleid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0, 'studentvalue' => $studentvalue));
@@ -6877,6 +6919,13 @@ class externallib extends base {
                 $insert = false;
             }
         }
+        if (!$insert) {
+            // ownership and input are verified before anything is changed or deleted
+            $item = static::require_own_exaport_item($itemid);
+        }
+        $draftids = $fileitemids !== '' ? explode(',', $fileitemids) : [];
+        $draftnames = $filenames !== null && $filenames !== '' ? explode(',', $filenames) : [];
+        $draftfiles = static::exaport_draft_files($USER->id, $draftids, $draftnames, !$insert);
         require_once $CFG->dirroot . '/blocks/exaport/inc.php';
         $transaction = $DB->start_delegated_transaction();
 
@@ -6927,21 +6976,25 @@ class externallib extends base {
             $DB->insert_record('block_exaportviewblock', array('viewid' => $dbView->id, 'positionx' => 1, 'positiony' => 1, 'type' => 'item', 'itemid' => $itemid));
 
         } else {
-            $item = $DB->get_record('block_exaportitem', array('id' => $itemid));
+            try {
+                $item->url = '';
+                $item->attachment = '';
+                $item->timemodified = time();
 
-            $item->url = '';
-            $item->attachment = '';
-            $item->timemodified = time();
 
+                $DB->update_record('block_exaportitem', $item);
 
-            $DB->update_record('block_exaportitem', $item);
+                $item = $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
+                static::replace_exaport_item_content($item, $type == 'file' ? '' : $url, $draftfiles);
+            } catch (\Throwable $e) {
+                $transaction->rollback($e);
+            }
         }
 
-        $draftids = $fileitemids !== '' ? explode(',', $fileitemids) : [];
-        $draftnames = $filenames !== null && $filenames !== '' ? explode(',', $filenames) : [];
-        $draftfiles = static::exaport_draft_files($USER->id, $draftids, $draftnames);
-        $item = $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
-        static::replace_exaport_item_content($item, $type == 'file' ? '' : $url, $draftfiles);
+        if ($insert) {
+            $item = $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
+            static::replace_exaport_item_content($item, $type == 'file' ? '' : $url, $draftfiles);
+        }
 
         if ($insert) {
             $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $exampleid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0));
@@ -7044,6 +7097,12 @@ class externallib extends base {
                 $insert = false;
             }
         }
+        if (!$insert) {
+            // ownership and input are verified before anything is changed or deleted
+            $item = static::require_own_exaport_item($itemid);
+        }
+        $draftids = $fileitemids !== '' ? explode(',', $fileitemids) : [];
+        $draftfiles = static::exaport_draft_files($USER->id, $draftids, [], !$insert);
         require_once $CFG->dirroot . '/blocks/exaport/inc.php';
         $transaction = $DB->start_delegated_transaction();
 
@@ -7117,31 +7176,37 @@ class externallib extends base {
             $DB->insert_record('block_exaportviewblock', array('viewid' => $dbView->id, 'positionx' => 1, 'positiony' => 1, 'type' => 'item', 'itemid' => $itemid));
 
         } else {
-            $item = $DB->get_record('block_exaportitem', array('id' => $itemid));
+            try {
+                $item->name = $itemtitle;
+                $item->url = '';
+                $item->attachment = '';
+                $item->timemodified = time();
+                $item->type = $type;
+                $item->intro = $solutiondescription;
 
-            $item->name = $itemtitle;
-            $item->url = '';
-            $item->attachment = '';
-            $item->timemodified = time();
-            $item->type = $type;
-            $item->intro = $solutiondescription;
+                // This would overwrite, which we do not want in diggrplus
+                //            if ($type == 'file') {
+                //                block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)));
+                //            }
 
-            // This would overwrite, which we do not want in diggrplus
-            //            if ($type == 'file') {
-            //                block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)));
-            //            }
+                $DB->update_record('block_exaportitem', $item);
 
-            $DB->update_record('block_exaportitem', $item);
+                $item = $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
+                static::remove_exaport_item_files($item, $removefiles !== '' ? explode(',', $removefiles) : []);
+                // DiggrPlus historically appended uploads to an in-progress item. Keep
+                // existing structured blocks on update; the singular writers above
+                // retain their replace-all policy.
+                static::replace_exaport_item_content($item, $url, $draftfiles, false);
+            } catch (\Throwable $e) {
+                $transaction->rollback($e);
+            }
         }
 
-        $draftids = $fileitemids !== '' ? explode(',', $fileitemids) : [];
-        $draftfiles = static::exaport_draft_files($USER->id, $draftids);
-        $item = $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
-        static::remove_exaport_item_files($item, $removefiles !== '' ? explode(',', $removefiles) : []);
-        // DiggrPlus historically appended uploads to an in-progress item. Keep
-        // existing structured blocks on update; the singular writers above
-        // retain their replace-all policy.
-        static::replace_exaport_item_content($item, $url, $draftfiles, $insert);
+        if ($insert) {
+            $item = $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
+            static::remove_exaport_item_files($item, $removefiles !== '' ? explode(',', $removefiles) : []);
+            static::replace_exaport_item_content($item, $url, $draftfiles, $insert);
+        }
 
         //calculate status of item: 0 means no submit, 1 means student has submitted, 2 means there exists a teachervalue and the item is completed
         // status=submit since the teacher cannot have graded an item, that has not been submitted by a student before.
