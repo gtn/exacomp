@@ -104,7 +104,7 @@ class externallib extends base {
      * equivalent removes all prior content blocks before adding one link or
      * one file block. This avoids retaining a stale link when changing type.
      */
-    private static function replace_exaport_item_content(stdClass $item, $url, array $draftfiles, $replace = true) {
+    private static function replace_exaport_item_content(stdClass $item, $url, array $draftfiles) {
         global $CFG;
 
         require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
@@ -114,17 +114,59 @@ class externallib extends base {
             'block_exaport_create_link_content_block',
             'block_exaport_import_stored_file_into_content_block',
         ]);
-        if ($replace) {
-            // Exaport needs the trusted parent item to resolve the owner context
-            // while deleting both structured block file areas.
-            block_exaport_delete_item_content($item);
-        }
+        // Exaport needs the trusted parent item to resolve the owner context
+        // while deleting both structured block file areas.
+        block_exaport_delete_item_content($item);
         if ($draftfiles) {
             foreach ($draftfiles as $draftfile) {
                 block_exaport_import_stored_file_into_content_block($item, $draftfile);
             }
         } else if ($url !== null && $url !== '') {
             block_exaport_create_link_content_block($item->id, $item->name, $url);
+        }
+    }
+
+    /**
+     * Resolve DiggrPlus's scalar URL to the first nonempty ordered link.
+     *
+     * There is no provenance identifying an app-owned link. Use the same primary
+     * link as Exaport's compatibility reader, preserving all other link blocks.
+     * Clearing with additional nonempty links is ambiguous: deleting the primary
+     * would expose the next URL, while deleting all links would destroy unrelated
+     * content. Reject that request before any submission side effects instead.
+     */
+    private static function diggrplus_exaport_link_for_update(?stdClass $item, string $url): ?stdClass {
+        $links = [];
+        foreach ($item ? block_exaport_get_item_content_blocks($item->id) : [] as $block) {
+            if ($block->type === 'link' && trim((string)$block->url) !== '') {
+                $links[] = $block;
+            }
+        }
+        if ($url === '' && count($links) > 1) {
+            throw new invalid_parameter_exception(
+                'Cannot clear the singular URL of an item with multiple links. Edit its links in Exaport first.'
+            );
+        }
+        return $links[0] ?? null;
+    }
+
+    /** Update the singular URL independently of DiggrPlus's appended uploads. */
+    private static function update_diggrplus_exaport_content(stdClass $item, string $url,
+            array $draftfiles, ?stdClass $link): void {
+        global $DB;
+
+        if ($link) {
+            if ($url === '') {
+                block_exaport_delete_item_content_block($item, $link);
+            } else if ($link->url !== $url) {
+                // Keep the block ID, order, title and other metadata stable.
+                $DB->set_field('block_exaportitemblock', 'url', $url, ['id' => $link->id, 'itemid' => $item->id]);
+            }
+        } else if ($url !== '') {
+            block_exaport_create_link_content_block($item->id, $item->name, $url);
+        }
+        foreach ($draftfiles as $draftfile) {
+            block_exaport_import_stored_file_into_content_block($item, $draftfile);
         }
     }
 
@@ -169,6 +211,21 @@ class externallib extends base {
             }
         }
         return $files;
+    }
+
+    /** Delete resolved stored files and only file blocks emptied by this request. */
+    private static function remove_exaport_item_files(stdClass $item, array $files): void {
+        $blockids = [];
+        foreach ($files as $file) {
+            $blockids[$file->get_itemid()] = true;
+            $file->delete();
+        }
+        foreach (array_keys($blockids) as $blockid) {
+            $block = block_exaport_get_item_content_block($item, (int)$blockid);
+            if ($block->type === 'file' && !block_exaport_get_item_content_files($item->userid, $blockid)) {
+                block_exaport_delete_item_content_block($item, $block);
+            }
+        }
     }
 
     /**
@@ -7030,7 +7087,7 @@ class externallib extends base {
             'itemtitle' => new external_value(PARAM_TEXT, 'name of the item (for examples, the exampletitle is fitting, but for topics, using the topic would not be very useful', VALUE_DEFAULT, ''),
             'collabuserids' => new external_value(PARAM_TEXT, 'userids of collaborators separated by comma', VALUE_DEFAULT, ''),
             'submit' => new external_value(PARAM_INT, '1 for submitting definitely (submitted), 0 for only creating/updating the item (inprogress)', VALUE_DEFAULT, 0),
-            'removefiles' => new external_value(PARAM_TEXT, 'fileindizes/pathnamehashes of the files that should be removed, separated by comma'),
+            'removefiles' => new external_value(PARAM_TEXT, 'stored-file IDs of the files that should be removed, separated by comma'),
             'solutiondescription' => new external_value(PARAM_TEXT, 'description of what the student has done'),
             'descriptorgradings' => new external_multiple_structure(
                 new external_single_structure(
@@ -7078,6 +7135,8 @@ class externallib extends base {
         $draftids = $fileitemids !== '' ? explode(',', $fileitemids) : [];
         $draftfiles = static::exaport_draft_files($USER->id, $draftids);
         $destination = $insert ? null : $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
+        $url = trim((string)$url);
+        $link = static::diggrplus_exaport_link_for_update($destination, $url);
         $removedfiles = $destination ? static::exaport_item_files_for_removal(
             $destination, $removefiles !== '' ? explode(',', $removefiles) : []
         ) : [];
@@ -7173,13 +7232,10 @@ class externallib extends base {
         }
 
         $item = $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
-        foreach ($removedfiles as $file) {
-            $file->delete();
-        }
-        // DiggrPlus historically appended uploads to an in-progress item. Keep
-        // existing structured blocks on update; the singular writers above
-        // retain their replace-all policy.
-        static::replace_exaport_item_content($item, $url, $draftfiles, $insert);
+        static::remove_exaport_item_files($item, $removedfiles);
+        // DiggrPlus updates its scalar URL and appends uploads independently.
+        // The singular writers above retain their replace-all policy.
+        static::update_diggrplus_exaport_content($item, $url, $draftfiles, $link);
 
         //calculate status of item: 0 means no submit, 1 means student has submitted, 2 means there exists a teachervalue and the item is completed
         // status=submit since the teacher cannot have graded an item, that has not been submitted by a student before.
