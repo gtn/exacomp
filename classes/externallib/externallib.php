@@ -152,20 +152,50 @@ class externallib extends base {
         return $result;
     }
 
-    /** Delete selected files from authoritative structured file blocks. */
-    private static function remove_exaport_item_files(stdClass $item, array $fileids) {
+    /** Resolve selected files once for both quota accounting and deletion. */
+    private static function exaport_item_files_for_removal(stdClass $item, array $fileids): array {
         if (!$fileids) {
-            return;
+            return [];
         }
+        $files = [];
         foreach (block_exaport_get_item_content_blocks($item->id) as $block) {
             if ($block->type !== 'file') {
                 continue;
             }
             foreach (block_exaport_get_item_content_files($item->userid, $block->id) as $file) {
                 if (in_array($file->get_id(), $fileids)) {
-                    $file->delete();
+                    $files[] = $file;
                 }
             }
+        }
+        return $files;
+    }
+
+    /**
+     * Enforce Exaport's owner quota before a DiggrPlus submission changes any records.
+     *
+     * Updates append uploads, so retained files are already included in current usage.
+     * Only actual destination files selected for deletion reduce that usage. Count
+     * each imported copy, even when a request repeats a draft ID. Owners already over
+     * quota may keep or reduce their total, matching Exaport's file form policy.
+     * Migration and general-purpose import helpers remain unrestricted.
+     */
+    private static function check_diggrplus_exaport_quota(int $ownerid, array $draftfiles, array $removedfiles): void {
+        global $CFG, $DB;
+
+        $currentbytes = (int)$DB->get_field_sql(
+            'SELECT COALESCE(SUM(filesize), 0) FROM {files} WHERE contextid = ? AND component = ? AND filename <> ?',
+            [context_user::instance($ownerid)->id, 'block_exaport', '.']
+        );
+        $incomingbytes = array_sum(array_map(static function(\stored_file $file): int {
+            return (int)$file->get_filesize();
+        }, $draftfiles));
+        $removedbytes = array_sum(array_map(static function(\stored_file $file): int {
+            return (int)$file->get_filesize();
+        }, $removedfiles));
+        $quota = (int)($CFG->block_exaport_userquota ?? 104857600);
+        if ($currentbytes - $removedbytes + $incomingbytes > max($quota, $currentbytes)) {
+            throw new moodle_exception('userquotalimit', 'error');
         }
     }
 
@@ -7045,6 +7075,14 @@ class externallib extends base {
             }
         }
         require_once $CFG->dirroot . '/blocks/exaport/inc.php';
+        $draftids = $fileitemids !== '' ? explode(',', $fileitemids) : [];
+        $draftfiles = static::exaport_draft_files($USER->id, $draftids);
+        $destination = $insert ? null : $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
+        $removedfiles = $destination ? static::exaport_item_files_for_removal(
+            $destination, $removefiles !== '' ? explode(',', $removefiles) : []
+        ) : [];
+        // A new/versioned item keeps the original's files, so those cannot free quota.
+        static::check_diggrplus_exaport_quota((int)($destination->userid ?? $USER->id), $draftfiles, $removedfiles);
         $transaction = $DB->start_delegated_transaction();
 
         $customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'courseid' => $courseid, 'itemid' => $itemid, 'itemuserid' => $USER->id];
@@ -7134,10 +7172,10 @@ class externallib extends base {
             $DB->update_record('block_exaportitem', $item);
         }
 
-        $draftids = $fileitemids !== '' ? explode(',', $fileitemids) : [];
-        $draftfiles = static::exaport_draft_files($USER->id, $draftids);
         $item = $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
-        static::remove_exaport_item_files($item, $removefiles !== '' ? explode(',', $removefiles) : []);
+        foreach ($removedfiles as $file) {
+            $file->delete();
+        }
         // DiggrPlus historically appended uploads to an in-progress item. Keep
         // existing structured blocks on update; the singular writers above
         // retain their replace-all policy.
