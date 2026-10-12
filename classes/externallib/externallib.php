@@ -127,27 +127,24 @@ class externallib extends base {
     }
 
     /**
-     * Resolve DiggrPlus's scalar URL to the first nonempty ordered link.
+     * Resolve an explicit nonempty URL update to the first nonempty ordered link.
      *
      * There is no provenance identifying an app-owned link. Use the same primary
      * link as Exaport's compatibility reader, preserving all other link blocks.
-     * Clearing with additional nonempty links is ambiguous: deleting the primary
-     * would expose the next URL, while deleting all links would destroy unrelated
-     * content. Reject that request before any submission side effects instead.
+     * DiggrPlus's current UI has no URL input and always sends an empty URL.
+     * That has no link-editing intent: preserve all links, including multiple
+     * links, and leave intentional removal to Exaport's structured editor.
      */
     private static function diggrplus_exaport_link_for_update(?stdClass $item, string $url): ?stdClass {
-        $links = [];
-        foreach ($item ? block_exaport_get_item_content_blocks($item->id) : [] as $block) {
+        if ($url === '' || !$item) {
+            return null;
+        }
+        foreach (block_exaport_get_item_content_blocks($item->id) as $block) {
             if ($block->type === 'link' && trim((string)$block->url) !== '') {
-                $links[] = $block;
+                return $block;
             }
         }
-        if ($url === '' && count($links) > 1) {
-            throw new invalid_parameter_exception(
-                'Cannot clear the singular URL of an item with multiple links. Edit its links in Exaport first.'
-            );
-        }
-        return $links[0] ?? null;
+        return null;
     }
 
     /** Update the singular URL independently of DiggrPlus's appended uploads. */
@@ -155,15 +152,13 @@ class externallib extends base {
             array $draftfiles, ?stdClass $link): void {
         global $DB;
 
-        if ($link) {
-            if ($url === '') {
-                block_exaport_delete_item_content_block($item, $link);
-            } else if ($link->url !== $url) {
+        if ($url !== '') {
+            if ($link && $link->url !== $url) {
                 // Keep the block ID, order, title and other metadata stable.
                 $DB->set_field('block_exaportitemblock', 'url', $url, ['id' => $link->id, 'itemid' => $item->id]);
+            } else if (!$link) {
+                block_exaport_create_link_content_block($item->id, $item->name, $url);
             }
-        } else if ($url !== '') {
-            block_exaport_create_link_content_block($item->id, $item->name, $url);
         }
         foreach ($draftfiles as $draftfile) {
             block_exaport_import_stored_file_into_content_block($item, $draftfile);
@@ -7077,7 +7072,7 @@ class externallib extends base {
         return new external_function_parameters(array(
             'compid' => new external_value(PARAM_INT, 'id of topic/example'),
             'studentvalue' => new external_value(PARAM_INT, 'studentvalue for grading', VALUE_DEFAULT, -1), // if example --> grading also possible
-            'url' => new external_value(PARAM_URL, 'url'),
+            'url' => new external_value(PARAM_URL, 'Nonempty URL updates the primary link; empty preserves existing links'),
             'filenames' => new external_value(PARAM_TEXT, 'filenames, separated by comma, used to look up files and create a new ones in the exaport file area'),
             'studentcomment' => new external_value(PARAM_TEXT, 'studentcomment'),
             'fileitemids' => new external_value(PARAM_TEXT, 'fileitemids separated by comma, used to look up file and create a new one in the exaport file area'),

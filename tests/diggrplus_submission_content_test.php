@@ -165,7 +165,7 @@ final class diggrplus_submission_content_test extends \advanced_testcase {
         $this->assertSame('', $item->attachment);
     }
 
-    public function test_clearing_and_repeated_empty_url_preserve_text_and_appended_files(): void {
+    public function test_empty_url_and_repeated_submission_preserve_links_text_and_appended_files(): void {
         $item = $this->item();
         $text = block_exaport_create_content_block($item->id, 'text', 'Text', '', [
             'content' => '<p><img src="@@PLUGINFILE@@/asset.txt"></p>',
@@ -180,11 +180,11 @@ final class diggrplus_submission_content_test extends \advanced_testcase {
         $this->submit($item->id, '', [$draftid]);
         $this->submit($item->id, '');
         $blocks = block_exaport_get_item_content_blocks($item->id);
-        $this->assertSame(['text', 'file', 'file'], array_column($blocks, 'type'));
+        $this->assertSame(['text', 'link', 'file', 'file'], array_column($blocks, 'type'));
         $this->assertEquals($text, $blocks[0]);
-        $this->assertEquals($fileblock, $blocks[1]);
-        $this->assertSame('', $this->read($item->id)['url']);
-        $this->assertFalse(in_array($link->id, array_column($blocks, 'id')));
+        $this->assertEquals($link, $blocks[1]);
+        $this->assertEquals($fileblock, $blocks[2]);
+        $this->assertSame('https://example.test/old', $this->read($item->id)['url']);
         $this->assertSame('File bytes', get_file_storage()->get_file_by_id($asset->get_id())->get_content());
         $this->assertSame('File bytes', get_file_storage()->get_file_by_id($kept->get_id())->get_content());
         $this->assertSame('Parent description', $this->read($item->id)['solutiondescription']);
@@ -207,26 +207,26 @@ final class diggrplus_submission_content_test extends \advanced_testcase {
         $this->assertSame('https://example.test/new', $this->read($item->id)['url']);
     }
 
-    public function test_ambiguous_multiple_link_clear_rejects_before_any_submission_mutations(): void {
+    public function test_empty_url_with_multiple_links_allows_file_changes_and_preserves_every_link(): void {
+        global $DB;
         $item = $this->item();
-        block_exaport_create_link_content_block($item->id, 'Primary', 'https://example.test/primary');
-        block_exaport_create_link_content_block($item->id, 'Other', 'https://example.test/other');
+        $primary = block_exaport_create_link_content_block($item->id, 'Primary', 'https://example.test/primary');
+        $other = block_exaport_create_link_content_block($item->id, 'Other', 'https://example.test/other');
         $block = block_exaport_create_file_content_block($item->id, 'Keep');
         $file = $this->file('item_content_file', $block->id, 'keep.txt');
         $draftid = file_get_unused_draft_itemid();
         $this->file('draft', $draftid, 'new.txt');
-        $before = $this->snapshot();
-        $messages = $this->redirectMessages();
-        $events = $this->redirectEvents();
-        try {
-            $this->submit($item->id, '', [$draftid], [$file->get_id()]);
-            $this->fail('Clearing a singular URL must not silently erase unrelated links');
-        } catch (\invalid_parameter_exception $exception) {
-            $this->assertStringContainsString('multiple links', $exception->getMessage());
-        }
-        $this->assertEquals($before, $this->snapshot());
-        $this->assertSame([], $messages->get_messages());
-        $this->assertSame([], $events->get_events());
+        $this->assertSame((int)$item->id, $this->submit($item->id, '', [$draftid], [$file->get_id()]));
+        $blocks = block_exaport_get_item_content_blocks($item->id);
+        $this->assertSame(['link', 'link', 'file'], array_column($blocks, 'type'));
+        $this->assertEquals([$primary, $other], array_slice($blocks, 0, 2));
+        $this->assertFalse(get_file_storage()->get_file_by_id($file->get_id()));
+        $this->assertFalse($DB->record_exists('block_exaportitemblock', ['id' => $block->id]));
+        $this->assertSame('https://example.test/primary', $this->read($item->id)['url']);
+        $this->assertSame(['new.txt'], array_column($this->read($item->id)['studentfiles'], 'filename'));
+        $this->assertSame('Updated title', $DB->get_field('block_exaportitem', 'name', ['id' => $item->id]));
+        $this->submit($item->id, '');
+        $this->assertEquals($blocks, block_exaport_get_item_content_blocks($item->id));
     }
 
     public static function removal_provider(): array {
