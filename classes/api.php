@@ -137,7 +137,7 @@ class api {
      * Has to be called by exaport for all descriptor ids, which come from the request, else any descriptor could be used by changing the id.
      * Allowed are the descriptors of the own competence tree and the ones, which are already assigned to the exaport item.
      */
-    static function require_descriptor_access_for_exaport(array $descriptorids, $itemid = 0) {
+    static function require_can_access_descriptors_for_exaport(array $descriptorids, $itemid = 0) {
         global $DB, $USER;
 
         // don't load the whole tree, if nothing has to be checked
