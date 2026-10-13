@@ -38,6 +38,9 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
     throw new moodle_exception('invalidcourse', 'block_simplehtml', $courseid);
 }
 
+require_login($course);
+block_exacomp_require_teacher($courseid);
+
 if ($action == 'save') {
     require_sesskey();
     $DB->delete_records("block_exacompdescrquest_mm", array('questid' => $questid));
@@ -47,8 +50,6 @@ if ($action == 'save') {
         }
     }
 }
-
-require_login($course);
 
 $context = context_course::instance($courseid);
 //$output = block_exacomp_get_renderer();

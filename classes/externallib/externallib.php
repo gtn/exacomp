@@ -11531,6 +11531,8 @@ class externallib extends base {
         }
 
         static::require_can_access_course_user($courseid, $userid);
+        // require_can_access_course_user() also allows students for their own user id
+        block_exacomp_require_teacher($courseid);
 
         block_exacomp_set_descriptor_visibility($descriptorid, $courseid, $visible, $userid);
 
@@ -11579,6 +11581,8 @@ class externallib extends base {
         }
 
         static::require_can_access_course_user($courseid, $userid);
+        // require_can_access_course_user() also allows students for their own user id
+        block_exacomp_require_teacher($courseid);
 
         block_exacomp_set_example_visibility($exampleid, $courseid, $visible, $userid);
 
@@ -11629,6 +11633,8 @@ class externallib extends base {
         }
 
         static::require_can_access_course_user($courseid, $userid);
+        // require_can_access_course_user() also allows students for their own user id
+        block_exacomp_require_teacher($courseid);
 
         if ($groupid != -1) {
             block_exacomp_set_topic_visibility_for_group($topicid, $courseid, $visible, $groupid);
@@ -11685,6 +11691,8 @@ class externallib extends base {
         }
 
         static::require_can_access_course_user($courseid, $userid);
+        // require_can_access_course_user() also allows students for their own user id
+        block_exacomp_require_teacher($courseid);
 
         //        if($groupid != -1){
         //            block_exacomp_set_topic_visibility_for_group($topicid, $courseid, $visible, $groupid);
@@ -11737,6 +11745,8 @@ class externallib extends base {
         }
 
         static::require_can_access_course_user($courseid, $userid);
+        // require_can_access_course_user() also allows students for their own user id
+        block_exacomp_require_teacher($courseid);
 
         block_exacomp_set_example_solution_visibility($exampleid, $courseid, $visible, $userid);
 
@@ -11796,6 +11806,8 @@ class externallib extends base {
         }
 
         static::require_can_access_course_user($courseid, $userid);
+        // require_can_access_course_user() also allows students for their own user id
+        block_exacomp_require_teacher($courseid);
 
         $descriptorids = explode(',', $ids);
 
@@ -11848,6 +11860,8 @@ class externallib extends base {
         }
 
         static::require_can_access_course_user($courseid, $userid);
+        // require_can_access_course_user() also allows students for their own user id
+        block_exacomp_require_teacher($courseid);
 
         $exampleids = explode(',', $ids);
 
@@ -11902,6 +11916,8 @@ class externallib extends base {
         }
 
         static::require_can_access_course_user($courseid, $userid);
+        // require_can_access_course_user() also allows students for their own user id
+        block_exacomp_require_teacher($courseid);
 
         $topicids = explode(',', $ids);
 

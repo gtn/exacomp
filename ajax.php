@@ -89,6 +89,8 @@ switch ($action) {
         block_exacomp_save_drafts_to_course(array($crosssubjid), 0);
         break;
     case('hide-descriptor'):
+        block_exacomp_require_teacher($courseid);
+
         $descrid = required_param('descrid', PARAM_INT);
         $courseid = required_param('courseid', PARAM_INT);
         $visible = required_param('value', PARAM_INT);
