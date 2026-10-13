@@ -23,7 +23,7 @@ $badgeid = optional_param('badgeid', 0, PARAM_INT);
 $action = optional_param('action', "", PARAM_ALPHA);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('invalidcourse', 'block_simplehtml', $courseid);
+    throw new moodle_exception('invalidcourse', 'block_simplehtml', $courseid);
 }
 
 block_exacomp_require_login($course);

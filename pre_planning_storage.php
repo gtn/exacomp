@@ -23,7 +23,7 @@ $creatorid = required_param('creatorid', PARAM_INT);
 $action = optional_param('action', '', PARAM_TEXT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('invalidcourse', 'block_exacomp', $courseid);
+    throw new moodle_exception('invalidcourse', 'block_exacomp', $courseid);
 }
 
 block_exacomp_require_login($course);

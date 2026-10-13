@@ -2317,7 +2317,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
                 $localurlfield = 'solution';
                 $externalurlfield = 'externalsolution';
             } else {
-                print_error('wrong type ' . $type);
+                throw new moodle_exception('wrong type ' . $type);
             }
 
             $url = $item->$localurlfield;

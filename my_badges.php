@@ -21,7 +21,7 @@
 //$courseid = required_param('courseid', PARAM_INT);
 //
 //if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-//    print_error('invalidcourse', 'block_simplehtml', $courseid);
+//    throw new moodle_exception('invalidcourse', 'block_simplehtml', $courseid);
 //}
 // TODO: since all instances of this are commented, this whole file is commented as well for now
 //

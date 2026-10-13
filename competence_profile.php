@@ -21,7 +21,7 @@ global $DB, $OUTPUT, $PAGE, $USER;
 $courseid = required_param('courseid', PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('invalidcourse', 'block_simplehtml', $courseid);
+    throw new moodle_exception('invalidcourse', 'block_simplehtml', $courseid);
 }
 
 block_exacomp_require_login($course);
@@ -51,7 +51,7 @@ if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
 } else {
     // check permission for viewing student's profile
     if (!array_key_exists($studentid, $coursestudents)) {
-        print_error("nopermissions", "", "", "Show student profile");
+        throw new moodle_exception("nopermissions", "", "", "Show student profile");
     }
     $students = [$studentid => $coursestudents[$studentid]];
 }

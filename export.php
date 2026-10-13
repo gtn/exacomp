@@ -21,7 +21,7 @@ require __DIR__ . '/inc.php';
 $courseid = required_param('courseid', PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('invalidcourse', 'block_simplehtml', $courseid);
+    throw new moodle_exception('invalidcourse', 'block_simplehtml', $courseid);
 }
 
 block_exacomp_require_login($course);
@@ -144,5 +144,5 @@ if ($action == 'export_all') {
 
     echo $output->footer();
 } else {
-    print_error("wrong action '$action'");
+    throw new moodle_exception("wrong action '$action'");
 }

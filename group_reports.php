@@ -24,7 +24,7 @@ require_once __DIR__ . '/wsdatalib.php';
 $courseid = required_param('courseid', PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('invalidcourse', 'block_simplehtml', $courseid);
+    throw new moodle_exception('invalidcourse', 'block_simplehtml', $courseid);
 }
 
 //To log in from Dakora:
@@ -47,7 +47,7 @@ $useprofoundness = block_exacomp_get_settings_by_course($courseid)->useprofoundn
 
 $reportType = optional_param('reportType', 'general', PARAM_ALPHANUM);
 if ($reportType == 'profoundness' && !$useprofoundness) {
-    print_error('This function is disabled!');
+    throw new moodle_exception('This function is disabled!');
 }
 
 $page_identifier = 'tab_teacher_report_' . $reportType;

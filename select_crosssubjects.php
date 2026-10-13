@@ -23,7 +23,7 @@ $descrid = optional_param('descrid', 0, PARAM_INT);
 
 // error if example does not exist or was created by somebody else
 if ($descrid > 0 && (!$descriptor = $DB->get_record('block_exacompdescriptors', array('id' => $descrid)))) {
-    print_error('invalidexample', 'block_exacomp', $exampleid);
+    throw new moodle_exception('invalidexample', 'block_exacomp', $exampleid);
 }
 
 block_exacomp_require_login($courseid);

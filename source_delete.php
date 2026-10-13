@@ -22,7 +22,7 @@ $courseid = required_param('courseid', PARAM_INT);
 global $DB, $OUTPUT, $PAGE, $CFG;
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('invalidcourse', 'block_simplehtml', $courseid);
+    throw new moodle_exception('invalidcourse', 'block_simplehtml', $courseid);
 }
 
 block_exacomp_require_login($course);
@@ -209,7 +209,7 @@ if ($action == 'delete_selected') {
 
     echo $output->footer();
     */
-    print_error("Deprecated action '$action'");
+    throw new moodle_exception("Deprecated action '$action'");
 } else if ($action == 'preselect_subjects') {
     // The user can select from which subject they want to delete. This can be only one subject, or several, or all.
     // If the user chooses all in a huge setting, this could lead to performance issues.
@@ -252,5 +252,5 @@ if ($action == 'delete_selected') {
     echo $output->footer();
 
 } else {
-    print_error("wrong action '$action'");
+    throw new moodle_exception("wrong action '$action'");
 }

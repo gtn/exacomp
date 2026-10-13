@@ -25,7 +25,7 @@ block_exacomp_require_login($courseid);
 
 if ($exampleid) {
     if (!$example = block_exacomp\example::get($exampleid)) {
-        print_error('invalidexample', 'block_exacomp', $exampleid);
+        throw new moodle_exception('invalidexample', 'block_exacomp', $exampleid);
     }
     block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_MODIFY, $example);
 } else {
@@ -43,13 +43,13 @@ $PAGE->set_title(block_exacomp_get_string('blocktitle'));
 $PAGE->set_pagelayout('embedded');
 
 if ($action == 'serve') {
-    print_error('this function is not available anymore');
+    throw new moodle_exception('this function is not available anymore');
 }
 
 if ($action == 'delete') {
     require_sesskey();
     if (!$example) {
-        print_error('invalidexample', 'block_exacomp', $exampleid);
+        throw new moodle_exception('invalidexample', 'block_exacomp', $exampleid);
     }
     $returnurl = new moodle_url(required_param('returnurl', PARAM_LOCALURL));
 

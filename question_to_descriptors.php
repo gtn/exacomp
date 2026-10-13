@@ -35,7 +35,7 @@ $action = optional_param("action", "", PARAM_TEXT);
 $descs = optional_param_array('desc', [], PARAM_INT);
 $questid = optional_param('questid', '', PARAM_RAW);
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('invalidcourse', 'block_simplehtml', $courseid);
+    throw new moodle_exception('invalidcourse', 'block_simplehtml', $courseid);
 }
 
 if ($action == 'save') {

@@ -37,7 +37,7 @@ $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param("action", "", PARAM_TEXT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('invalidcourse', 'block_simplehtml', $courseid);
+    throw new moodle_exception('invalidcourse', 'block_simplehtml', $courseid);
 }
 
 block_exacomp_require_login($course);

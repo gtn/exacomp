@@ -10626,10 +10626,10 @@ class externallib extends base {
         // hvp --> the plugin that is mostly used
         if (strpos($example->externaltask, "/mod/hvp/view.php")) {
             if (!$cm = get_coursemodule_from_id('hvp', $example->activityid)) { // here the coursemodule aka activityid is needed
-                print_error('invalidcoursemodule');
+                throw new moodle_exception('invalidcoursemodule');
             }
             if (!$course = $DB->get_record('course', ['id' => $cm->course])) {
-                print_error('coursemisconf');
+                throw new moodle_exception('coursemisconf');
             }
 
             $id = $cm->instance; // NOT the activityid, but the hvp-id of that activity.. this is the "instanceid" of the coursemodule

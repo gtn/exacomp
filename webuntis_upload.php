@@ -21,7 +21,7 @@ $courseid = required_param('courseid', PARAM_INT);
 $studentid = required_param('studentid', PARAM_INT); //not always studentid actually, but id of selected weekly schedule
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('invalidcourse', 'block_exacomp', $courseid);
+    throw new moodle_exception('invalidcourse', 'block_exacomp', $courseid);
 }
 
 block_exacomp_require_login($course);

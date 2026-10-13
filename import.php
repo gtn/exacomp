@@ -37,7 +37,7 @@ global $DB, $OUTPUT, $PAGE;
 $courseid = required_param('courseid', PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('invalidcourse', 'block_simplehtml', $courseid);
+    throw new moodle_exception('invalidcourse', 'block_simplehtml', $courseid);
 }
 
 block_exacomp_require_login($course);
@@ -241,7 +241,7 @@ if ($isAdmin || block_exacomp_check_customupload()) {
 
         if (block_exacomp\data::has_old_data(BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT)) {
             if (!$isAdmin) {
-                print_error('pls contact your admin');
+                throw new moodle_exception('pls contact your admin');
             }
 
             echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php',
@@ -250,7 +250,7 @@ if ($isAdmin || block_exacomp_check_customupload()) {
                 'For the latest exacomp version you need to reimport global educational standards'));
         } else if (block_exacomp\data::has_old_data(BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC)) {
             if (!$isAdmin) {
-                print_error('pls contact your admin');
+                throw new moodle_exception('pls contact your admin');
             }
 
             echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php',

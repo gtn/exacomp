@@ -105,7 +105,7 @@ if ($course_settings->uses_activities && !$activities && !$course_settings->show
 $ret = block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher, ($isTeacher ? 0 : $USER->id), ($isTeacher) ? false : true, @$course_settings->hideglobalsubjects);
 
 if (!$ret) {
-    print_error('not configured');
+    throw new moodle_exception('not configured');
 }
 list($courseSubjects, $courseTopics, $niveaus, $selectedSubject, $selectedTopic, $selectedNiveau) = $ret;
 
