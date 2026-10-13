@@ -98,6 +98,25 @@ class externallib extends base {
     }
 
     /**
+     * Load an existing item owned by the caller before submission side effects.
+     *
+     * Ownership is checked before the caller selects update or new-version
+     * behavior, so grading restrictions remain specific to each service.
+     */
+    private static function require_owned_exaport_submission(int $itemid): ?stdClass {
+        global $DB, $USER;
+
+        if ($itemid <= 0) {
+            return null;
+        }
+        $item = $DB->get_record('block_exaportitem', ['id' => $itemid, 'userid' => $USER->id]);
+        if (!$item) {
+            throw new invalid_parameter_exception('Not allowed to modify this item');
+        }
+        return $item;
+    }
+
+    /**
      * Replace the content represented by the old singular submission inputs.
      *
      * The old operation replaced the submission, therefore its structured
@@ -1866,6 +1885,8 @@ class externallib extends base {
             array('title' => $title, 'exampleid' => $exampleid, 'url' => $url, 'effort' => $effort, 'filename' => $filename, 'fileitemid' => $fileitemid, 'studentcomment' => $studentcomment, 'studentvalue' => $studentvalue,
                 'itemid' => $itemid, 'courseid' => $courseid));
 
+        $existingitem = static::require_owned_exaport_submission((int)$itemid);
+
         if ($CFG->block_exaport_app_externaleportfolio) {
             // export to Mahara
             // TODO: besser als function call, nicht als include!
@@ -1940,7 +1961,7 @@ class externallib extends base {
                 $DB->insert_record('block_exacompcompactiv_mm', array('compid' => $comp->descrid, 'comptype' => 0, 'eportfolioitem' => 1, 'activityid' => $itemid));
             }
         } else {
-            $item = $DB->get_record('block_exaportitem', array('id' => $itemid));
+            $item = $existingitem;
             $item->name = $title;
             $item->url = '';
             $item->attachment = '';
@@ -6945,6 +6966,8 @@ class externallib extends base {
         static::validate_parameters(static::dakora_submit_example_parameters(),
             array('exampleid' => $exampleid, 'url' => $url, 'filenames' => $filenames, 'studentcomment' => $studentcomment, 'studentvalue' => $studentvalue, 'itemid' => $itemid, 'courseid' => $courseid, 'fileitemids' => $fileitemids));
 
+        $existingitem = static::require_owned_exaport_submission((int)$itemid);
+
         if (!isset($type)) {
             $type = ($filenames != '') ? 'file' : 'url';
         }
@@ -7009,7 +7032,7 @@ class externallib extends base {
             $DB->insert_record('block_exaportviewblock', array('viewid' => $dbView->id, 'positionx' => 1, 'positiony' => 1, 'type' => 'item', 'itemid' => $itemid));
 
         } else {
-            $item = $DB->get_record('block_exaportitem', array('id' => $itemid));
+            $item = $existingitem;
 
             $item->url = '';
             $item->attachment = '';
@@ -7110,6 +7133,8 @@ class externallib extends base {
                 'itemid' => $itemid, 'courseid' => $courseid, 'comptype' => $comptype, 'itemtitle' => $itemtitle, 'collabuserids' => $collabuserids, 'submit' => $submit, 'removefiles' => $removefiles,
                 'solutiondescription' => $solutiondescription, 'descriptorgradings' => $descriptorgradings));
 
+        $existingitem = static::require_owned_exaport_submission((int)$itemid);
+
         // TODO: is URL type needed in diggrplus? what exactly does it do?  For now: always set to "file"
         //        if (!isset($type)) {
         //            $type = ($filenames != '') ? 'file' : 'url';
@@ -7129,7 +7154,7 @@ class externallib extends base {
         require_once $CFG->dirroot . '/blocks/exaport/inc.php';
         $draftids = $fileitemids !== '' ? explode(',', $fileitemids) : [];
         $draftfiles = static::exaport_draft_files($USER->id, $draftids);
-        $destination = $insert ? null : $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
+        $destination = $insert ? null : $existingitem;
         $url = trim((string)$url);
         $link = static::diggrplus_exaport_link_for_update($destination, $url);
         $removedfiles = $destination ? static::exaport_item_files_for_removal(
@@ -7209,7 +7234,7 @@ class externallib extends base {
             $DB->insert_record('block_exaportviewblock', array('viewid' => $dbView->id, 'positionx' => 1, 'positiony' => 1, 'type' => 'item', 'itemid' => $itemid));
 
         } else {
-            $item = $DB->get_record('block_exaportitem', array('id' => $itemid));
+            $item = $existingitem;
 
             $item->name = $itemtitle;
             $item->url = '';
