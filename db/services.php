@@ -1,6 +1,38 @@
 <?php
 
 $functions = array (
+  'block_exacomp_get_course_competences' =>
+  array (
+    'classname' => '\\block_exacomp\\externallib\\activity_competences',
+    'methodname' => 'get_course_competences',
+    'description' => 'Read the complete configured course competence tree.',
+    'type' => 'read',
+    'capabilities' => 'block/exacomp:teacher',
+  ),
+  'block_exacomp_get_activity_competences' =>
+  array (
+    'classname' => '\\block_exacomp\\externallib\\activity_competences',
+    'methodname' => 'get_activity_competences',
+    'description' => 'Inspect every material and relation for a course activity.',
+    'type' => 'read',
+    'capabilities' => 'block/exacomp:teacher',
+  ),
+  'block_exacomp_plan_activity_competences' =>
+  array (
+    'classname' => '\\block_exacomp\\externallib\\activity_competences',
+    'methodname' => 'plan_activity_competences',
+    'description' => 'Plan explicitly requested activity competence additions without writes.',
+    'type' => 'read',
+    'capabilities' => 'block/exacomp:teacher',
+  ),
+  'block_exacomp_add_activity_competences' =>
+  array (
+    'classname' => '\\block_exacomp\\externallib\\activity_competences',
+    'methodname' => 'add_activity_competences',
+    'description' => 'Add only explicitly confirmed missing activity competence links.',
+    'type' => 'write',
+    'capabilities' => 'block/exacomp:teacher',
+  ),
   'diggrplus_set_item_status' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\competence_grid',
