@@ -24,7 +24,7 @@ $fromimport = optional_param('fromimport', 0, PARAM_INT);
 if (!$course = $DB->get_record('course', array(
     'id' => $courseid,
 ))) {
-    print_error('invalidcourse', 'block_simplehtml', $courseid);
+    throw new moodle_exception('invalidcourse', 'block_simplehtml', $courseid);
 }
 
 require_login($course);

@@ -230,7 +230,7 @@ class provider implements
     public static function get_users_in_context(userlist $userlist) {
         global $DB;
         $context = $userlist->get_context();
-        if (get_class($context) != 'context_course') {
+        if (!($context instanceof \core\context\course)) {
             return;
         }
         $courseid = $context->instanceid;
@@ -264,7 +264,7 @@ class provider implements
         // got only context_cources
         $exacompcoursescontexts = $contextlist->get_contexts();
         foreach ($exacompcoursescontexts as $k => $context) {
-            if (get_class($context) != 'context_course') {
+            if (!($context instanceof \core\context\course)) {
                 unset($exacompcoursescontexts[$k]);
             }
         }
@@ -894,18 +894,19 @@ class provider implements
 
     public static function delete_data_for_all_users_in_context(context $context) {
         global $DB;
-        if (get_class($context) != 'context_course') {
+        if (!($context instanceof \core\context\course)) {
             return;
         }
         $courseid = $context->instanceid;
         if ($courseid) {
             $DB->delete_records('block_exacompcompuser', ['courseid' => $courseid]); // for students
             //$DB->delete_records('block_exacompcompuser', ['courseid' => $courseid]); // for teachers
-            $DB->delete_records('block_exacompdescrvisibility', ['courseid' => $courseid]);
+            // the visibilities with studentid = 0 are the configuration of the course, without them the competence grid would be empty
+            $DB->delete_records_select('block_exacompdescrvisibility', 'courseid = ? AND studentid > 0', [$courseid]);
             $DB->delete_records('block_exacompexameval', ['courseid' => $courseid]); // for students
             //$DB->delete_records('block_exacompexameval', ['courseid' => $courseid]); // for teachers
-            $DB->delete_records('block_exacompexampvisibility', ['courseid' => $courseid]);
-            $DB->delete_records('block_exacompcrosssubjects', ['courseid' => $courseid]);
+            $DB->delete_records_select('block_exacompexampvisibility', 'courseid = ? AND studentid > 0', [$courseid]);
+            // the cross subjects are not deleted, they are content of the course and no personal data
         }
         return;
     }
@@ -919,7 +920,7 @@ class provider implements
 
         $exacompcoursescontexts = $contextlist->get_contexts();
         foreach ($exacompcoursescontexts as $k => $context) {
-            if (get_class($context) != 'context_course') {
+            if (!($context instanceof \core\context\course)) {
                 unset($exacompcoursescontexts[$k]);
             }
         }
@@ -931,14 +932,15 @@ class provider implements
             //$DB->delete_records('block_exacompcmassign', ['userid' => $userid]);
 
             $DB->delete_records('block_exacompcompuser', ['userid' => $userid, 'courseid' => $courseid]); // for students
-            $DB->delete_records('block_exacompcompuser', ['reviewerid' => $userid, 'courseid' => $courseid]); // for teachers
+            // for teachers: the assessments belong to the students, so only the reference to the teacher is removed
+            $DB->set_field('block_exacompcompuser', 'reviewerid', 0, ['reviewerid' => $userid, 'courseid' => $courseid]);
             // block_exacompcompuser_mm - looks like not used anymore
             //$DB->delete_records('block_exacompcompuser_mm', ['userid' => $userid]);
             $DB->delete_records('block_exacompcrossstud_mm', ['studentid' => $userid]);
-            $DB->delete_records('block_exacompcrosssubjects', ['creatorid' => $userid]);
+            // the cross subjects of the user are not deleted, they are content of the course and no personal data
             $DB->delete_records('block_exacompdescrvisibility', ['studentid' => $userid, 'courseid' => $courseid]);
             $DB->delete_records('block_exacompexameval', ['studentid' => $userid, 'courseid' => $courseid]); // for students
-            $DB->delete_records('block_exacompexameval', ['teacher_reviewerid' => $userid, 'courseid' => $courseid]); // for teachers
+            $DB->set_field('block_exacompexameval', 'teacher_reviewerid', 0, ['teacher_reviewerid' => $userid, 'courseid' => $courseid]); // for teachers
             $DB->delete_records('block_exacompexampvisibility', ['studentid' => $userid, 'courseid' => $courseid]);
             $DB->delete_records('block_exacompexternaltrainer', ['studentid' => $userid]); // for students
             $DB->delete_records('block_exacompexternaltrainer', ['trainerid' => $userid]); // for trainers
@@ -961,7 +963,7 @@ class provider implements
     public static function delete_data_for_users(approved_userlist $userlist) {
         global $DB;
         $context = $userlist->get_context();
-        if (get_class($context) != 'context_course') {
+        if (!($context instanceof \core\context\course) || !$userlist->get_userids()) {
             return;
         }
         $courseid = $context->instanceid;
@@ -985,7 +987,7 @@ class provider implements
 
         $select = " creatorid {$inSql}";
         $DB->delete_records_select('block_exacompschedule', $select, $params);
-        $DB->delete_records_select('block_exacompcrosssubjects', $select, $params);
+        // the cross subjects of the users are not deleted, they are content of the course and no personal data
 
         $select = " trainerid {$inSql}";
         $DB->delete_records_select('block_exacompexternaltrainer', $select, $params);
@@ -1000,11 +1002,12 @@ class provider implements
         $select = " userid {$inSql} AND courseid = :courseid ";
         $DB->delete_records_select('block_exacompcompuser', $select, $params);
 
+        // the assessments of teachers belong to the students, so only the reference to the teacher is removed
         $select = " reviewerid {$inSql} AND courseid = :courseid ";
-        $DB->delete_records_select('block_exacompcompuser', $select, $params);
+        $DB->set_field_select('block_exacompcompuser', 'reviewerid', 0, $select, $params);
 
         $select = " teacher_reviewerid {$inSql} AND courseid = :courseid ";
-        $DB->delete_records_select('block_exacompexameval', $select, $params);
+        $DB->set_field_select('block_exacompexameval', 'teacher_reviewerid', 0, $select, $params);
 
     }
 

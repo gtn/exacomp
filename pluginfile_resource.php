@@ -47,16 +47,16 @@ $embed = optional_param('embed', 0, PARAM_BOOL);
 
 // relative path must start with '/'
 if (!$relativepath) {
-    print_error('invalidargorconf');
+    throw new moodle_exception('invalidargorconf');
 } else if ($relativepath[0] != '/') {
-    print_error('pathdoesnotstartslash');
+    throw new moodle_exception('pathdoesnotstartslash');
 }
 
 // extract relative path components
 $args = explode('/', ltrim($relativepath, '/'));
 
 if (count($args) < 3) { // always at least context, component and filearea
-    print_error('invalidarguments');
+    throw new moodle_exception('invalidarguments');
 }
 
 $contextid = (int)array_shift($args);

@@ -700,7 +700,7 @@ class db_record {
             /*
             if (\block_exacomp\db_layer::property_exists($this, $name)) {
                 // the property exists now -> error
-                print_error('property set on object!');
+                throw new moodle_exception('property set on object!');
             }
             */
         } elseif (method_exists($this, 'get_' . $method)) {

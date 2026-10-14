@@ -19,7 +19,7 @@ require __DIR__ . '/inc.php';
 $courseid = required_param('courseid', PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error("That's an invalid course id");
+    throw new moodle_exception("That's an invalid course id");
 }
 
 block_exacomp_require_login($course);

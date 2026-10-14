@@ -32,12 +32,12 @@ $courseid = required_param('courseid', PARAM_INT);
 $exampleid = required_param('exampleid', PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('invalidcourse', 'block_exacomp', $courseid);
+    throw new moodle_exception('invalidcourse', 'block_exacomp', $courseid);
 }
 
 // error if example does not exist or was created by somebody else
 if (!$example = $DB->get_record('block_exacompexamples', array('id' => $exampleid))) {
-    print_error('invalidexample', 'block_exacomp', $exampleid);
+    throw new moodle_exception('invalidexample', 'block_exacomp', $exampleid);
 }
 
 block_exacomp_require_login($course);

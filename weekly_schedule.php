@@ -22,7 +22,7 @@ $courseid = required_param('courseid', PARAM_INT);
 $groupid = optional_param('groupid', 0, PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('invalidcourse', 'block_simplehtml', $courseid);
+    throw new moodle_exception('invalidcourse', 'block_simplehtml', $courseid);
 }
 
 block_exacomp_require_login($course);
@@ -70,7 +70,7 @@ if ($isTeacher) {
     } else {
         //check permission for viewing students profile
         if (!array_key_exists($studentid, $coursestudents)) {
-            print_error("nopermissions", "", "", "Show student profile");
+            throw new moodle_exception("nopermissions", "", "", "Show student profile");
         }
         $student = $DB->get_record('user', array('id' => $studentid));
     }

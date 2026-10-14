@@ -25,7 +25,7 @@ $courseid = required_param('courseid', PARAM_INT);
 $embedded = optional_param('embedded', true, PARAM_BOOL);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('invalidcourse', 'block_exacomp', $courseid);
+    throw new moodle_exception('invalidcourse', 'block_exacomp', $courseid);
 }
 
 block_exacomp_require_login($course);

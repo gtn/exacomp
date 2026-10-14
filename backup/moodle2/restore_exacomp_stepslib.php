@@ -124,7 +124,7 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
                 } elseif ($descractiv_mm->comptype == BLOCK_EXACOMP_TYPE_TOPIC) {
                     $table = BLOCK_EXACOMP_DB_TOPICS;
                 } else {
-                    print_error("unknown comptype {$descractiv_mm->comptype}");
+                    throw new moodle_exception("unknown comptype {$descractiv_mm->comptype}");
                 }
 
                 if (!$source_desc = $this->get_db_record_from_sourceid($table, $descractiv_mm, 'comp')) {

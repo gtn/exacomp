@@ -31,7 +31,7 @@ if (!$course = $DB->get_record('course', array(
     'id' => $courseid,
 ))
 ) {
-    print_error('invalidcourse', 'block_simplehtml', $courseid);
+    throw new moodle_exception('invalidcourse', 'block_simplehtml', $courseid);
 }
 
 require_login($course);
@@ -58,13 +58,13 @@ switch ($action) {
 
         foreach ($not_subj_ids as $not_subj_id) {
             if (!is_numeric($not_subj_id)) {
-                print_error('invalidparameter', 'block_exacomp', $not_subj_id);
+                throw new moodle_exception('invalidparameter', 'block_exacomp', $not_subj_id);
             }
         }
 
         foreach ($subj_ids as $subj_id) {
             if (!is_numeric($subj_id)) {
-                print_error('invalidparameter', 'block_exacomp', $subj_id);
+                throw new moodle_exception('invalidparameter', 'block_exacomp', $subj_id);
             }
         }
 
@@ -89,6 +89,8 @@ switch ($action) {
         block_exacomp_save_drafts_to_course(array($crosssubjid), 0);
         break;
     case('hide-descriptor'):
+        block_exacomp_require_teacher($courseid);
+
         $descrid = required_param('descrid', PARAM_INT);
         $courseid = required_param('courseid', PARAM_INT);
         $visible = required_param('value', PARAM_INT);
@@ -450,14 +452,14 @@ switch ($action) {
         die('ok');
     case 'delete-descriptor':
         if (!$isTeacher) {
-            print_error('noteacher');
+            throw new moodle_exception('noteacher');
         }
 
         block_exacomp_delete_custom_descriptor(required_param('id', PARAM_INT));
         break;
     case 'allow-resubmission':
         if (!$isTeacher) {
-            print_error('noteacher');
+            throw new moodle_exception('noteacher');
         }
         $studentid = required_param('studentid', PARAM_INT);
         $exampleid = required_param('exampleid', PARAM_INT);
@@ -467,7 +469,7 @@ switch ($action) {
         exit;
     case 'send-message-to-course':
         if (!$isTeacher) {
-            print_error('noteacher');
+            throw new moodle_exception('noteacher');
         }
         $message = required_param('message', PARAM_TEXT);
         $courseid = required_param('courseid', PARAM_INT);

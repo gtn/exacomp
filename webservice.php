@@ -75,7 +75,7 @@ class block_exacomp_simple_service {
             } else {
                 //check permission for viewing students profile
                 if (!array_key_exists($studentid, $coursestudents)) {
-                    print_error("nopermissions", "", "", "Show student profile");
+                    throw new moodle_exception("nopermissions", "", "", "Show student profile");
                 }
 
                 $student = g::$DB->get_record('user', array('id' => $studentid));
@@ -85,7 +85,7 @@ class block_exacomp_simple_service {
         }
 
         if (!$student) {
-            print_error("student not found");
+            throw new moodle_exception("student not found");
         }
 
         printer::weekly_schedule($course, $student, optional_param('interval', 'week', PARAM_TEXT));
@@ -192,7 +192,7 @@ class block_exacomp_simple_service {
             // check permission for viewing student's profile: studentid must be an actual student of this course
             $coursestudents = \block_exacomp\permissions::get_course_students($courseid);
             if (!array_key_exists($studentid, $coursestudents)) {
-                print_error("nopermissions", "", "", "Show student profile");
+                throw new moodle_exception("nopermissions", "", "", "Show student profile");
             }
             $student = $coursestudents[$studentid];
 
@@ -274,7 +274,7 @@ class block_exacomp_simple_service {
 
         $ret = block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, false, $isTeacher, ($isTeacher ? 0 : $USER->id), ($isTeacher) ? false : true, $course_settings->hideglobalsubjects);
         if (!$ret) {
-            print_error('not configured');
+            throw new moodle_exception('not configured');
         }
         list($courseSubjects, $courseTopics, $niveaus, $selectedSubject, $selectedTopic, $selectedNiveau) = $ret;
 
@@ -476,7 +476,7 @@ class block_exacomp_simple_service {
         $courseid = required_param('courseid', PARAM_INT);
 
         if (!$course = g::$DB->get_record('course', array('id' => $courseid))) {
-            print_error('invalidcourse', 'block_simplehtml', $courseid);
+            throw new moodle_exception('invalidcourse', 'block_simplehtml', $courseid);
         }
 
         block_exacomp_require_login($course);

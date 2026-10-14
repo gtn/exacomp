@@ -24,12 +24,12 @@ $topicid = required_param('topicid', PARAM_INT);
 $userid = required_param('userid', PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('invalidcourse', 'block_exacomp', $courseid);
+    throw new moodle_exception('invalidcourse', 'block_exacomp', $courseid);
 }
 
 // error if example does not exist or was created by somebody else
 if (!$topic = $DB->get_record(BLOCK_EXACOMP_DB_TOPICS, array('id' => $topicid))) {
-    print_error('invalidtopic', 'block_exacomp', $topicid);
+    throw new moodle_exception('invalidtopic', 'block_exacomp', $topicid);
 }
 
 block_exacomp_require_login($course);
@@ -41,7 +41,7 @@ if ($userid != $USER->id) {
 }
 
 if (!block_exacomp_use_eval_niveau($courseid)) {
-    print_error('invalidevalniveau', 'block_exacomp');
+    throw new moodle_exception('invalidevalniveau', 'block_exacomp');
 }
 
 /* PAGE URL - MUST BE CHANGED */

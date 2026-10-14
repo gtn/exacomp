@@ -6,7 +6,7 @@ global $DB, $OUTPUT, $PAGE, $USER;
 $courseid = required_param('courseid', PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('invalidcourse', 'block_simplehtml', $courseid);
+    throw new moodle_exception('invalidcourse', 'block_simplehtml', $courseid);
 }
 
 $context = context_course::instance($courseid);

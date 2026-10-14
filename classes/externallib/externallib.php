@@ -10767,10 +10767,10 @@ class externallib extends base {
         // hvp --> the plugin that is mostly used
         if (strpos($example->externaltask, "/mod/hvp/view.php")) {
             if (!$cm = get_coursemodule_from_id('hvp', $example->activityid)) { // here the coursemodule aka activityid is needed
-                print_error('invalidcoursemodule');
+                throw new moodle_exception('invalidcoursemodule');
             }
             if (!$course = $DB->get_record('course', ['id' => $cm->course])) {
-                print_error('coursemisconf');
+                throw new moodle_exception('coursemisconf');
             }
 
             $id = $cm->instance; // NOT the activityid, but the hvp-id of that activity.. this is the "instanceid" of the coursemodule
@@ -11672,6 +11672,8 @@ class externallib extends base {
         }
 
         static::require_can_access_course_user($courseid, $userid);
+        // require_can_access_course_user() also allows students for their own user id
+        block_exacomp_require_teacher($courseid);
 
         block_exacomp_set_descriptor_visibility($descriptorid, $courseid, $visible, $userid);
 
@@ -11720,6 +11722,8 @@ class externallib extends base {
         }
 
         static::require_can_access_course_user($courseid, $userid);
+        // require_can_access_course_user() also allows students for their own user id
+        block_exacomp_require_teacher($courseid);
 
         block_exacomp_set_example_visibility($exampleid, $courseid, $visible, $userid);
 
@@ -11770,6 +11774,8 @@ class externallib extends base {
         }
 
         static::require_can_access_course_user($courseid, $userid);
+        // require_can_access_course_user() also allows students for their own user id
+        block_exacomp_require_teacher($courseid);
 
         if ($groupid != -1) {
             block_exacomp_set_topic_visibility_for_group($topicid, $courseid, $visible, $groupid);
@@ -11826,6 +11832,8 @@ class externallib extends base {
         }
 
         static::require_can_access_course_user($courseid, $userid);
+        // require_can_access_course_user() also allows students for their own user id
+        block_exacomp_require_teacher($courseid);
 
         //        if($groupid != -1){
         //            block_exacomp_set_topic_visibility_for_group($topicid, $courseid, $visible, $groupid);
@@ -11878,6 +11886,8 @@ class externallib extends base {
         }
 
         static::require_can_access_course_user($courseid, $userid);
+        // require_can_access_course_user() also allows students for their own user id
+        block_exacomp_require_teacher($courseid);
 
         block_exacomp_set_example_solution_visibility($exampleid, $courseid, $visible, $userid);
 
@@ -11937,6 +11947,8 @@ class externallib extends base {
         }
 
         static::require_can_access_course_user($courseid, $userid);
+        // require_can_access_course_user() also allows students for their own user id
+        block_exacomp_require_teacher($courseid);
 
         $descriptorids = explode(',', $ids);
 
@@ -11989,6 +12001,8 @@ class externallib extends base {
         }
 
         static::require_can_access_course_user($courseid, $userid);
+        // require_can_access_course_user() also allows students for their own user id
+        block_exacomp_require_teacher($courseid);
 
         $exampleids = explode(',', $ids);
 
@@ -12043,6 +12057,8 @@ class externallib extends base {
         }
 
         static::require_can_access_course_user($courseid, $userid);
+        // require_can_access_course_user() also allows students for their own user id
+        block_exacomp_require_teacher($courseid);
 
         $topicids = explode(',', $ids);
 

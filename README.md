@@ -6,7 +6,7 @@ By seamlessly integrating competency-based assessments and adaptive learning pat
 
 # INSTALLATION
 
-This block is for Moodle 3.11 and 4.0, 4.1, 4.2 versions
+This block is for Moodle 4.2 and newer versions
 
 1) Download the plugin from Moodle Plug-ins Repository. Please follow the instructions available in the Moodle Plug-ins Repository.
 OR

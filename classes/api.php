@@ -133,6 +133,41 @@ class api {
         return $tree;
     }
 
+    /**
+     * Has to be called by exaport for all descriptor ids, which come from the request, else any descriptor could be used by changing the id.
+     * Allowed are the descriptors of the own competence tree and the ones, which are already assigned to the exaport item.
+     */
+    static function require_can_access_descriptors_for_exaport(array $descriptorids, $itemid = 0) {
+        global $DB, $USER;
+
+        // don't load the whole tree, if nothing has to be checked
+        if (!$descriptorids) {
+            return;
+        }
+
+        $allowed = [];
+        $walker = function($items) use (&$walker, &$allowed) {
+            foreach ($items as $item) {
+                if ($item instanceof descriptor) {
+                    $allowed[] = $item->id;
+                }
+                $walker($item->get_subs());
+            }
+        };
+        $walker(static::get_comp_tree_for_exaport($USER->id));
+
+        if ($itemid) {
+            $allowed = array_merge($allowed, $DB->get_fieldset_select(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, 'compid',
+                'activityid = ? AND eportfolioitem = 1', [$itemid]));
+        }
+
+        foreach ($descriptorids as $descriptorid) {
+            if (!in_array($descriptorid, $allowed)) {
+                throw new \block_exacomp_permission_exception('Descriptor is not part of the competence tree of the user');
+            }
+        }
+    }
+
     static function delete_user_data($userid) {
         global $DB;
 
