@@ -23,10 +23,10 @@ defined('MOODLE_INTERNAL') || die();
 require_once __DIR__ . '/../../inc.php';
 
 abstract class base extends event {
-    static function log(array $data) {
+    public static function log(array $data): void {
         // check if logging is enabled and then trigger the event
         if (!get_config('exacomp', 'logging')) {
-            return null;
+            return;
         }
 
         // moodle doesn't allow objecttable parameter in $data
@@ -45,6 +45,6 @@ abstract class base extends event {
             $obj->data['objecttable'] = 'block_exacompdescriptors';
         }
 
-        return $obj->trigger();
+        $obj->trigger();
     }
 }
