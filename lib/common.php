@@ -14,16 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace {
-    defined('MOODLE_INTERNAL') || die();
-
-    require_once __DIR__ . '/../classes/common.php';
-}
-
 namespace block_exacomp\common {
 
+    use block_exacomp\db;
     use block_exacomp\developer;
+    use block_exacomp\moodle_exception;
 
+    defined('MOODLE_INTERNAL') || die();
+
+    /**
+     * @deprecated use global $DB; for update_record() with a where condition and insert_or_update_record() use \block_exacomp\db
+     */
     abstract class exadb extends \moodle_database {
         /**
          * @param string $table
@@ -42,6 +43,8 @@ namespace block_exacomp\common {
      * Class exadb_forwarder
      * exadb_extender extends this call,
      * which allows exadb_extender to call parent::function(), which gets forwarded to $DB->function()
+     *
+     * @deprecated use global $DB;
      */
     class exadb_forwarder {
         function __call($func, $args) {
@@ -51,6 +54,9 @@ namespace block_exacomp\common {
         }
     }
 
+    /**
+     * @deprecated use global $DB; for update_record() with a where condition and insert_or_update_record() use \block_exacomp\db
+     */
     class exadb_extender extends exadb_forwarder {
 
         /**
@@ -79,6 +85,8 @@ namespace block_exacomp\common {
      * @property string $wwwroot moodle url
      * @property string $dirroot moodle path
      * @property string $libdir lib path
+     *
+     * @deprecated use global $CFG;
      */
     class _globals_dummy_CFG {
     }
@@ -143,6 +151,9 @@ namespace block_exacomp\common {
 
     globals::init();
 
+    /**
+     * @deprecated do not use
+     */
     function _plugin_name() {
         return preg_replace('!\\\\.*$!', '', __NAMESPACE__); // the \\\\ syntax matches a \ (backslash)!
     }
@@ -230,52 +241,10 @@ namespace block_exacomp\common {
     });
 }
 
-/**
- * exporting all classes and functions from the common namespace to the plugin namespace
- * the whole part below is done, so eclipse knows the common classes and functions
- */
-
 namespace block_exacomp {
-    function _should_export_class($classname) {
-        return !class_exists(__NAMESPACE__ . '\\' . $classname);
-    }
-
-    // export classnames, if not already existing
-    if (_should_export_class('event')) {
-        abstract class event extends common\event {
-        }
-    }
-    if (_should_export_class('moodle_exception')) {
-        class moodle_exception extends common\moodle_exception {
-        }
-    }
-    if (_should_export_class('globals')) {
-        /**
-         * @deprecated use the Moodle globals in the function instead, eg. global $DB, $USER;
-         */
-        class globals extends common\globals {
-        }
-    }
-    if (_should_export_class('param')) {
-        class param extends common\param {
-        }
-    }
-    if (_should_export_class('SimpleXMLElement')) {
-        class SimpleXMLElement extends common\SimpleXMLElement {
-        }
-    }
-    if (_should_export_class('url')) {
-        class url extends common\url {
-        }
-    }
-}
-
-namespace {
-    function block_exacomp_get_string($identifier, $component = null, $a = null) {
-        return \block_exacomp\lang::get_string($identifier, $component, $a);
-    }
-
-    function block_exacomp_trans($string_or_strings, $arg_or_args = null) {
-        return \block_exacomp\lang::trans($string_or_strings, $arg_or_args);
+    /**
+     * @deprecated use the Moodle globals in the function instead, eg. global $DB, $USER;
+     */
+    class globals extends common\globals {
     }
 }

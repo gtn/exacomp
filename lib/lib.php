@@ -36,6 +36,14 @@ if (file_exists($CFG->dirroot . '/badges/lib/awardlib.php')) {
 require_once($CFG->dirroot . '/cohort/lib.php');
 require_once __DIR__ . '/setapp.php';
 
+function block_exacomp_get_string($identifier, $component = null, $a = null) {
+    return \block_exacomp\lang::get_string($identifier, $component, $a);
+}
+
+function block_exacomp_trans($string_or_strings, $arg_or_args = null) {
+    return \block_exacomp\lang::trans($string_or_strings, $arg_or_args);
+}
+
 /**
  * DATABSE TABLE NAMES
  */
