@@ -31,7 +31,8 @@ final class exaport_compatibility_test extends \advanced_testcase {
             'contextid' => \context_user::instance($USER->id)->id, 'component' => 'user',
             'filearea' => 'draft', 'itemid' => 123, 'filepath' => '/', 'filename' => 'keep.txt',
         ], 'Keep these bytes');
-        set_config('version', 2026091001, 'block_exaport');
+        // The earlier structured-content release must also be rejected.
+        set_config('version', 2026101502, 'block_exaport');
 
         $tables = ['block_exaportitem', 'block_exaportitemcate', 'block_exaportview',
             'block_exaportviewblock', 'block_exaportitemcomm', BLOCK_EXACOMP_DB_ITEM_MM, 'files'];

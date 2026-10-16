@@ -7,8 +7,8 @@ defined('MOODLE_INTERNAL') || die();
 
 /** Compatibility boundary for Exacomp's optional Exaport integration. */
 final class exaport_compatibility {
-    /** First Exaport version with the structured-content schema and migration. */
-    public const MIN_VERSION = 2026101502;
+    /** Matching Exaport release with guarded optional integration. */
+    public const MIN_VERSION = 2026101600;
 
     /**
      * Require an upgraded Exaport and its complete content API before any side effects.

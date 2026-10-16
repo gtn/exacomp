@@ -43,7 +43,7 @@ new content block.
 
 Both plugins remain independently installable. For an existing integration,
 update Exacomp first, then Exaport. Exacomp's content reads, submissions and
-deletion calls require Exaport's installed version to be at least **2026101502**
+deletion calls require Exaport's installed version to be at least **2026101600**
 and its structured API to be available. Until Exaport's Moodle upgrade finishes,
 these calls report an explicit update requirement before changing any data.
 There is no fallback to legacy parent fields or the `item_file` area.
