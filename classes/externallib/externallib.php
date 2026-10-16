@@ -31,6 +31,7 @@ use block_exacomp\event\example_submitted;
 use block_exacomp\example;
 use block_exacomp\global_config;
 use block_exacomp\globals as g;
+use block_exacomp\local\exaport_compatibility;
 use block_exacomp\topic;
 use block_exacomp_permission_exception;
 use block_exaport\api;
@@ -63,21 +64,8 @@ class externallib extends base {
      * generation, so all Exacomp item readers use its public serializer.
      */
     private static function exaport_item_content(stdClass $item, $token = null) {
-        global $CFG;
-
-        require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
-        require_once $CFG->dirroot . '/blocks/exaport/inc.php';
-        self::require_structured_exaport_api(['block_exaport_get_item_content_webservice_data']);
+        exaport_compatibility::require_available();
         return (array)block_exaport_get_item_content_webservice_data($item, $token);
-    }
-
-    /** Fail explicitly instead of writing new content through Exaport's legacy API. */
-    private static function require_structured_exaport_api(array $functions) {
-        foreach ($functions as $function) {
-            if (!function_exists($function)) {
-                throw new moodle_exception('Exaport is too old: the structured item-content API is required.');
-            }
-        }
     }
 
     /** Convert Exaport's flat structured-file projection to Exacomp's schema. */
@@ -124,15 +112,7 @@ class externallib extends base {
      * one file block. This avoids retaining a stale link when changing type.
      */
     private static function replace_exaport_item_content(stdClass $item, $url, array $draftfiles) {
-        global $CFG;
-
-        require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
-        require_once $CFG->dirroot . '/blocks/exaport/inc.php';
-        self::require_structured_exaport_api([
-            'block_exaport_delete_item_content',
-            'block_exaport_create_link_content_block',
-            'block_exaport_import_stored_file_into_content_block',
-        ]);
+        exaport_compatibility::require_available();
         // Exaport needs the trusted parent item to resolve the owner context
         // while deleting both structured block file areas.
         block_exaport_delete_item_content($item);
@@ -1527,6 +1507,7 @@ class externallib extends base {
      */
     public static function delete_item($itemid) {
         global $CFG, $DB, $USER;
+        exaport_compatibility::require_available();
 
         // TODO: check exaport available
         // TODO: check allowd to delete
@@ -1537,7 +1518,6 @@ class externallib extends base {
             $itemexample = $DB->get_record_sql("SELECT id, exacomp_record_id, itemid, status, MAX(timecreated) from {" . BLOCK_EXACOMP_DB_ITEM_MM . "} ie WHERE itemid = ?", array($itemid));
             if ($itemexample->status == 0) {
                 require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
-                self::require_structured_exaport_api(['block_exaport_delete_item']);
                 $transaction = $DB->start_delegated_transaction();
                 // Exaport owns structured blocks, both structured file areas,
                 // categories, views and comments. Remove Exacomp's association
@@ -1662,6 +1642,7 @@ class externallib extends base {
      */
     public static function get_item_for_example($userid, $itemid) {
         global $CFG, $DB, $USER;
+        exaport_compatibility::require_available();
 
         if ($userid == 0) {
             $userid = $USER->id;
@@ -1880,6 +1861,7 @@ class externallib extends base {
      */
     public static function submit_example($exampleid, $studentvalue, $url, $effort, $filename, $fileitemid = 0, $studentcomment = null, $title = null, $itemid = 0, $courseid = 0) {
         global $CFG, $DB, $USER;
+        exaport_compatibility::require_available();
 
         static::validate_parameters(static::submit_example_parameters(),
             array('title' => $title, 'exampleid' => $exampleid, 'url' => $url, 'effort' => $effort, 'filename' => $filename, 'fileitemid' => $fileitemid, 'studentcomment' => $studentcomment, 'studentvalue' => $studentvalue,
@@ -3480,6 +3462,11 @@ class externallib extends base {
         $example = $DB->get_record('block_exacompexamples', array('id' => $exampleid, 'creatorid' => $USER->id));
         if (!$example) {
             throw new invalid_parameter_exception ('Parameter can not be empty');
+        }
+
+        // Check before deleting the example or its submission associations.
+        if ($DB->record_exists(BLOCK_EXACOMP_DB_ITEM_MM, ['exacomp_record_id' => $exampleid])) {
+            exaport_compatibility::require_available();
         }
 
         // also checks for permissions
@@ -6963,6 +6950,7 @@ class externallib extends base {
      */
     public static function dakora_submit_example($exampleid, $studentvalue = null, $url = null, $filenames = null, $studentcomment = null, $itemid = 0, $courseid = 0, $fileitemids = '') {
         global $CFG, $DB, $USER;
+        exaport_compatibility::require_available();
         static::validate_parameters(static::dakora_submit_example_parameters(),
             array('exampleid' => $exampleid, 'url' => $url, 'filenames' => $filenames, 'studentcomment' => $studentcomment, 'studentvalue' => $studentvalue, 'itemid' => $itemid, 'courseid' => $courseid, 'fileitemids' => $fileitemids));
 
@@ -7128,6 +7116,7 @@ class externallib extends base {
     public static function diggrplus_submit_item($compid, $studentvalue, $url, $filenames, $studentcomment, $fileitemids = '', $itemid = 0, $courseid = 0, $comptype = BLOCK_EXACOMP_TYPE_EXAMPLE, $itemtitle = '', $collabuserids = '',
         $submit = 0, $removefiles = '', $solutiondescription = '', $descriptorgradings = []) {
         global $CFG, $DB, $USER;
+        exaport_compatibility::require_available();
         static::validate_parameters(static::diggrplus_submit_item_parameters(),
             array('compid' => $compid, 'studentvalue' => $studentvalue, 'url' => $url, 'filenames' => $filenames, 'fileitemids' => $fileitemids, 'studentcomment' => $studentcomment,
                 'itemid' => $itemid, 'courseid' => $courseid, 'comptype' => $comptype, 'itemtitle' => $itemtitle, 'collabuserids' => $collabuserids, 'submit' => $submit, 'removefiles' => $removefiles,
@@ -7589,6 +7578,7 @@ class externallib extends base {
      */
     public static function diggrplus_get_examples_and_items($courseid = -1, $userid = null, $compid = null, $comptype = null, $type = "", $search = "", $niveauid = -1, $status = "") {
         global $DB, $USER;
+        exaport_compatibility::require_available();
 
         if ($userid == 0) {
             $userid = $USER->id;
@@ -7883,6 +7873,7 @@ class externallib extends base {
      */
     public static function diggrplus_get_teacher_examples_and_items($courseid, $studentid, $compid, $comptype, $type = "", $search = "", $niveauid = -1, $status = "") {
         global $DB, $USER;
+        exaport_compatibility::require_available();
 
         static::validate_parameters(static::diggrplus_get_teacher_examples_and_items_parameters(), array(
             'courseid' => $courseid,
@@ -9563,6 +9554,7 @@ class externallib extends base {
      */
     public static function dakora_get_example_information($courseid, $userid, $exampleid) {
         global $USER;
+        exaport_compatibility::require_available();
         if ($userid == 0) {
             $userid = $USER->id;
         }
@@ -15304,6 +15296,7 @@ class externallib extends base {
      */
     public static function dakoraplus_get_example_and_item(int $exampleid, int $courseid, int $itemid) {
         global $USER, $DB;
+        exaport_compatibility::require_available();
 
         [
             'exampleid' => $exampleid,
@@ -15527,6 +15520,7 @@ class externallib extends base {
      */
     public static function dakoraplus_get_teacher_example_and_item($exampleid, $courseid, $studentid) {
         global $USER, $DB;
+        exaport_compatibility::require_available();
 
         static::validate_parameters(static::dakoraplus_get_teacher_example_and_item_parameters(), array(
             'exampleid' => $exampleid,

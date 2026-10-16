@@ -41,9 +41,22 @@ new content block.
 
 ## Deployment contract
 
-Deploy the matching Exaport structured-content release before this Exacomp
-release. Exacomp deliberately fails if Exaport's structured serializer, block
-creation/import, or deletion helpers are unavailable; there is no fallback to
-legacy parent fields or the `item_file` area. DiggrPlus can then be deployed (or
-left unchanged) because its existing `studentfiles[].id` removal request is the
-stored-file ID expected by Exacomp.
+Both plugins remain independently installable. For an existing integration,
+update Exacomp first, then Exaport. Exacomp's content reads, submissions and
+deletion calls require Exaport's installed version to be at least **2026101600**
+and its structured API to be available. Until Exaport's Moodle upgrade finishes,
+these calls report an explicit update requirement before changing any data.
+There is no fallback to legacy parent fields or the `item_file` area.
+
+Exaport's installation and upgrade reject Exacomp code older than **2026101600**
+when it is present. Sites can stage both plugins for the same Moodle upgrade,
+or leave hours between completed updates in the Exacomp-first order. Keep the
+site in maintenance mode while a Moodle upgrade is running or has failed; a
+failed upgrade does not restore the deployed PHP code.
+
+Installing or restoring old Exacomp code after upgrading Exaport is unsupported:
+that code can write directly to legacy Exaport storage, bypassing its APIs.
+Exaport's current item-content audit detects the resulting legacy URLs/files and
+orphaned structured content; the saved historical migration report is unchanged.
+DiggrPlus can remain unchanged because its existing `studentfiles[].id` removal
+request is the stored-file ID expected by Exacomp.
