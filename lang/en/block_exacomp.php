@@ -979,3 +979,5 @@ $string['delete_grids_missing_from_xmlserverurl_description'] = 'All grids that 
 $string['no_examples_in_this_grid'] = 'There are no examples in this grid';
 $string['source_delete_info'] = 'Data imported from <strong>"{$a}"</strong> to delete, ';
 $string['manage_assessment_configurations'] = 'Manage assessment configurations';
+
+$string['exaportupdaterequired'] = 'This integration requires Exaport version {$a} or later. Please install or update Exaport and complete the Moodle upgrade.';

@@ -3683,4 +3683,8 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Bewertungskonfigurationen verwalten',
         'Manage assessment configurations',
     ],
+    'exaportupdaterequired' => [
+        'Diese Integration benötigt Exaport-Version {$a} oder neuer. Bitte installieren oder aktualisieren Sie Exaport und schließen Sie das Moodle-Upgrade ab.',
+        'This integration requires Exaport version {$a} or later. Please install or update Exaport and complete the Moodle upgrade.',
+    ],
 ];

@@ -989,3 +989,5 @@ $string['delete_grids_missing_from_xmlserverurl_description'] = 'Alle Raster, di
 $string['no_examples_in_this_grid'] = 'In diesem Raster gibt es keine Lernmaterialien';
 $string['source_delete_info'] = 'Zu löschende Daten, die von <strong>"{$a}"</strong> importiert wurden, ';
 $string['manage_assessment_configurations'] = 'Bewertungskonfigurationen verwalten';
+
+$string['exaportupdaterequired'] = 'Diese Integration benötigt Exaport-Version {$a} oder neuer. Bitte installieren oder aktualisieren Sie Exaport und schließen Sie das Moodle-Upgrade ab.';

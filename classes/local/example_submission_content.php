@@ -19,6 +19,7 @@ final class example_submission_content {
      * @return \stdClass
      */
     public static function select($userid, $draftitemid, $url) {
+        exaport_compatibility::require_available();
         $type = 'file';
         if (!empty($url)) {
             $url = (filter_var($url, FILTER_VALIDATE_URL) == true) ? $url : 'http://' . $url;
@@ -50,6 +51,7 @@ final class example_submission_content {
      * @param \stdClass $selection
      */
     public static function store(\stdClass $item, $name, \stdClass $selection) {
+        exaport_compatibility::require_available();
         if (!empty($selection->url)) {
             \block_exaport_create_link_content_block($item->id, $name, $selection->url);
         }

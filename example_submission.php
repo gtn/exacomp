@@ -16,17 +16,11 @@
 
 use block_exacomp\event\example_submitted;
 use block_exacomp\local\example_submission_content;
+use block_exacomp\local\exaport_compatibility;
 
 require __DIR__ . '/inc.php';
+exaport_compatibility::require_available();
 require_once __DIR__ . '/example_submission_form.php';
-require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
-
-foreach (['block_exaport_create_link_content_block',
-             'block_exaport_import_stored_file_into_content_block'] as $function) {
-    if (!function_exists($function)) {
-        throw new moodle_exception('Exaport is too old: the structured item-content API is required.');
-    }
-}
 
 $courseid = required_param('courseid', PARAM_INT);
 $exampleid = required_param('exampleid', PARAM_INT);
