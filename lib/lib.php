@@ -12855,7 +12855,7 @@ function block_exacomp_group_reports_get_filter($reportType = 'general') {
     return $filter;
 }
 
-function block_exacomp_array_filter_recursive(array $array, callable $callback = null) {
+function block_exacomp_array_filter_recursive(array $array, ?callable $callback = null) {
     $array = is_callable($callback) ? array_filter($array, $callback) : array_filter($array);
     foreach ($array as &$value) {
         if (is_array($value)) {

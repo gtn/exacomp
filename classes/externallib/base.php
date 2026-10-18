@@ -162,7 +162,7 @@ class base extends \external_api {
     // SplObjectStorage is used for a cycle guard, because some db_records hold
     // back-references to their parent (e.g. $topic->subject) — without it, simple
     // recursion would loop forever. $_visited is for internal recursion use only.
-    public static function prepare_ws_return(mixed $value, \SplObjectStorage $_visited = null): mixed {
+    public static function prepare_ws_return(mixed $value, ?\SplObjectStorage $_visited = null): mixed {
         $_visited ??= new \SplObjectStorage();
 
         if (is_array($value)) {

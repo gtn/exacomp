@@ -17,6 +17,7 @@ class CalFileParser {
     private $_base_path = './';
     private $_file_name = '';
     private $_output = 'array';
+    private $_default_output;
     private $DTfields = array('DTSTART', 'DTEND', 'DTSTAMP', 'CREATED', 'EXDATE', 'LAST-MODIFIED');
     private $_user_timezone = null;
     private $_file_timezone = null;
@@ -121,7 +122,7 @@ class CalFileParser {
      * @param $file_contents
      * @return mixed|string
      */
-    public function parse($file = '', $output = '', $file_contents) {
+    public function parse($file = '', $output = '', $file_contents = '') {
         if($file_contents==null){
             $file_contents = $this->read_file($file);
         }

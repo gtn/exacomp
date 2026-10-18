@@ -27,7 +27,7 @@ class db {
      * @return bool
      * @throws \moodle_exception
      */
-    public static function update_record(string $table, $data, array $where = null): bool {
+    public static function update_record(string $table, $data, ?array $where = null): bool {
         global $DB;
 
         if ($where === null) {
@@ -521,7 +521,7 @@ class SimpleXMLElement extends \SimpleXMLElement {
 }
 
 class url extends \moodle_url {
-    public static function create($url, array $params = null, $anchor = null) {
+    public static function create($url, ?array $params = null, $anchor = null) {
         return new static($url, $params, $anchor);
     }
 
@@ -530,7 +530,7 @@ class url extends \moodle_url {
      * @param array $overrideparams new attributes for object
      * @return self
      */
-    public function copy(array $overrideparams = null) {
+    public function copy(?array $overrideparams = null) {
         $object = new static($this);
         if ($overrideparams) {
             $object->params($overrideparams);
@@ -539,7 +539,7 @@ class url extends \moodle_url {
         return $object;
     }
 
-    protected function merge_overrideparams(array $overrideparams = null) {
+    protected function merge_overrideparams(?array $overrideparams = null) {
         $params = parent::merge_overrideparams($overrideparams);
 
         $overrideparams = (array)$overrideparams;
@@ -552,7 +552,7 @@ class url extends \moodle_url {
         return $params;
     }
 
-    public function params(array $params = null) {
+    public function params(?array $params = null) {
         parent::params($params);
 
         $params = (array)$params;

@@ -1,0 +1,2 @@
+# iCalendar uses CRLF line endings.
+tests/fixtures/*.ics text eol=crlf
