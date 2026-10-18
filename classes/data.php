@@ -1248,7 +1248,7 @@ class data_exporter extends data {
         }
     }
 
-    private static function export_assignments(SimpleXMLElement $xmlParent = null, $zip, $activityid = -1) {
+    private static function export_assignments(?SimpleXMLElement $xmlParent, $zip, $activityid = -1) {
         global $CFG, $USER;
         if ($activityid == -1) {
 

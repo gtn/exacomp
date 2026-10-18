@@ -602,7 +602,7 @@ class db_record {
 
     protected array $_data = [];
 
-    public function __construct($data = [], db_layer $dbLayer = null) {
+    public function __construct($data = [], ?db_layer $dbLayer = null) {
         if ($dbLayer) {
             $this->setDbLayer($dbLayer);
         } else {
@@ -915,11 +915,11 @@ class db_record {
      * @param int $limitnum
      * @return static[]
      */
-    static function get_objects(array $conditions = null, $sort = '', $fields = '*', $limitfrom = 0, $limitnum = 0) {
+    static function get_objects(?array $conditions = null, $sort = '', $fields = '*', $limitfrom = 0, $limitnum = 0) {
         return static::create_objects(static::get_records($conditions, $sort, $fields, $limitfrom, $limitnum));
     }
 
-    static function get_records(array $conditions = null, $sort = '', $fields = '*', $limitfrom = 0, $limitnum = 0) {
+    static function get_records(?array $conditions = null, $sort = '', $fields = '*', $limitfrom = 0, $limitnum = 0) {
         return g::$DB->get_records(static::TABLE, $conditions, $sort, $fields, $limitfrom, $limitnum);
     }
 
@@ -930,15 +930,15 @@ class db_record {
      * @param int $limitnum
      * @return static[]
      */
-    static function get_objects_sql($sql, array $params = null, $limitfrom = 0, $limitnum = 0) {
+    static function get_objects_sql($sql, ?array $params = null, $limitfrom = 0, $limitnum = 0) {
         return static::create_objects(static::get_records_sql($sql, $params, $limitfrom, $limitnum));
     }
 
-    static function get_records_sql($sql, array $params = null, $limitfrom = 0, $limitnum = 0) {
+    static function get_records_sql($sql, ?array $params = null, $limitfrom = 0, $limitnum = 0) {
         return g::$DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
     }
 
-    static function create_objects($records, $data = [], db_layer $dbLayer = null) {
+    static function create_objects($records, $data = [], ?db_layer $dbLayer = null) {
         if (!$dbLayer) {
             $dbLayer = db_layer::get();
         }
@@ -946,7 +946,7 @@ class db_record {
         return $dbLayer->create_objects(get_called_class(), $records, $data);
     }
 
-    static function create($data = [], db_layer $dbLayer = null) {
+    static function create($data = [], ?db_layer $dbLayer = null) {
         if ($data instanceof static) {
             if ($dbLayer) {
                 $data->setDbLayer($dbLayer);

@@ -15591,7 +15591,7 @@ class externallib extends base {
      * @ws-type-write
      * @return success
      */
-    public static function dakoraplus_save_coursesettings(int $courseid, string $experience_level = null) {
+    public static function dakoraplus_save_coursesettings(int $courseid, ?string $experience_level = null) {
         global $DB;
 
         [

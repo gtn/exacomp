@@ -1114,7 +1114,7 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor {
 
     function check() {
         if (preg_match('!\\$(.*(>|{)(?<name>[a-z{}].*)<)!iU', $this->tempDocumentMainPart, $matches)) {
-            throw new Exception("fehler in variable ${matches['name']}");
+            throw new Exception("fehler in variable {$matches['name']}");
         }
     }
 
