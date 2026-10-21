@@ -68,7 +68,7 @@ final class student_submission_authorization_test extends \advanced_testcase {
         $id = $DB->insert_record('block_exaportitem', [
             'userid' => $this->owner->id, 'courseid' => $this->course->id,
             'name' => 'Owner submission', 'type' => 'file', 'intro' => 'Owner description',
-            'url' => '', 'attachment' => '', 'timemodified' => 100,
+            'url' => '', 'attachment' => '  historical-submission-id  ', 'timemodified' => 100,
         ]);
         $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, [
             'exacomp_record_id' => $this->exampleid, 'itemid' => $id, 'timecreated' => 100,
@@ -187,12 +187,16 @@ final class student_submission_authorization_test extends \advanced_testcase {
         $this->assertEquals(\context_user::instance($this->owner->id)->id, $files[0]->get_contextid());
         if ($operation === 'update') {
             $this->assertEquals($original->id, $saved->id);
+            $this->assertSame($original->attachment, $saved->attachment);
         } else if ($operation === 'version') {
+            $this->assertSame('', $saved->attachment);
             $this->assertNotEquals($original->id, $saved->id);
             $this->assertEquals($original, $DB->get_record('block_exaportitem', ['id' => $original->id]));
             $this->assertEquals($originalblocks, block_exaport_get_item_content_blocks($original->id));
             $this->assertEquals($originalrelation, $DB->get_record(BLOCK_EXACOMP_DB_ITEM_MM, ['itemid' => $original->id]));
             $this->assertSame('Owner file bytes', get_file_storage()->get_file_by_id($originalfile->get_id())->get_content());
+        } else {
+            $this->assertSame('', $saved->attachment);
         }
     }
 

@@ -1946,7 +1946,6 @@ class externallib extends base {
             $item = $existingitem;
             $item->name = $title;
             $item->url = '';
-            $item->attachment = '';
             $item->intro = $effort;
             $item->timemodified = time();
 
@@ -7023,7 +7022,6 @@ class externallib extends base {
             $item = $existingitem;
 
             $item->url = '';
-            $item->attachment = '';
             $item->timemodified = time();
 
 
@@ -7227,7 +7225,6 @@ class externallib extends base {
 
             $item->name = $itemtitle;
             $item->url = '';
-            $item->attachment = '';
             $item->timemodified = time();
             $item->type = $type;
             $item->intro = $solutiondescription;
