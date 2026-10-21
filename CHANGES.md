@@ -1,3 +1,6 @@
+### v5.2 (2026102100) ###
+* Preserve historical Exaport attachment metadata when updating submissions through the Exacomp, Dakora, and DiggrPlus web services.
+
 ### v5.1 (2026090800) ###
 * Competence profile improvements: select all students, hide usernames in collapsed views, and improve layout/date selection.
 * Fixed competence-acquisition timeline calculations for teacher and student assessments

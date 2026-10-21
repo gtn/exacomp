@@ -4,6 +4,13 @@ Exacomp treats `block_exaportitemblock` content as the only active content of an
 Exaport item. Parent `url` and `attachment` values and the legacy `item_file`
 area are intentionally ignored, even when no structured content exists.
 
+Existing parent `attachment` values are opaque historical metadata. Submission
+updates preserve them verbatim while updating structured content. Records created
+from scratch, including new submission versions, initialize the field empty.
+Deploy the matching Exaport preservation change as well so its migration, editor,
+copies and restore paths retain the same metadata. The marker is not an active
+file/submission lookup or a fallback for an empty structured response.
+
 ## Active external-function inventory
 
 The registered services affected by this boundary are:
@@ -43,12 +50,12 @@ new content block.
 
 Both plugins remain independently installable. For an existing integration,
 update Exacomp first, then Exaport. Exacomp's content reads, submissions and
-deletion calls require Exaport's installed version to be at least **2026101600**
+deletion calls require Exaport's installed version to be at least **2026101903**
 and its structured API to be available. Until Exaport's Moodle upgrade finishes,
 these calls report an explicit update requirement before changing any data.
 There is no fallback to legacy parent fields or the `item_file` area.
 
-Exaport's installation and upgrade reject Exacomp code older than **2026101600**
+Exaport's installation and upgrade reject Exacomp code older than **2026101903**
 when it is present. Sites can stage both plugins for the same Moodle upgrade,
 or leave hours between completed updates in the Exacomp-first order. Keep the
 site in maintenance mode while a Moodle upgrade is running or has failed; a
