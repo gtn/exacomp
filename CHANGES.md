@@ -1,5 +1,13 @@
 ### v5.2 (2026102100) ###
-* Preserve historical Exaport attachment metadata when updating submissions through the Exacomp, Dakora, and DiggrPlus web services.
+* Requires Moodle 5.2.
+* Updated Exaport integration to use structured item content for submissions, links, uploaded files, downloads, and deletion across Exacomp, Dakora, Dakora+, and DiggrPlus.
+* DiggrPlus updates append uploaded files and support individual file removal. Empty URL submissions preserve existing links; explicit URL updates change the primary link.
+* Added ownership checks before updating or creating new versions of existing submissions. DiggrPlus now enforces Exaport storage quotas before saving.
+* Preserve historical Exaport attachment metadata when updating submissions.
+* Added teacher permission checks for competency and example visibility changes, badge configuration, and question-to-competency assignments.
+* Restricted new competency selections through Exaport to the user's permitted competence tree while allowing existing assignments to be retained.
+* Fixed privacy exports and deletions skipping course data. Removing teacher data now clears reviewer references while preserving students' assessments; shared course configuration is retained.
+* Exaport integration requires Exaport 2026101903 or later with its database upgrade completed. Incompatible content operations are blocked before changing data; Exacomp remains independently installable.
 
 ### v5.1 (2026090800) ###
 * Competence profile improvements: select all students, hide usernames in collapsed views, and improve layout/date selection.
