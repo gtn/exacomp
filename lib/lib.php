@@ -9526,15 +9526,17 @@ function block_exacomp_empty_pre_planning_storage($courseid) {
 function block_exacomp_get_current_item_for_example($userid, $exampleid) {
     global $DB;
 
+    // Topic and descriptor IDs can coincide with example IDs.
     $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue
               FROM {block_exacompexamples} e
 			    JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON ie.exacomp_record_id = e.id
 			    JOIN {block_exaportitem} i ON ie.itemid = i.id
 			  WHERE e.id = ?
+			      AND ie.competence_type = ?
 			      AND i.userid = ?
 			  ORDER BY ie.timecreated DESC
 			  LIMIT 1';
-    return $DB->get_record_sql($sql, array($exampleid, $userid));
+    return $DB->get_record_sql($sql, array($exampleid, BLOCK_EXACOMP_TYPE_EXAMPLE, $userid));
 }
 
 /**
