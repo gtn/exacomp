@@ -31,6 +31,38 @@ final class example_submission_content_test extends \advanced_testcase {
         $this->setUser($this->user);
     }
 
+    public function test_current_example_submission_ignores_other_types_and_owners(): void {
+        global $DB;
+
+        $exampleid = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, [
+            'title' => 'Submission selection', 'creatorid' => $this->user->id, 'source' => 0,
+        ]);
+        $latest = null;
+        foreach ([BLOCK_EXACOMP_TYPE_EXAMPLE, BLOCK_EXACOMP_TYPE_EXAMPLE,
+                BLOCK_EXACOMP_TYPE_TOPIC, BLOCK_EXACOMP_TYPE_DESCRIPTOR] as $index => $type) {
+            $item = $this->create_item();
+            $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, [
+                'competence_type' => $type, 'exacomp_record_id' => $exampleid,
+                'itemid' => $item->id, 'timecreated' => 100 + $index,
+            ]);
+            if ($type === BLOCK_EXACOMP_TYPE_EXAMPLE) {
+                $latest = $item->id;
+            }
+        }
+        $otheritem = $this->create_item();
+        $DB->set_field('block_exaportitem', 'userid', $this->getDataGenerator()->create_user()->id,
+            ['id' => $otheritem->id]);
+        $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, [
+            'competence_type' => BLOCK_EXACOMP_TYPE_EXAMPLE, 'exacomp_record_id' => $exampleid,
+            'itemid' => $otheritem->id, 'timecreated' => 200,
+        ]);
+
+        $selected = block_exacomp_get_current_item_for_example($this->user->id, $exampleid);
+        $this->assertSame((int)$latest, (int)$selected->id);
+        $DB->delete_records(BLOCK_EXACOMP_DB_ITEM_MM, ['competence_type' => BLOCK_EXACOMP_TYPE_EXAMPLE]);
+        $this->assertFalse(block_exacomp_get_current_item_for_example($this->user->id, $exampleid));
+    }
+
     public function test_file_submission_stores_file_in_structured_content(): void {
         $item = $this->create_item();
         $draftitemid = $this->create_draft_file('submission.txt', 'file submission');
