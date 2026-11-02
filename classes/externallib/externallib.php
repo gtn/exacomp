@@ -14884,7 +14884,8 @@ class externallib extends base {
             'moodleversion' => $CFG->version,
             'msteams_import_enabled' => !!trim($msteams_client_id),
             'msteams_azure_app_client_id' => $msteams_client_id,
-            'enrolcode_enabled' => $info_block_enrolcode && $info_block_enrolcode->versiondb >= 2025040302,
+            // 2026110100 introduced \block_enrolcode\api, which is used to create the codes.
+            'enrolcode_enabled' => $info_block_enrolcode && $info_block_enrolcode->versiondb >= 2026110100,
             'example_upload_global' => get_config('exacomp', 'example_upload_global'),
             'plugins' => $plugins,
         );
@@ -15060,7 +15061,7 @@ class externallib extends base {
         $DB->delete_records('block_enrolcode', array('roleid' => $roleid, 'courseid' => $courseid));
 
         // create new code
-        $code = \block_enrolcode\locallib::create_code($courseid, $roleid, 0, 1, $maturity, 0, 0);
+        $code = \block_enrolcode\api::create_code($courseid, $roleid, 0, $maturity);
 
         return array("code" => $code, 'valid_until' => $maturity);
     }
