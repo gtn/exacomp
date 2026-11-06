@@ -15140,7 +15140,7 @@ function block_exacomp_check_profile_fields() {
     }
 }
 
-function block_exacomp_build_comp_tree() {
+function block_exacomp_build_comp_tree($cmid = 0) {
     global $CFG, $USER, $COURSE, $DB;
     $content = '<form></form>';
     $content .= '<form id="treeform" method="post" ' .
@@ -15184,6 +15184,9 @@ function block_exacomp_build_comp_tree() {
     $comptree = \block_exacomp\api::get_comp_tree_for_exaport($USER->id);
 
     $content .= $printtree($comptree);
+    if ($cmid) {
+        $content .= html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'cmid', 'value' => $cmid]);
+    }
     $content .= '<input type="hidden" value="" name="questid">';
     $content .= '<input type="hidden" value="save" name="action">';
     $content .= '<input type="hidden" value=' . sesskey() . ' name="sesskey">';
