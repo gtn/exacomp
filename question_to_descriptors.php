@@ -10,6 +10,8 @@
  */
 
 use core\event\question_category_viewed;
+use core_question\local\bank\question_bank_helper;
+use core_question\local\bank\question_edit_contexts;
 
 require __DIR__ . '/inc.php';
 require_once(__DIR__ . '/questiontodescriptor/exacomp_view.php');
@@ -41,6 +43,29 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 require_login($course);
 block_exacomp_require_teacher($courseid);
 
+$questionbanks = [];
+if ($CFG->branch >= 500) {
+    // Since Moodle 5, a course's questions belong to question-bank activities.
+    $banks = question_bank_helper::get_activity_instances_with_shareable_questions(
+        [$courseid], [], question_edit_contexts::$caps['questions']);
+    foreach ($banks as $bank) {
+        $questionbanks[$bank->cminfo->id] = $bank->cminfo->get_formatted_name(['escape' => false]);
+    }
+
+    $cmid = optional_param('cmid', 0, PARAM_INT);
+    if ($cmid && !isset($questionbanks[$cmid])) {
+        throw new moodle_exception('invalidcoursemodule');
+    }
+    if (!$cmid) {
+        if (!$questionbanks) {
+            redirect(new moodle_url('/question/banks.php', ['courseid' => $courseid]));
+        }
+        redirect(new moodle_url('/blocks/exacomp/question_to_descriptors.php', [
+            'courseid' => $courseid, 'cmid' => array_key_first($questionbanks),
+        ]));
+    }
+}
+
 if ($action == 'save') {
     require_sesskey();
     $DB->delete_records("block_exacompdescrquest_mm", array('questid' => $questid));
@@ -70,6 +95,9 @@ if (get_config('exacomp', 'disable_js_edit_activities')) {
 }
 
 $page_params = array('courseid' => $courseid);
+if ($cmid) {
+    $page_params['cmid'] = $cmid;
+}
 if ($columngroupnumber !== null) {
     $page_params['colgroupid'] = $columngroupnumber;
 }
@@ -81,7 +109,7 @@ if (($lastchanged = optional_param('lastchanged', 0, PARAM_INT)) !== 0) {
 
 
 $cache = cache::make('block_exacomp', 'visibility_cache');
-$result = $cache->set('comptree', block_exacomp_build_comp_tree());
+$result = $cache->set('comptree', block_exacomp_build_comp_tree($cmid));
 
 
 // Create a question in the default category.
@@ -106,6 +134,13 @@ block_exacomp_build_breadcrum_navigation($courseid);
 // build tab navigation & print header
 echo $OUTPUT->header($context, $courseid, 'tab_teacher_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $page_identifier);
+
+if (count($questionbanks) > 1) {
+    $bankselect = new single_select(new moodle_url('/blocks/exacomp/question_to_descriptors.php',
+        ['courseid' => $courseid]), 'cmid', $questionbanks, $cmid, null);
+    $bankselect->set_label(get_string('questionbank', 'question'));
+    echo $OUTPUT->render($bankselect);
+}
 
 //$context = $contexts->lowest();
 //$streditingquestions = get_string('editquestions', 'question');
