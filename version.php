@@ -20,6 +20,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_exacomp';
 $plugin->release = '5.2';
-$plugin->version = 2026102100;
+$plugin->version = 2026111000;
 $plugin->requires = 2024100700; // moodle 4.5
 $plugin->maturity = MATURITY_STABLE;
