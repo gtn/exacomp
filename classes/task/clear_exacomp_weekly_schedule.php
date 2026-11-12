@@ -30,6 +30,7 @@ class clear_exacomp_weekly_schedule extends scheduled_task {
     }
 
     public function execute() {
+        \block_exacomp\local\migration_pause::require_ready();
         try {
             if (block_exacomp_exaportexists()) {
                 mtrace("Exabis Competence Grid: clear_exacomp_weekly_schedule \"Sonntagsscript\" task is running:");

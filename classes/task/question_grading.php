@@ -14,6 +14,7 @@ class question_grading extends scheduled_task {
     }
 
     public function execute() {
+        \block_exacomp\local\migration_pause::require_ready();
         block_exacomp_perform_question_grading();
     }
 }

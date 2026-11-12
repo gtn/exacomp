@@ -989,5 +989,9 @@ $string['delete_grids_missing_from_xmlserverurl_description'] = 'Alle Raster, di
 $string['no_examples_in_this_grid'] = 'In diesem Raster gibt es keine Lernmaterialien';
 $string['source_delete_info'] = 'Zu löschende Daten, die von <strong>"{$a}"</strong> importiert wurden, ';
 $string['manage_assessment_configurations'] = 'Bewertungskonfigurationen verwalten';
-
 $string['exaportupdaterequired'] = 'Diese Integration benötigt Exaport-Version {$a} oder neuer. Bitte installieren oder aktualisieren Sie Exaport und schließen Sie das Moodle-Upgrade ab.';
+$string['itemcontentmigrationpending'] = 'Exabis ePortfolio und Exabis Competencies sind während der Migration der Portfolio-Inhalte vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut.';
+$string['itemcontentmigrationbusy'] = 'Eine andere Portfolio-Migration läuft bereits. Diese Aufgabe wird erneut versucht.';
+$string['privacy:metadata:block_exacompdeferredevent'] = 'Temporary Moodle event journal while portfolio migration pauses Exacomp. Entries are deleted after replay.';
+$string['privacy:metadata:block_exacompdeferredevent:payload'] = 'Event actor, related user, course/module information and the observer’s required record snapshots.';
+$string['privacy:metadata:block_exacompdeferredevent:timecreated'] = 'Time when the event was queued.';

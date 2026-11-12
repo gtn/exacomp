@@ -55,7 +55,7 @@ final class exaport_compatibility_test extends \advanced_testcase {
         foreach ($calls as [$method, $arguments]) {
             $this->assert_update_required(static function() use ($method, $arguments): void {
                 externallib::$method(...$arguments);
-            });
+            }, 'itemcontentmigrationpending');
         }
         $this->assert_update_required(static function() use ($USER): void {
             example_submission_content::select($USER->id, 123, '');
@@ -107,13 +107,14 @@ final class exaport_compatibility_test extends \advanced_testcase {
     }
 
     /** Check both the stable error code and the administrator's update instruction. */
-    private function assert_update_required(callable $call): void {
+    private function assert_update_required(callable $call, string $code = 'exaportupdaterequired'): void {
         try {
             $call();
             $this->fail('An incompatible Exaport integration call was accepted');
         } catch (\moodle_exception $exception) {
-            $this->assertSame('exaportupdaterequired', $exception->errorcode);
-            $this->assertStringContainsString('install or update Exaport', $exception->getMessage());
+            $this->assertSame($code, $exception->errorcode);
+            $this->assertStringContainsString($code === 'itemcontentmigrationpending' ?
+                'temporarily unavailable' : 'install or update Exaport', $exception->getMessage());
         }
     }
 }

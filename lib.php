@@ -25,6 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once __DIR__ . '/inc.php';
 
 function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
+    \block_exacomp\local\migration_pause::require_ready();
     global $CFG;
 
     //  Check the contextlevel is as expected - if your plugin is a block, this becomes CONTEXT_BLOCK, etc.
@@ -359,6 +360,9 @@ function block_exacomp_coursemodule_standard_elements($formwrapper, $mform) {
  * @param MoodleQuickForm $mform The actual form object (required to modify the form).
  */
 function block_exacomp_coursemodule_definition_after_data($formwrapper, $mform) {
+    if (\block_exacomp\local\migration_pause::is_pending()) {
+        return;
+    }
     global $CFG, $COURSE, $DB, $PAGE;
 
 

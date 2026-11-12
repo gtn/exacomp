@@ -21,6 +21,15 @@ require_once __DIR__ . '/inc.php';
 
 class block_exacomp extends block_list {
 
+    public function user_can_addto($page) {
+        return !\block_exacomp\local\migration_pause::is_pending() && parent::user_can_addto($page);
+    }
+
+    public function instance_delete() {
+        \block_exacomp\local\migration_pause::require_ready();
+        return parent::instance_delete();
+    }
+
     function init() {
         $this->title = block_exacomp_get_string('blocktitle');
     }
@@ -62,6 +71,9 @@ class block_exacomp extends block_list {
     }
 
     function get_content() {
+        if (\block_exacomp\local\migration_pause::is_pending()) {
+            return $this->content = (object)['items' => [get_string('itemcontentmigrationpending', 'block_exacomp')], 'icons' => [], 'footer' => ''];
+        }
         global $CFG, $USER, $COURSE, $DB, $PAGE;
 
         if ($this->isExaplanDashboardBlock()) {

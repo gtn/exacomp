@@ -30,6 +30,7 @@ class normalize_exacomp_tables extends scheduled_task {
     }
 
     public function execute() {
+        \block_exacomp\local\migration_pause::require_ready();
         try {
             mtrace("Exabis Competence Grid: normalize task is running:");
             data::normalize_database();

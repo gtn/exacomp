@@ -269,6 +269,7 @@ class externallib extends base {
      * @return array of user courses
      */
     public static function get_courses($userid = null) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $CFG, $DB, $USER;
         require_once("$CFG->dirroot/lib/enrollib.php");
 
@@ -371,6 +372,7 @@ class externallib extends base {
      * @return array of examples
      */
     public static function get_examples_for_subject($subjectid, $courseid, $userid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         if (empty ($subjectid) || empty ($courseid)) {
@@ -552,6 +554,7 @@ class externallib extends base {
      * @return array of examples
      */
     public static function get_examples_for_subject_with_lfs_infos($subjectid, $courseid, $userid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         if (empty ($subjectid) || empty ($courseid)) {
@@ -747,6 +750,7 @@ class externallib extends base {
      * @throws invalid_parameter_exception
      */
     public static function get_example_by_id($exampleid, $courseid = null) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB;
 
         if (empty ($exampleid)) {
@@ -829,6 +833,7 @@ class externallib extends base {
      * @throws invalid_parameter_exception
      */
     public static function get_descriptors_for_example($exampleid, $courseid, $userid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
 
         if ($userid == 0) {
@@ -941,6 +946,7 @@ class externallib extends base {
      * @throws invalid_parameter_exception
      */
     public static function get_descriptors_for_quiz($quizid, $courseid, $userid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         if ($userid == 0) {
@@ -1021,6 +1027,7 @@ class externallib extends base {
      * @return array
      */
     public static function get_user_role() {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         static::validate_parameters(static::get_user_role_parameters(), array());
@@ -1096,6 +1103,7 @@ class externallib extends base {
      * @return array
      */
     public static function diggr_get_user_role() {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         static::validate_parameters(static::diggr_get_user_role_parameters(), array());
@@ -1179,6 +1187,7 @@ class externallib extends base {
      * @return array all items available
      */
     public static function get_external_trainer_students() {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         $students = $DB->get_records(BLOCK_EXACOMP_DB_EXTERNAL_TRAINERS, array(
@@ -1267,6 +1276,7 @@ class externallib extends base {
      * @return array of user courses
      */
     public static function get_subjects_for_user($userid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $CFG, $USER;
         require_once("$CFG->dirroot/lib/enrollib.php");
 
@@ -1338,6 +1348,7 @@ class externallib extends base {
      * @return array of user courses
      */
     public static function diggrplus_get_subjects_and_topics_for_user($userid, $courseid, $showonlywithexamples) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $CFG, $USER, $DB;
 
         static::validate_parameters(static::diggrplus_get_subjects_and_topics_for_user_parameters(), array(
@@ -1455,6 +1466,7 @@ class externallib extends base {
      * @return array of user courses
      */
     public static function diggrplus_get_niveaus_for_subject($subjectid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB;
 
         static::validate_parameters(static::diggrplus_get_niveaus_for_subject_parameters(), array(
@@ -1506,6 +1518,7 @@ class externallib extends base {
      * @param int $itemid
      */
     public static function delete_item($itemid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $CFG, $DB, $USER;
         exaport_compatibility::require_available();
 
@@ -1568,6 +1581,7 @@ class externallib extends base {
      * @param int value
      */
     public static function set_competence($courseid, $descriptorid, $value) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         if (empty ($courseid) || empty ($descriptorid) || !isset ($value)) {
@@ -1641,6 +1655,7 @@ class externallib extends base {
      * @return array of user courses
      */
     public static function get_item_for_example($userid, $itemid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $CFG, $DB, $USER;
         exaport_compatibility::require_available();
 
@@ -1757,6 +1772,7 @@ class externallib extends base {
      * @return array of examples
      */
     public static function get_competencies_for_upload($userid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
 
         static::validate_parameters(static::get_competencies_for_upload_parameters(), array(
@@ -1860,6 +1876,7 @@ class externallib extends base {
      * @throws invalid_parameter_exception
      */
     public static function submit_example($exampleid, $studentvalue, $url, $effort, $filename, $fileitemid = 0, $studentcomment = null, $title = null, $itemid = 0, $courseid = 0) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $CFG, $DB, $USER;
         exaport_compatibility::require_available();
 
@@ -2030,6 +2047,7 @@ class externallib extends base {
     public static function create_or_update_example($exampleid, $name, $description, $timeframe = '', $externalurl = null, $comps = null, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $newtaxonomy = '', $courseid = 0,
         $filename = null,
         $crosssubjectid = -1, $activityid = 0, $is_teacherexample = 0) {
+        \block_exacomp\local\migration_pause::require_ready();
         if (empty ($name)) {
             throw new invalid_parameter_exception ('Parameter can not be empty');
         }
@@ -2116,6 +2134,7 @@ class externallib extends base {
      */
     public static function diggrplus_create_or_update_example($exampleid = -1, $name = null, $description = null, $timeframe = '', $externalurl = 'www', $comps = '0', $taxonomies = '', $newtaxonomy = '', $courseid = 0, $crosssubjectid = -1,
         $fileitemids = '', $removefiles = '', $solutionfileitemid = '', $activityid = 0, $is_teacherexample = 0) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $COURSE; //TODO: calling this function with courseid=3... but $COURSE->id is 1. Why?
 
         static::validate_parameters(static::diggrplus_create_or_update_example_parameters(), array(
@@ -2192,6 +2211,7 @@ class externallib extends base {
      *
      */
     public static function diggrplus_grade_descriptor($descriptorid, $grading, $courseid, $userid, $role, $subjectid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         // Info: grading can be -1 (unset) or 0 (= positive), 1 or 2
@@ -2269,6 +2289,7 @@ class externallib extends base {
      * @deprecated on 2023-05-29 -> can be deleted later
      */
     public static function diggrplus_grade_element($elementid, $type, $grading, $courseid, $userid, $role) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
 
         if (empty ($elementid) || is_null($grading)) {
@@ -2326,6 +2347,7 @@ class externallib extends base {
      *
      */
     public static function diggrplus_grade_competency($compid, $comptype, $grading, $courseid, $userid, $role) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         static::validate_parameters(static::diggrplus_grade_competency_parameters(), array(
@@ -2411,6 +2433,7 @@ class externallib extends base {
      * @ws-type-write
      */
     public static function diggrplus_get_all_competency_gradings($compid, $comptype, $userid) {
+        \block_exacomp\local\migration_pause::require_ready();
         static::validate_parameters(static::diggrplus_get_all_competency_gradings_parameters(), array(
             'compid' => $compid,
             'comptype' => $comptype,
@@ -2490,6 +2513,7 @@ class externallib extends base {
      * @ws-type-write
      */
     public static function diggrplus_msteams_import_students($courseid, $access_token, $teamid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER, $CFG;
 
         require_once $CFG->dirroot . '/lib/enrollib.php';
@@ -2638,6 +2662,7 @@ class externallib extends base {
      * @ws-type-write
      */
     public static function diggrplus_msteams_get_access_token($tenantid, $authentication_token) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER, $CFG;
 
         static::validate_parameters(static::diggrplus_msteams_get_access_token_parameters(), array(
@@ -2738,6 +2763,7 @@ class externallib extends base {
      *
      */
     public static function grade_item($userid, $value, $status, $comment, $itemid, $comps, $courseid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         if (empty ($userid) || empty ($value) || empty ($comment) || empty ($itemid) || empty ($courseid)) {
@@ -2898,6 +2924,7 @@ class externallib extends base {
      * @throws invalid_parameter_exception
      */
     public static function get_user_examples() {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         static::validate_parameters(static::get_user_examples_parameters(), array());
@@ -2980,6 +3007,7 @@ class externallib extends base {
      * @return array of user courses
      */
     public static function get_user_profile($userid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $CFG, $DB, $USER;
         require_once($CFG->dirroot . "/lib/enrollib.php");
 
@@ -3355,6 +3383,7 @@ class externallib extends base {
      * @throws moodle_exception
      */
     public static function update_example($exampleid, $name, $description, $externalurl, $comps, $filename, $fileitemid = 0) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $CFG, $DB, $USER;
 
         if (empty ($exampleid) || empty ($name)) {
@@ -3452,6 +3481,7 @@ class externallib extends base {
      *
      */
     public static function delete_example($exampleid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         static::validate_parameters(static::delete_example_parameters(), array(
@@ -3514,6 +3544,7 @@ class externallib extends base {
      * @return array of examples
      */
     public static function get_competencies_by_topic($userid, $topicid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
 
         static::validate_parameters(static::get_competencies_by_topic_parameters(), array(
@@ -3595,6 +3626,7 @@ class externallib extends base {
      * @return success
      */
     public static function dakora_set_competence($courseid, $userid, $compid, $comptype, $role, $value, $additionalinfo, $evalniveauid, $subjectid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER, $DB;
         static::validate_parameters(static::dakora_set_competence_parameters(), array(
             'courseid' => $courseid,
@@ -3696,6 +3728,7 @@ class externallib extends base {
      * @return array of user courses
      */
     public static function dakora_get_courses($userid = null) {
+        \block_exacomp\local\migration_pause::require_ready();
         return static::get_courses($userid);
     }
 
@@ -3729,6 +3762,7 @@ class externallib extends base {
      * @return array of user courses
      */
     public static function dakora_get_topics_by_course($courseid, $userid, $forall) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
 
         static::validate_parameters(static::dakora_get_topics_by_course_parameters(), array(
@@ -3783,6 +3817,7 @@ class externallib extends base {
      * @return array of user courses
      */
     public static function dakora_get_all_topics_by_course($courseid, $userid, $forall, $groupid = -1) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
 
         static::validate_parameters(static::dakora_get_all_topics_by_course_parameters(), array(
@@ -3851,6 +3886,7 @@ class externallib extends base {
      * @return array of user courses
      */
     public static function dakora_get_descriptors($courseid, $topicid, $userid, $forall) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_get_descriptors_parameters(), array(
             'courseid' => $courseid,
@@ -3909,6 +3945,7 @@ class externallib extends base {
      * @return array of user courses
      */
     public static function dakora_get_all_descriptors($courseid, $topicid, $userid, $forall, $editmode) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_get_all_descriptors_parameters(), array(
             'courseid' => $courseid,
@@ -3968,6 +4005,7 @@ class externallib extends base {
      * @return array of user courses
      */
     public static function dakora_get_descriptor_children($courseid, $descriptorid, $userid, $forall) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_get_descriptor_children_parameters(), array(
             'courseid' => $courseid,
@@ -4040,6 +4078,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakora_get_examples_for_descriptor($courseid, $descriptorid, $userid, $forall) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_get_examples_for_descriptor_parameters(), array(
             'courseid' => $courseid,
@@ -4085,6 +4124,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakora_get_examples_for_descriptor_with_grading($courseid, $descriptorid, $userid, $forall) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_get_examples_for_descriptor_with_grading_parameters(), array(
             'courseid' => $courseid,
@@ -4137,6 +4177,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakora_get_examples_for_descriptor_for_crosssubject($courseid, $descriptorid, $userid, $forall, $crosssubjid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_get_examples_for_descriptor_for_crosssubject_parameters(), array(
             'courseid' => $courseid,
@@ -4185,6 +4226,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakora_get_examples_for_descriptor_for_crosssubject_with_grading($courseid, $descriptorid, $userid, $forall, $crosssubjid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_get_examples_for_descriptor_for_crosssubject_with_grading_parameters(), array(
             'courseid' => $courseid,
@@ -4234,6 +4276,7 @@ class externallib extends base {
      * @return example
      */
     public static function dakora_get_example_overview($courseid, $exampleid, $userid) {
+        \block_exacomp\local\migration_pause::require_ready();
         static::validate_parameters(static::dakora_get_example_overview_parameters(), array(
             'courseid' => $courseid,
             'exampleid' => $exampleid,
@@ -4316,6 +4359,7 @@ class externallib extends base {
      * @return example
      */
     public static function diggrplus_get_example_overview($courseid, $exampleid, $userid) {
+        \block_exacomp\local\migration_pause::require_ready();
         static::validate_parameters(static::diggrplus_get_example_overview_parameters(), array(
             'courseid' => $courseid,
             'exampleid' => $exampleid,
@@ -4417,6 +4461,7 @@ class externallib extends base {
      * @return array of user courses
      */
     public static function dakora_add_example_to_learning_calendar($courseid, $exampleid, $creatorid, $userid, $forall, $groupid = 0) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
         static::validate_parameters(static::dakora_add_example_to_learning_calendar_parameters(), array(
             'courseid' => $courseid,
@@ -4514,6 +4559,7 @@ class externallib extends base {
      * @return list of descriptors
      */
     public static function dakora_get_descriptors_for_example($exampleid, $courseid, $userid, $forall) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         static::validate_parameters(static::dakora_get_descriptors_for_example_parameters(), array(
@@ -4783,6 +4829,7 @@ class externallib extends base {
      * @return list of descriptors
      */
     public static function dakora_get_example_grading($exampleid, $courseid, $userid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         static::validate_parameters(static::dakora_get_example_grading_parameters(), array(
@@ -4863,6 +4910,7 @@ class externallib extends base {
      * @return grading
      */
     public static function dakora_get_topic_grading($topicid, $courseid, $userid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         static::validate_parameters(static::dakora_get_topic_grading_parameters(), array(
@@ -4963,6 +5011,7 @@ class externallib extends base {
      * @return grading
      */
     public static function dakora_get_subject_grading($subjectid, $courseid, $userid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         static::validate_parameters(static::dakora_get_subject_grading_parameters(), array(
@@ -5058,6 +5107,7 @@ class externallib extends base {
      * @return array role
      */
     public static function dakora_get_user_role() {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
 
         static::validate_parameters(static::dakora_get_user_role_parameters(), array());
@@ -5107,6 +5157,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakora_get_students_and_groups_for_course($courseid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $PAGE, $OUTPUT;
         static::validate_parameters(static::dakora_get_students_and_groups_for_course_parameters(), array(
             'courseid' => $courseid,
@@ -5186,6 +5237,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakora_get_students_for_teacher($userid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $PAGE;
         static::validate_parameters(static::dakora_get_students_for_teacher_parameters(), array(
             'userid' => $userid,
@@ -5234,6 +5286,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakora_get_teachers_for_student($userid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $PAGE;
         static::validate_parameters(static::dakora_get_teachers_for_student_parameters(), array(
             'userid' => $userid,
@@ -5285,6 +5338,7 @@ class externallib extends base {
      * @return list of descriptors
      */
     public static function dakora_get_examples_pool($courseid, $userid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER, $DB;
 
         static::validate_parameters(static::dakora_get_examples_pool_parameters(), array(
@@ -5419,6 +5473,7 @@ class externallib extends base {
      * @return list of descriptors
      */
     public static function dakora_get_examples_trash($courseid, $userid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER, $DB;
 
         static::validate_parameters(static::dakora_get_examples_trash_parameters(), array(
@@ -5494,6 +5549,7 @@ class externallib extends base {
      * @return list of descriptors
      */
     public static function dakora_set_example_time_slot($scheduleid, $start, $end, $deleted) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB;
         static::validate_parameters(static::dakora_set_example_time_slot_parameters(), array(
             'scheduleid' => $scheduleid,
@@ -5591,6 +5647,7 @@ class externallib extends base {
      * @param * @return list of descriptors
      */
     public static function dakora_remove_example_from_schedule($scheduleid) {
+        \block_exacomp\local\migration_pause::require_ready();
 
         static::validate_parameters(static::dakora_remove_example_from_schedule_parameters(), array(
             'scheduleid' => $scheduleid,
@@ -5635,6 +5692,7 @@ class externallib extends base {
      * @param * @return list of descriptors
      */
     public static function dakora_add_examples_to_schedule_for_all($courseid) {
+        \block_exacomp\local\migration_pause::require_ready();
 
         static::validate_parameters(static::dakora_add_examples_to_schedule_for_all_parameters(), array(
             'courseid' => $courseid,
@@ -5684,6 +5742,7 @@ class externallib extends base {
      * @return list of descriptors
      */
     public static function dakora_get_examples_for_time_slot($userid, $start, $end) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER, $DB;
 
         static::validate_parameters(static::dakora_get_examples_for_time_slot_parameters(), array(
@@ -5830,6 +5889,7 @@ class externallib extends base {
      * @return array list of crosssubjects
      */
     public static function dakora_get_cross_subjects_by_course($courseid, $userid, $forall, $allcrosssubjects) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER, $DB;
 
         static::validate_parameters(static::dakora_get_cross_subjects_by_course_parameters(), array(
@@ -6018,6 +6078,7 @@ class externallib extends base {
      * @return list of descriptors
      */
     public static function dakora_get_descriptors_by_cross_subject($courseid, $crosssubjid, $userid, $forall) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_get_descriptors_by_cross_subject_parameters(), array(
             'courseid' => $courseid,
@@ -6078,6 +6139,7 @@ class externallib extends base {
      * @return list of descriptors
      */
     public static function dakora_get_all_descriptors_by_cross_subject($courseid, $crosssubjid, $userid, $forall) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_get_all_descriptors_by_cross_subject_parameters(), array(
             'courseid' => $courseid,
@@ -6135,6 +6197,7 @@ class externallib extends base {
      * @return array of user courses
      */
     public static function dakora_get_descriptor_children_for_cross_subject($courseid, $descriptorid, $userid, $forall, $crosssubjid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
         static::validate_parameters(static::dakora_get_descriptor_children_for_cross_subject_parameters(), array(
             'courseid' => $courseid,
@@ -6212,6 +6275,7 @@ class externallib extends base {
      * @return array of user courses
      */
     public static function dakora_get_all_descriptor_children_for_cross_subject($courseid, $descriptorid, $userid, $forall, $crosssubjid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_get_all_descriptor_children_for_cross_subject_parameters(), array(
             'courseid' => $courseid,
@@ -6284,6 +6348,7 @@ class externallib extends base {
      * @return array of user courses
      */
     public static function dakora_get_schedule_config() {
+        \block_exacomp\local\migration_pause::require_ready();
         $units = (get_config("exacomp", "scheduleunits")) ? get_config("exacomp", "scheduleunits") : 8;
         $interval = (get_config("exacomp", "scheduleinterval")) ? get_config("exacomp", "scheduleinterval") : 50;
         $time = (get_config("exacomp", "schedulebegin")) ? get_config("exacomp", "schedulebegin") : "07:45";
@@ -6335,6 +6400,7 @@ class externallib extends base {
      * @return examples
      */
     public static function dakora_get_pre_planning_storage_examples($courseid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_get_pre_planning_storage_examples_parameters(), array(
             'courseid' => $courseid,
@@ -6388,6 +6454,7 @@ class externallib extends base {
      * @return examples
      */
     public static function dakora_get_pre_planning_storage_students($courseid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_get_pre_planning_storage_students_parameters(), array(
             'courseid' => $courseid,
@@ -6457,6 +6524,7 @@ class externallib extends base {
      * @return examples
      */
     public static function dakora_get_pre_planning_storage_groups($courseid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_get_pre_planning_storage_groups_parameters(), array(
             'courseid' => $courseid,
@@ -6552,6 +6620,7 @@ class externallib extends base {
      * @return examples
      */
     public static function dakora_has_items_in_pre_planning_storage($courseid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_has_items_in_pre_planning_storage_parameters(), array(
             'courseid' => $courseid,
@@ -6603,6 +6672,7 @@ class externallib extends base {
      * @return examples
      */
     public static function dakora_empty_pre_planning_storage($courseid) {
+        \block_exacomp\local\migration_pause::require_ready();
         static::validate_parameters(static::dakora_empty_pre_planning_storage_parameters(), array(
             'courseid' => $courseid,
         ));
@@ -6649,6 +6719,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakora_add_example_to_pre_planning_storage($courseid, $exampleid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_add_example_to_pre_planning_storage_parameters(), array(
             'courseid' => $courseid,
@@ -6703,6 +6774,7 @@ class externallib extends base {
      * @return examples
      */
     public static function dakora_add_examples_to_students_schedule($courseid, $examples, $students, $groups) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_add_examples_to_students_schedule_parameters(), array(
             'courseid' => $courseid,
@@ -6775,6 +6847,7 @@ class externallib extends base {
      * @return examples
      */
     public static function dakora_add_examples_to_selected_students_schedule($courseid, $students, $groups, $distributionid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_add_examples_to_selected_students_schedule_parameters(), array(
             'courseid' => $courseid,
@@ -6836,6 +6909,7 @@ class externallib extends base {
      * @deprecated Delete after dakora app changed
      */
     public static function dakora_delete_examples_from_schedule($teacherid, $distributionid) {
+        \block_exacomp\local\migration_pause::require_ready();
         return self::dakora_undo_examples_from_schedule($teacherid, $distributionid);
     }
 
@@ -6871,6 +6945,7 @@ class externallib extends base {
      * @return list of descriptors
      */
     public static function dakora_undo_examples_from_schedule($teacherid, $distributionid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB;
 
         static::validate_parameters(static::dakora_undo_examples_from_schedule_parameters(), array(
@@ -6948,6 +7023,7 @@ class externallib extends base {
      * @return array of course subjects
      */
     public static function dakora_submit_example($exampleid, $studentvalue = null, $url = null, $filenames = null, $studentcomment = null, $itemid = 0, $courseid = 0, $fileitemids = '') {
+        \block_exacomp\local\migration_pause::require_ready();
         global $CFG, $DB, $USER;
         exaport_compatibility::require_available();
         static::validate_parameters(static::dakora_submit_example_parameters(),
@@ -7113,6 +7189,7 @@ class externallib extends base {
      */
     public static function diggrplus_submit_item($compid, $studentvalue, $url, $filenames, $studentcomment, $fileitemids = '', $itemid = 0, $courseid = 0, $comptype = BLOCK_EXACOMP_TYPE_EXAMPLE, $itemtitle = '', $collabuserids = '',
         $submit = 0, $removefiles = '', $solutiondescription = '', $descriptorgradings = []) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $CFG, $DB, $USER;
         exaport_compatibility::require_available();
         static::validate_parameters(static::diggrplus_submit_item_parameters(),
@@ -7356,6 +7433,7 @@ class externallib extends base {
      * @return array of course subjects
      */
     public static function diggrplus_submit_item_comment($itemid, $comment, $fileitemid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
         static::validate_parameters(static::diggrplus_submit_item_comment_parameters(),
             array(
@@ -7457,6 +7535,7 @@ class externallib extends base {
      * @return array of course subjects
      */
     public static function diggrplus_get_item_comments($itemid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $CFG, $DB, $USER;
         static::validate_parameters(static::diggrplus_get_item_comments_parameters(),
             array(
@@ -7574,6 +7653,7 @@ class externallib extends base {
      * @return array of items
      */
     public static function diggrplus_get_examples_and_items($courseid = -1, $userid = null, $compid = null, $comptype = null, $type = "", $search = "", $niveauid = -1, $status = "") {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
         exaport_compatibility::require_available();
 
@@ -7869,6 +7949,7 @@ class externallib extends base {
      * @return array of items
      */
     public static function diggrplus_get_teacher_examples_and_items($courseid, $studentid, $compid, $comptype, $type = "", $search = "", $niveauid = -1, $status = "") {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
         exaport_compatibility::require_available();
 
@@ -8133,6 +8214,7 @@ class externallib extends base {
      * @return array of user courses
      */
     public static function diggrplus_get_all_subjects_for_course_as_tree($userid, $courseid, $subjectid = null, $select = null) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER, $DB;
 
         static::validate_parameters(static::diggrplus_get_all_subjects_for_course_as_tree_parameters(), array(
@@ -8491,6 +8573,7 @@ class externallib extends base {
      * @return array
      */
     public static function diggrplus_get_user_info() {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         static::validate_parameters(static::diggrplus_get_user_info_parameters(), array());
@@ -8520,6 +8603,7 @@ class externallib extends base {
      * @ws-type-read
      */
     public static function diggrplus_request_external_file($url) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
 
         static::validate_parameters(static::diggrplus_request_external_file_parameters(), array(
@@ -8569,6 +8653,7 @@ class externallib extends base {
      * @ws-type-write
      */
     public static function diggrplus_grade_item($itemid, $teachervalue = -1, $descriptorgradings = []) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         // if (empty ($userid) || empty ($value) || empty ($comment) || empty ($itemid) || empty ($courseid)) {
@@ -8681,6 +8766,7 @@ class externallib extends base {
      * @ws-type-read
      */
     public static function diggrplus_get_competence_profile_statistic($userid = 0, $courseid = 0) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER, $DB;
 
         static::validate_parameters(static::diggrplus_get_competence_profile_statistic_parameters(), array(
@@ -8958,6 +9044,7 @@ class externallib extends base {
      * @return list of descriptors
      */
     public static function diggrplus_get_descriptors_for_example($exampleid, $courseid, $userid, $forall, $mindvisibility) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         static::validate_parameters(static::diggrplus_get_descriptors_for_example_parameters(), array(
@@ -9103,6 +9190,7 @@ class externallib extends base {
      * @return array of course subjects
      */
     public static function dakora_grade_example($userid, $courseid, $exampleid, $examplevalue, $additionalInfo, $exampleevalniveauid, $itemid, $comment, $url, $filename, $fileitemid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $CFG, $DB, $USER;
         static::validate_parameters(static::dakora_grade_example_parameters(), array('userid' => $userid, 'courseid' => $courseid, 'exampleid' => $exampleid, 'examplevalue' => $examplevalue,
             'additionalinfo' => $additionalInfo, 'exampleevalniveauid' => $exampleevalniveauid, 'itemid' => $itemid, 'comment' => $comment, 'url' => $url, 'filename' => $filename, 'fileitemid' => $fileitemid));
@@ -9222,6 +9310,7 @@ class externallib extends base {
      * @return stdClass
      */
     public static function dakora_get_descriptors_details($courseid, $descriptorids, $userid, $forall, $crosssubjid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
         static::validate_parameters(static::dakora_get_descriptors_details_parameters(),
             array('courseid' => $courseid, 'descriptorids' => $descriptorids, 'userid' => $userid, 'forall' => $forall, 'crosssubjid' => $crosssubjid));
@@ -9390,6 +9479,7 @@ class externallib extends base {
      * @return stdClass
      */
     public static function dakora_get_descriptor_details($courseid, $descriptorid, $userid, $forall, $crosssubjid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER, $CFG;
         static::validate_parameters(static::dakora_get_descriptor_details_parameters(),
             array('courseid' => $courseid, 'descriptorid' => $descriptorid, 'userid' => $userid, 'forall' => $forall, 'crosssubjid' => $crosssubjid));
@@ -9550,6 +9640,7 @@ class externallib extends base {
      * @return
      */
     public static function dakora_get_example_information($courseid, $userid, $exampleid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         exaport_compatibility::require_available();
         if ($userid == 0) {
@@ -9753,6 +9844,7 @@ class externallib extends base {
      * @return
      */
     public static function dakora_get_user_information() {
+        \block_exacomp\local\migration_pause::require_ready();
         global $CFG, $USER;
         require_once($CFG->dirroot . "/user/lib.php");
 
@@ -9807,6 +9899,7 @@ class externallib extends base {
      * @return
      */
     public static function dakora_get_lang_information($lang) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB;
 
         static::validate_parameters(static::dakora_get_lang_information_parameters(), array(
@@ -9861,6 +9954,7 @@ class externallib extends base {
      * @ws-type-write
      */
     public static function dakora_create_blocking_event($courseid, $title, $description, $timeframe, $externalurl, $userid, $preplanningstorage) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
 
         static::validate_parameters(static::dakora_create_blocking_event_parameters(), array(
@@ -9915,6 +10009,7 @@ class externallib extends base {
      * @ws-type-read
      */
     public static function dakora_get_examples_by_descriptor_and_grading($courseid, $userid, $descriptorid, $grading) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
 
         static::validate_parameters(static::dakora_get_examples_by_descriptor_and_grading_parameters(), array('courseid' => $courseid,
@@ -9992,6 +10087,7 @@ class externallib extends base {
      * @ws-type-read
      */
     public static function dakora_allow_example_resubmission($courseid, $userid, $exampleid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
 
         static::validate_parameters(static::dakora_allow_example_resubmission_parameters(), array('courseid' => $courseid,
@@ -10037,6 +10133,7 @@ class externallib extends base {
      * @ws-type-read
      */
     public static function dakora_get_competence_grid_for_profile($courseid, $userid, $subjectid = -1, $crosssubjid = -1) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
 
         static::validate_parameters(static::dakora_get_competence_grid_for_profile_parameters(), array('courseid' => $courseid,
@@ -10200,6 +10297,7 @@ class externallib extends base {
      * @ws-type-read
      */
     public static function dakora_get_competence_profile_statistic($courseid, $userid, $subjectid, $start_timestamp, $end_timestamp) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
 
         static::validate_parameters(static::dakora_get_competence_profile_statistic_parameters(), array('courseid' => $courseid,
@@ -10422,6 +10520,7 @@ class externallib extends base {
      * @ws-type-read
      */
     public static function dakora_get_competence_profile_comparison($courseid, $userid, $topicid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
 
         static::validate_parameters(static::dakora_get_competence_profile_comparison_parameters(), array('courseid' => $courseid,
@@ -10556,6 +10655,7 @@ class externallib extends base {
      * @ws-type-read
      */
     public static function dakora_get_competence_profile_topic_statistic($courseid, $userid, $topicid, $start_timestamp, $end_timestamp) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
 
         static::validate_parameters(static::dakora_get_competence_profile_topic_statistic_parameters(), array('courseid' => $courseid,
@@ -10622,6 +10722,7 @@ class externallib extends base {
      * @return boolean
      */
     public static function is_elove_student_self_assessment_enabled() {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
         static::validate_parameters(static::is_elove_student_self_assessment_enabled_parameters(), array());
 
@@ -10654,6 +10755,7 @@ class externallib extends base {
      * @return boolean
      */
     public static function dakora_get_site_policies() {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
         static::validate_parameters(static::dakora_get_site_policies_parameters(), array());
 
@@ -10741,6 +10843,7 @@ class externallib extends base {
      * @return boolean
      */
     public static function dakora_get_example_h5p_activity_results($exampleid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER, $CFG;
         require_once $CFG->dirroot . '/mod/hvp/locallib.php';
         static::validate_parameters(static::dakora_get_example_h5p_activity_results_parameters(), array("exampleid" => $exampleid));
@@ -10910,6 +11013,7 @@ class externallib extends base {
      * @ws-type-write
      */
     public static function diggr_create_cohort($name, $skz) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         $parameters = static::validate_parameters(static::diggr_create_cohort_parameters(), array(
@@ -10992,6 +11096,7 @@ class externallib extends base {
      * @ws-type-read
      */
     public static function diggr_get_students_of_cohort($cohortid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB;
 
         $parameters = static::validate_parameters(static::diggr_get_students_of_cohort_parameters(), array(
@@ -11060,6 +11165,7 @@ class externallib extends base {
      * @ws-type-read
      */
     public static function diggr_get_cohorts_of_trainer() {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         $parameters = static::validate_parameters(static::diggr_get_cohorts_of_trainer_parameters(), array());
@@ -11116,6 +11222,7 @@ class externallib extends base {
      * @ws-type-read
      */
     public static function dakora_get_evaluation_config() {
+        \block_exacomp\local\migration_pause::require_ready();
         // TODO: fjungwirth: What if scheme > 4 is selected in a course? WS & Dakora need to be adapted to that I think
 
         static::validate_parameters(static::dakora_get_evaluation_config_parameters(), array());
@@ -11230,6 +11337,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakora_get_config() {
+        \block_exacomp\local\migration_pause::require_ready();
         global $CFG, $USER;
         static::validate_parameters(static::dakora_get_evaluation_config_parameters(), array());
 
@@ -11303,6 +11411,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakora_get_courseconfigs() {
+        \block_exacomp\local\migration_pause::require_ready();
         global $CFG, $USER;
         static::validate_parameters(static::dakora_get_courseconfigs_parameters(), array());
 
@@ -11616,6 +11725,7 @@ class externallib extends base {
      * @return array
      */
     public static function login() {
+        \block_exacomp\local\migration_pause::require_ready();
         return [
             'user' => static::dakora_get_user_information(),
             'exacompcourses' => static::dakora_get_courses(),
@@ -11647,6 +11757,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakora_set_descriptor_visibility($courseid, $descriptorid, $userid, $forall, $visible) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_set_descriptor_visibility_parameters(), array(
             'courseid' => $courseid,
@@ -11697,6 +11808,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakora_set_example_visibility($courseid, $exampleid, $userid, $forall, $visible) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_set_example_visibility_parameters(), array(
             'courseid' => $courseid,
@@ -11748,6 +11860,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakora_set_topic_visibility($courseid, $topicid, $userid, $forall, $visible, $groupid = -1) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_set_topic_visibility_parameters(), array(
             'courseid' => $courseid,
@@ -11805,6 +11918,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakora_set_niveau_visibility($courseid, $topicid, $userid, $forall, $visible, $groupid = -1, $niveauid = null) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_set_niveau_visibility_parameters(), array(
             'courseid' => $courseid,
@@ -11861,6 +11975,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakora_set_example_solution_visibility($courseid, $exampleid, $userid, $forall, $visible) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_set_example_solution_visibility_parameters(), array(
             'courseid' => $courseid,
@@ -11922,6 +12037,7 @@ class externallib extends base {
      * @return array
      */
     public static function diggrplus_set_descriptor_visibility($courseid, $ids, $userid, $forall, $visible) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::diggrplus_set_descriptor_visibility_parameters(), array(
             'courseid' => $courseid,
@@ -11976,6 +12092,7 @@ class externallib extends base {
      * @return array
      */
     public static function diggrplus_set_example_visibility($courseid, $ids, $userid, $forall, $visible) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::diggrplus_set_example_visibility_parameters(), array(
             'courseid' => $courseid,
@@ -12031,6 +12148,7 @@ class externallib extends base {
      * @return array
      */
     public static function diggrplus_set_topic_visibility($courseid, $ids, $userid, $forall, $visible, $groupid = -1) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::diggrplus_set_topic_visibility_parameters(), array(
             'courseid' => $courseid,
@@ -12081,6 +12199,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakora_create_cross_subject($courseid, $title, $description, $subjectid, $draftid, $groupcategory) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_create_cross_subject_parameters(), array(
             'courseid' => $courseid,
@@ -12129,6 +12248,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakora_delete_cross_subject($courseid, $crosssubjid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_delete_cross_subject_parameters(), array(
             'courseid' => $courseid,
@@ -12175,6 +12295,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakora_edit_cross_subject($courseid, $crosssubjid, $title, $description, $subjectid, $groupcategory = "") {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_edit_cross_subject_parameters(), array(
             'courseid' => $courseid,
@@ -12215,6 +12336,7 @@ class externallib extends base {
      * @return cross_subject[]
      */
     public static function dakora_get_cross_subject_drafts($courseid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_get_cross_subject_drafts_parameters(), array('courseid' => $courseid));
 
@@ -12247,6 +12369,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakora_get_subjects($courseid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         static::validate_parameters(static::dakora_get_subjects_parameters(), array('courseid' => $courseid));
 
@@ -12289,6 +12412,7 @@ class externallib extends base {
      * @return stdClass
      */
     public static function dakora_get_students_for_cross_subject($courseid, $crosssubjid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB;
         static::validate_parameters(static::dakora_get_students_for_cross_subject_parameters(), array(
             'courseid' => $courseid,
@@ -12356,6 +12480,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakora_set_cross_subject_student($courseid, $crosssubjid, $userid, $forall, $value) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER, $DB;
         static::validate_parameters(static::dakora_set_cross_subject_student_parameters(), array(
             'courseid' => $courseid,
@@ -12432,6 +12557,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakora_set_cross_subject_descriptor($courseid, $crosssubjid, $descriptorid, $value) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER, $DB;
         static::validate_parameters(static::dakora_set_cross_subject_descriptor_parameters(), array(
             'courseid' => $courseid,
@@ -12482,6 +12608,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakora_dismiss_oldgrading_warning($courseid, $descriptorid, $studentid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER, $DB;
 
         static::validate_parameters(static::dakora_dismiss_oldgrading_warning_parameters(), array(
@@ -12525,6 +12652,7 @@ class externallib extends base {
      * @return
      */
     public static function dakora_send_message($messagetext, $userfrom, $userto) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
         if ($userfrom == 0) {
             $userfrom = $USER->id;
@@ -14362,6 +14490,7 @@ class externallib extends base {
      * @throws moodle_exception
      */
     public static function update_descriptor_category($descriptorid, $categories = '', $newcategory = '', $courseid = 0) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $CFG, $DB, $USER, $COURSE;
 
         if (empty($descriptorid)) {
@@ -14469,6 +14598,7 @@ class externallib extends base {
      * @return array
      */
     public static function get_url_preview(string $url): array {
+        \block_exacomp\local\migration_pause::require_ready();
         [
             'url' => $url,
         ] = static::validate_parameters(static::get_url_preview_parameters(), [
@@ -14577,6 +14707,7 @@ class externallib extends base {
      * @throws moodle_exception
      */
     public static function dakora_competencegrid_overview($courseid = 0, $userid = 0, $subjectid = 0, $forall = 0) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
 
         if (empty($courseid)) {
@@ -14647,6 +14778,7 @@ class externallib extends base {
      *
      */
     public static function dakora_delete_custom_example($exampleid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         static::validate_parameters(static::dakora_delete_custom_example_parameters(), array(
@@ -14697,6 +14829,7 @@ class externallib extends base {
      *
      */
     public static function diggrplus_delete_custom_example($exampleid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         static::validate_parameters(static::diggrplus_delete_custom_example_parameters(), array(
@@ -14737,6 +14870,7 @@ class externallib extends base {
      * @ws-type-read
      */
     public static function diggrplus_get_course_schooltype_tree($courseid) {
+        \block_exacomp\local\migration_pause::require_ready();
         [
             'courseid' => $courseid,
         ] = static::validate_parameters(static::diggrplus_get_course_schooltype_tree_parameters(), [
@@ -14811,6 +14945,7 @@ class externallib extends base {
      * @ws-type-write
      */
     public static function diggrplus_set_active_course_topics($courseid, $topicids = [], $hide_new_examples = null) {
+        \block_exacomp\local\migration_pause::require_ready();
         static::validate_parameters(static::diggrplus_set_active_course_topics_parameters(), array(
             'courseid' => $courseid,
             'topicids' => $topicids,
@@ -14861,6 +14996,7 @@ class externallib extends base {
      * @return array
      */
     public static function diggrplus_get_config() {
+        \block_exacomp\local\migration_pause::require_ready();
         global $CFG;
         static::validate_parameters(static::diggrplus_get_config_parameters(), array());
 
@@ -14934,6 +15070,7 @@ class externallib extends base {
      * @return array
      */
     public static function diggrplus_annotate_example($exampleid, $courseid, $annotationtext) {
+        \block_exacomp\local\migration_pause::require_ready();
         static::validate_parameters(static::diggrplus_annotate_example_parameters(), array(
             'exampleid' => $exampleid,
             'courseid' => $courseid,
@@ -14998,6 +15135,7 @@ class externallib extends base {
      * @return array
      */
     public static function diggrplus_get_student_enrolcode($courseid) {
+        \block_exacomp\local\migration_pause::require_ready();
         static::validate_parameters(static::diggrplus_get_student_enrolcode_parameters(), array(
             'courseid' => $courseid,
         ));
@@ -15046,6 +15184,7 @@ class externallib extends base {
      * @return array
      */
     public static function diggrplus_create_student_enrolcode($courseid) {
+        \block_exacomp\local\migration_pause::require_ready();
         static::validate_parameters(static::diggrplus_create_student_enrolcode_parameters(), array(
             'courseid' => $courseid,
         ));
@@ -15097,6 +15236,7 @@ class externallib extends base {
      * @return array
      */
     public static function diggrplus_enrol_by_enrolcode($code) {
+        \block_exacomp\local\migration_pause::require_ready();
         static::validate_parameters(static::diggrplus_enrol_by_enrolcode_parameters(), array(
             'code' => $code,
         ));
@@ -15138,6 +15278,7 @@ class externallib extends base {
      * @return array
      */
     public static function diwipass_get_sections_with_materials() {
+        \block_exacomp\local\migration_pause::require_ready();
         static::validate_parameters(static::diwipass_get_sections_with_materials_parameters(), array());
         global $USER;
 
@@ -15293,6 +15434,7 @@ class externallib extends base {
      * @return array of items
      */
     public static function dakoraplus_get_example_and_item(int $exampleid, int $courseid, int $itemid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER, $DB;
         exaport_compatibility::require_available();
 
@@ -15517,6 +15659,7 @@ class externallib extends base {
      * @return item
      */
     public static function dakoraplus_get_teacher_example_and_item($exampleid, $courseid, $studentid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER, $DB;
         exaport_compatibility::require_available();
 
@@ -15725,6 +15868,7 @@ class externallib extends base {
      * @return success
      */
     public static function dakoraplus_save_coursesettings(int $courseid, ?string $experience_level = null) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB;
 
         [
@@ -15785,6 +15929,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakoraplus_get_learning_diary() {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER, $DB;
 
         $category = $DB->get_record('block_exaportcate', ['userid' => $USER->id, 'name' => 'Lerntagebuch'], '*', IGNORE_MULTIPLE);
@@ -15850,6 +15995,7 @@ class externallib extends base {
      * @return success
      */
     public static function dakoraplus_save_learning_diary_entry($id, $title, $text) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         static::validate_parameters(static::dakoraplus_save_learning_diary_entry_parameters(), array(
@@ -15938,6 +16084,7 @@ class externallib extends base {
      * @return success
      */
     public static function get_lang($lang, $app) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         static::validate_parameters(static::get_lang_parameters(), array(
@@ -16013,6 +16160,7 @@ class externallib extends base {
      * @since Moodle 3.1
      */
     public static function fakecore_get_fragment($component, $callback, $contextid, $args = null) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $CFG;
         // Main thing what we need this fake external function
         require_once $CFG->dirroot . '/blocks/exacomp/questiontodescriptor/exacomp_view.php';

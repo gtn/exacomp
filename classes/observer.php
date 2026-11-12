@@ -33,9 +33,12 @@ class block_exacomp_observer {
      * @return void
      */
     public static function course_created(course_created $event) {
+        if (\block_exacomp\local\deferred_events::defer($event)) {
+            return;
+        }
         global $CFG, $DB;
 
-        $course = $event->get_record_snapshot('course', $event->objectid);
+        $course = \block_exacomp\local\deferred_events::snapshot($event, 'course', $event->objectid);
         $addto = get_config('exacomp', 'addblock_to_new_course');
         if ($addto) {
             // check main CFG from config.php - the moodle is able to create the block by self
@@ -74,13 +77,13 @@ class block_exacomp_observer {
      * @return void
      */
     public static function course_module_completion_updated(course_module_completion_updated $event) {
+        if (\block_exacomp\local\deferred_events::defer($event)) {
+            return;
+        }
         global $CFG, $DB, $USER;
 
-        if (block_exacomp_is_teacher($event->courseid, $USER->id)) {
-            $admingrading = false;
-        } else {
-            $admingrading = true; // if the student triggers this event, the grading should be done by the admin
-        }
+        // Preserve the actor's classification if this event was deferred during portfolio migration.
+        $admingrading = \block_exacomp\local\deferred_events::admingrading($event->courseid, (int)$USER->id);
 
         // If this course does not use moodle activities all queries can just be skipped entirely. Also the global admin setting for using autotest must be set.
         if (get_config('exacomp', 'autotest') && block_exacomp_get_settings_by_course($event->courseid)->uses_activities) {
@@ -107,17 +110,13 @@ class block_exacomp_observer {
             $maxgrade = null;
             $studentgraderesult = null;
             // get completion info for the activity
-            $activity_completion = $event->get_record_snapshot('course_modules_completion', $event->objectid);
+            $activity_completion = \block_exacomp\local\deferred_events::snapshot($event, 'course_modules_completion', $event->objectid);
             // get the module, then check if it is a quiz. If it is a quiz, get the quiz-grading, if not, just grade with max value.
-            $quiz_module = $DB->get_record('course_modules', array('id' => $activity_completion->coursemoduleid, 'module' => 17)); // 17 is the id of the module "quiz"
-            if ($quiz_module) {
-                $quiz = $DB->get_record('quiz', array('id' => $quiz_module->instance));
-                $quiz_grade = $DB->get_record('quiz_grades', array('quiz' => $quiz->id, 'userid' => $event->relateduserid));
-                if ($quiz_grade) {
-                    $userealvalue = true;
-                    $maxgrade = $quiz->grade;
-                    $studentgraderesult = $quiz_grade->grade;
-                }
+            $quizdata = \block_exacomp\local\deferred_events::completion_quiz($activity_completion, $event->relateduserid);
+            if ($quizdata['grade']) {
+                $userealvalue = true;
+                $maxgrade = $quizdata['quiz']->grade;
+                $studentgraderesult = $quizdata['grade']->grade;
             }
             // TODO if needed some day: the same can be done for anything else with a grade... e.g. assignments can have grades ==> get assignment, get the grade, set maxgrad and studengraderesult and userealvalue
             if ($activity_completion && ($activity_completion->completionstate == COMPLETION_COMPLETE || $activity_completion->completionstate == COMPLETION_COMPLETE_PASS)) {
@@ -155,18 +154,21 @@ class block_exacomp_observer {
      * @return void
      */
     public static function course_module_updated(course_module_updated $event) {
+        if (\block_exacomp\local\deferred_events::defer($event)) {
+            return;
+        }
         global $DB;
         $event->other['name']; // gives the "name" field of e.g. assign or quiz table entry
         block_exacomp_check_relatedactivitydata($event->objectid, $event->other['name']);
         // this was done in block_exacomp_coursemodule_edit_post_actions() and  block_exacomp_override_webservice_execution before
 
-        $students = \block_exacomp\permissions::get_course_students($event->courseid);
-        $activity = $event->get_record_snapshot('course_modules', $event->objectid);
+        $students = \block_exacomp\local\deferred_events::course_student_ids($event->courseid);
+        $activity = \block_exacomp\local\deferred_events::snapshot($event, 'course_modules', $event->objectid);
         $activity->activityid = $activity->id;
         // get the examples.. the assigned descriptors and topics do not matter for the visibility update
         $activity->examples = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('activityid' => $activity->id, 'courseid' => $event->courseid), '', 'id');
-        foreach ($students as $student) {
-            block_exacomp_update_related_examples_visibilities(array($activity), $event->courseid, $student->id);
+        foreach ($students as $studentid) {
+            block_exacomp_update_related_examples_visibilities(array($activity), $event->courseid, $studentid);
         }
         return true;
     }
@@ -178,6 +180,9 @@ class block_exacomp_observer {
      * @return void
      */
     public static function course_module_deleted(\core\event\course_module_deleted $event) {
+        if (\block_exacomp\local\deferred_events::defer($event)) {
+            return;
+        }
         // This is often not triggered instantly, but for example in the next cron.
         block_exacomp_checkfordelete_relatedactivity($event->objectid);
         return true;
@@ -197,45 +202,30 @@ class block_exacomp_observer {
      * @return void
      */
     public static function attempt_submitted(\mod_quiz\event\attempt_submitted $event) {
+        if (\block_exacomp\local\deferred_events::defer($event)) {
+            return;
+        }
         global $DB, $USER;
         if (block_exacomp_has_topics_assigned($event->courseid)) {
-            if (block_exacomp_is_teacher($event->courseid, $USER->id)) {
-                $admingrading = false;
-            } else {
-                $admingrading = true; // if the student triggers this event, the grading should be done by the admin
-            }
+            $admingrading = \block_exacomp\local\deferred_events::admingrading($event->courseid, (int)$USER->id);
 
             // Get the quiz attempt ID from the event data.
             $attemptid = $event->objectid;
 
             // Fetch the quiz attempt record to get the 'uniqueid'.
-            $quizattempt = $DB->get_record('quiz_attempts', array('id' => $attemptid), 'uniqueid, userid');
-
+            $attempt = \block_exacomp\local\deferred_events::quiz_attempt($attemptid);
+            $quizattempt = $attempt['record'];
             if (!$quizattempt) {
-                // If the quiz attempt is not found, return early.
                 return;
             }
-
-            // The uniqueid corresponds to the question usage id in question_attempts.
-            $questionusageid = $quizattempt->uniqueid;
-
-            // Fetch all question attempts related to this quiz attempt using the uniqueid.
-            // $questionattempts = $DB->get_records('question_attempts', array('questionusageid' => $questionusageid));
-
-            $sql = "SELECT attempts.id, attempts.questionid, attempts.maxmark, step.fraction, attempts.timemodified as timemodified
-            FROM {question_attempts} attempts
-            JOIN {question_attempt_steps} AS step ON attempts.id=step.questionattemptid
-            WHERE (step.state = 'gradedright' OR step.state = 'gradedwrong')
-            AND questionusageid = :questionusageid";
-            $questionattempts = $DB->get_records_sql($sql, array('questionusageid' => $questionusageid));
-
+            $questionattempts = $attempt['questions'];
 
             // Loop through each question attempt.
             foreach ($questionattempts as $questionattempt) {
                 $questionid = $questionattempt->questionid;
 
                 // For each question, fetch related descriptors from block_exacompdescrquest_mm.
-                $descriptors = $DB->get_records('block_exacompdescrquest_mm', array('questid' => $questionid));
+                $descriptors = $attempt['descriptors'][$questionid];
 
                 // Process the descriptors as needed for grading or other purposes.
                 foreach ($descriptors as $descriptor) {

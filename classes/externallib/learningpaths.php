@@ -36,6 +36,7 @@ class learningpaths extends base {
      * @ws-type-read
      */
     public static function diggrplus_learningpath_list(int $courseid, int $studentid = 0) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         [
@@ -130,6 +131,7 @@ class learningpaths extends base {
      * @ws-type-read
      */
     public static function diggrplus_learningpath_details(int $id, int $studentid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         [
@@ -268,6 +270,7 @@ class learningpaths extends base {
      * @ws-type-write
      */
     public static function diggrplus_learningpath_add(int $courseid, string $title, string $description, bool $visible) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB;
 
         [
@@ -314,6 +317,7 @@ class learningpaths extends base {
      * @ws-type-write
      */
     public static function diggrplus_learningpath_delete(int $id) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB;
 
         [
@@ -356,6 +360,7 @@ class learningpaths extends base {
      * @ws-type-write
      */
     public static function diggrplus_learningpath_update(int $id, ?string $title, ?string $description, ?bool $visible) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB;
 
         [
@@ -415,6 +420,7 @@ class learningpaths extends base {
      * @ws-type-write
      */
     public static function diggrplus_learningpath_item_update(int $id, int $studentid, ?bool $visibleall, ?bool $visiblestudent) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB;
 
         [
@@ -475,6 +481,7 @@ class learningpaths extends base {
      * @ws-type-write
      */
     public static function diggrplus_learningpath_add_items(int $learningpathid, array $exampleids, array $studentids = []) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB;
 
         [
@@ -553,6 +560,7 @@ class learningpaths extends base {
      * @ws-type-write
      */
     public static function diggrplus_learningpath_item_delete(int $id) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB;
 
         [
@@ -602,6 +610,7 @@ class learningpaths extends base {
      * @ws-type-write
      */
     public static function diggrplus_learningpath_item_sorting(int $learningpathid, array $itemids) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB;
 
         [

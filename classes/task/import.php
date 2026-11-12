@@ -33,6 +33,7 @@ class import extends scheduled_task {
     }
 
     public function execute() {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB;
 
         // set all importstate fields of the subjects of ALL sources to BLOCK_EXACOMP_SUBJECT_IMPORTING, meaning, it is currently importing and therefore in an unsure state

@@ -37,6 +37,7 @@ class competence_grid extends base {
      * @ws-type-write
      */
     public static function diggrplus_set_item_status(int $itemid, string $status_str) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         [

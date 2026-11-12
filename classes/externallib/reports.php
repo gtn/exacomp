@@ -49,6 +49,7 @@ class reports extends base {
      * @ws-type-read
      */
     public static function dakoraplus_create_report(int $courseid, array $studentids, array $topicids, bool $with_childdescriptors, bool $with_examples, bool $only_achieved_competencies, int $time_from, int $time_to, string $output_style, string $result_type) {
+        \block_exacomp\local\migration_pause::require_ready();
         [
             'courseid' => $courseid,
             'studentids' => $studentids,
@@ -697,6 +698,7 @@ class reports extends base {
      * @ws-type-read
      */
     public static function get_fullcompetence_grid_for_profile(int $userid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER;
 
         [

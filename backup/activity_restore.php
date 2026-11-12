@@ -18,6 +18,7 @@ require __DIR__ . '/../inc.php';
 require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 
 function moodle_restore($data, $courseid, $userdoingrestore) {
+    \block_exacomp\local\migration_pause::require_ready();
     global $DB, $CFG;
     if (!is_siteadmin()) {
         die('No Admin!');
