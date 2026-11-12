@@ -3687,4 +3687,24 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Diese Integration benötigt Exaport-Version {$a} oder neuer. Bitte installieren oder aktualisieren Sie Exaport und schließen Sie das Moodle-Upgrade ab.',
         'This integration requires Exaport version {$a} or later. Please install or update Exaport and complete the Moodle upgrade.',
     ],
+    'itemcontentmigrationpending' => [
+        'Exabis ePortfolio und Exabis Competencies sind während der Migration der Portfolio-Inhalte vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut.',
+        'Exabis ePortfolio and Exabis Competencies are temporarily unavailable while portfolio content is migrated. Please try again later.',
+    ],
+    'itemcontentmigrationbusy' => [
+        'Eine andere Portfolio-Migration läuft bereits. Diese Aufgabe wird erneut versucht.',
+        'Another portfolio migration worker is running. This task will retry.',
+    ],
+    'privacy:metadata:block_exacompdeferredevent' => [
+        'Temporary Moodle event journal while portfolio migration pauses Exacomp. Entries are deleted after replay.',
+        'Temporary Moodle event journal while portfolio migration pauses Exacomp. Entries are deleted after replay.',
+    ],
+    'privacy:metadata:block_exacompdeferredevent:payload' => [
+        'Event actor, related user, course/module information and the observer’s required record snapshots.',
+        'Event actor, related user, course/module information and the observer’s required record snapshots.',
+    ],
+    'privacy:metadata:block_exacompdeferredevent:timecreated' => [
+        'Time when the event was queued.',
+        'Time when the event was queued.',
+    ],
 ];

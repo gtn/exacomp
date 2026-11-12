@@ -44,6 +44,11 @@ class provider implements
     \core_privacy\local\request\plugin\provider {
 
     public static function get_metadata(collection $collection): collection {
+        $collection->add_database_table('block_exacompdeferredevent', [
+            'payload' => 'privacy:metadata:block_exacompdeferredevent:payload',
+            'timecreated' => 'privacy:metadata:block_exacompdeferredevent:timecreated',
+        ], 'privacy:metadata:block_exacompdeferredevent');
+
         // block_exacompcompuser
         $collection->add_database_table('block_exacompcompuser', [
             'userid' => 'privacy:metadata:block_exacompcompuser:userid',
@@ -203,6 +208,7 @@ class provider implements
      * @return  contextlist   $contextlist  The contextlist containing the list of contexts used in this plugin.
      */
     public static function get_contexts_for_userid(int $userid): contextlist {
+        \block_exacomp\local\migration_pause::require_ready();
         $contextlist = new contextlist();
 
         $contextlist->add_user_context($userid);
@@ -228,6 +234,7 @@ class provider implements
      * @param userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
      */
     public static function get_users_in_context(userlist $userlist) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB;
         $context = $userlist->get_context();
         if (!($context instanceof \core\context\course)) {
@@ -253,6 +260,7 @@ class provider implements
     }
 
     public static function export_user_data(approved_contextlist $contextlist) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $CFG;
         require_once($CFG->dirroot . '/blocks/exacomp/lib/lib.php');
         require_once($CFG->dirroot . '/blocks/exacomp/lib/classes.php');
@@ -893,6 +901,7 @@ class provider implements
     }
 
     public static function delete_data_for_all_users_in_context(context $context) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB;
         if (!($context instanceof \core\context\course)) {
             return;
@@ -912,6 +921,7 @@ class provider implements
     }
 
     public static function delete_data_for_user(approved_contextlist $contextlist) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB;
         if (empty($contextlist->count())) {
             return;
@@ -961,6 +971,7 @@ class provider implements
      * @param approved_userlist $userlist The approved context and user information to delete information for.
      */
     public static function delete_data_for_users(approved_userlist $userlist) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB;
         $context = $userlist->get_context();
         if (!($context instanceof \core\context\course) || !$userlist->get_userids()) {

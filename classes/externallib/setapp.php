@@ -52,6 +52,7 @@ class setapp extends base {
      * @return array
      */
     public static function diggrplus_v_edit_course($courseid, $fullname) {
+        \block_exacomp\local\migration_pause::require_ready();
         static::validate_parameters(static::diggrplus_v_edit_course_parameters(), array(
             'courseid' => $courseid,
             'fullname' => $fullname,
@@ -106,6 +107,7 @@ class setapp extends base {
      * @throws moodle_exception
      */
     public static function diggrplus_v_create_or_update_student($courseid, $userid, $firstname, $lastname, $ausserordentlich) {
+        \block_exacomp\local\migration_pause::require_ready();
         static::validate_parameters(static::diggrplus_v_create_or_update_student_parameters(), array(
             'courseid' => $courseid,
             'userid' => $userid,
@@ -199,6 +201,7 @@ class setapp extends base {
      * @ws-type-write
      */
     public static function diggrplus_v_delete_student($courseid, $userid) {
+        \block_exacomp\local\migration_pause::require_ready();
         static::validate_parameters(static::diggrplus_v_delete_student_parameters(), array(
             'courseid' => $courseid,
             'userid' => $userid,
@@ -255,6 +258,7 @@ class setapp extends base {
      * @ws-type-write
      */
     public static function diggrplus_v_get_student_by_id($courseid, $userid) {
+        \block_exacomp\local\migration_pause::require_ready();
         static::validate_parameters(static::diggrplus_v_get_student_by_id_parameters(), array(
             'courseid' => $courseid,
             'userid' => $userid,
@@ -309,6 +313,7 @@ class setapp extends base {
      * @ws-type-read
      */
     public static function diggrplus_v_get_student_grading_tree($userid = 0, $courseid = 0) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER, $DB;
 
         static::validate_parameters(static::diggrplus_v_get_student_grading_tree_parameters(), array(
@@ -459,6 +464,7 @@ class setapp extends base {
      * @ws-type-read
      */
     public static function diggrplus_v_save_student_grading($userid = 0, $courseid = 0, $subject_gradings = [], $descriptor_gradings = []) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER, $DB;
 
         static::validate_parameters(static::diggrplus_v_save_student_grading_parameters(), array(
@@ -545,6 +551,7 @@ class setapp extends base {
      * @ws-type-read
      */
     public static function diggrplus_v_print_student_grading_report($userid, $courseid, $output_format, $schoolname, $assessment_period_title) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $USER, $DB;
 
         static::validate_parameters(static::diggrplus_v_print_student_grading_report_parameters(), array(
@@ -818,6 +825,7 @@ class setapp extends base {
      * @ws-type-read
      */
     public static function diggrplus_v_get_course_edulevel_schooltype_tree($courseid) {
+        \block_exacomp\local\migration_pause::require_ready();
         static::validate_parameters(static::diggrplus_v_get_course_edulevel_schooltype_tree_parameters(), array(
             'courseid' => $courseid,
         ));

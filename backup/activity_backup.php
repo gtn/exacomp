@@ -21,6 +21,7 @@ require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
 
 
 function moodle_backup($activityid, $user_doing_the_backup) {
+    \block_exacomp\local\migration_pause::require_ready();
 
     if (!is_siteadmin()) {
         die('No Admin!');

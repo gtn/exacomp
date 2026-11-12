@@ -71,6 +71,7 @@ if (!is_file($file)) {
 
 $trace->output("importing file '$file'...");
 
+\block_exacomp\local\migration_pause::require_ready();
 data::prepare();
 
 try {

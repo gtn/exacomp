@@ -28,6 +28,7 @@ class komettranslator_to_exacomp extends scheduled_task {
     }
 
     public function execute() {
+        \block_exacomp\local\migration_pause::require_ready();
         block_exacomp_relate_komettranslator_to_exacomp();
     }
 }

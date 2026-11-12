@@ -31,6 +31,9 @@ class api {
     const BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO = 4;
 
     static function active() {
+        if (\block_exacomp\local\migration_pause::is_pending()) {
+            return false;
+        }
         global $DB;
 
         // check if block is active
@@ -42,6 +45,7 @@ class api {
     }
 
     static function get_active_comps_for_exaport_item($itemid, $userid = -1, $courseid = -1) {
+        \block_exacomp\local\migration_pause::require_ready();
         // First: get the entry in block_exacompcompactiv_mm for the itemid
         $entries = g::$DB->get_records_sql("
 			SELECT DISTINCT compactiv.*
@@ -106,6 +110,7 @@ class api {
     }
 
     static function get_comp_tree_for_exaport($userid) {
+        \block_exacomp\local\migration_pause::require_ready();
 
         $achieved_descriptors = g::$DB->get_records_menu('block_exacompcompuser', [
             "userid" => g::$USER->id,
@@ -138,6 +143,7 @@ class api {
      * Allowed are the descriptors of the own competence tree and the ones, which are already assigned to the exaport item.
      */
     static function require_can_access_descriptors_for_exaport(array $descriptorids, $itemid = 0) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB, $USER;
 
         // don't load the whole tree, if nothing has to be checked
@@ -169,6 +175,7 @@ class api {
     }
 
     static function delete_user_data($userid) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB;
 
         $DB->delete_records(BLOCK_EXACOMP_DB_COMPETENCES, array("userid" => $userid));
@@ -199,6 +206,7 @@ class api {
     }
 
     static function delete_student_assessment_data_up_until($studentid, $time) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB;
 
         // comp assessment
@@ -218,6 +226,7 @@ class api {
     }
 
     static function get_subjects_with_grade_for_teacher_and_student($teacherid, $studentid) {
+        \block_exacomp\local\migration_pause::require_ready();
         $resultSubjects = [];
 
         //$courses = block_exacomp_get_teacher_courses($teacherid);
@@ -240,6 +249,7 @@ class api {
     }
 
     static function get_comp_tree_for_exastud($studentid) {
+        \block_exacomp\local\migration_pause::require_ready();
 
 
         $subjects = db_layer_all_user_courses::create($studentid)->get_subjects();
@@ -433,6 +443,7 @@ class api {
     }
 
     static function send_stored_file_as_pdf(\stored_file $file, $forcedownload, $options = []) {
+        \block_exacomp\local\migration_pause::require_ready();
         // for now always add page!
         $add_blank_page = optional_param('add_blank_page', false, PARAM_BOOL);
 

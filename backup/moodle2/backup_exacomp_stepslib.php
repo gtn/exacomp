@@ -26,6 +26,7 @@ require_once __DIR__ . "/../../inc.php";
 class backup_exacomp_block_structure_step extends backup_block_structure_step {
 
     protected function define_structure() {
+        \block_exacomp\local\migration_pause::require_ready();
 
         global $DB;
 

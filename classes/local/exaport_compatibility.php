@@ -25,6 +25,8 @@ final class exaport_compatibility {
             throw new \moodle_exception('exaportupdaterequired', 'block_exacomp', '', self::MIN_VERSION);
         }
 
+        migration_pause::require_ready();
+
         require_once($library);
         foreach ([
             'block_exaport_get_item_content_webservice_data',

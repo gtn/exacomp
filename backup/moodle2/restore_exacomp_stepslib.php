@@ -21,6 +21,7 @@ use block_exacomp\globals as g;
 class restore_exacomp_block_structure_step extends restore_structure_step {
 
     protected function define_structure() {
+        \block_exacomp\local\migration_pause::require_ready();
 
         $paths = array();
 
@@ -48,6 +49,7 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
     }
 
     public function process_block($data) {
+        \block_exacomp\local\migration_pause::require_ready();
         global $DB;
 
         $data = (object)$data;

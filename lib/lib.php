@@ -14645,6 +14645,7 @@ function block_exacomp_random_password($length = 12) {
 }
 
 function block_exacomp_require_login($courseorid = null, $autologinguest = true, $cm = null, $setwantsurltome = true, $preventredirect = false) {
+    \block_exacomp\local\migration_pause::require_ready();
     require_login($courseorid, $autologinguest, $cm, $setwantsurltome, $preventredirect);
 
     if (class_exists('\block_exa2fa\api')) {

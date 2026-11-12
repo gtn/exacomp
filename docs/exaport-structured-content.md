@@ -55,7 +55,7 @@ and its structured API to be available. Until Exaport's Moodle upgrade finishes,
 these calls report an explicit update requirement before changing any data.
 There is no fallback to legacy parent fields or the `item_file` area.
 
-Exaport's installation and upgrade reject Exacomp code older than **2026101903**
+Exaport's installation and upgrade reject Exacomp code older than **2026111200**
 when it is present. Sites can stage both plugins for the same Moodle upgrade,
 or leave hours between completed updates in the Exacomp-first order. Keep the
 site in maintenance mode while a Moodle upgrade is running or has failed; a
@@ -67,3 +67,28 @@ Exaport's current item-content audit detects the resulting legacy URLs/files and
 orphaned structured content; the saved historical migration report is unchanged.
 DiggrPlus can remain unchanged because its existing `studentfiles[].id` removal
 request is the stored-file ID expected by Exacomp.
+
+## Background migration pause
+
+The matching Exaport release records its installed version after schema setup,
+then converts legacy content in ad hoc tasks. This release checks Exaport's
+explicit pending state at all external functions, plugin pages/file callbacks,
+public integration APIs, tasks and privacy/backup operations. Installed versions
+and a preloaded Exaport library do not bypass the pause. Without Exaport there
+is no pause dependency.
+
+Moodle courses remain usable. Exacomp journals course creation, module updates,
+completion/deletion and submitted quiz attempts rather than dropping their
+observers. Only required snapshots, actor/student IDs and quiz-grade inputs are
+retained; no session state or credentials are stored. The journal is replayed in
+order before either plugin reopens, with each event's database writes and deletion
+in one transaction. Successful replay removes its journal entry. The existing
+no-op competence-assigned observer remains a no-op. User/course deletion is
+paused by Exaport to protect contexts and files.
+
+Keep recurring cron running and use Exaport's **Portfolio content migration**
+administration page for progress, native task logs and retry. A failed or stopped
+task leaves both plugins unavailable until the cause is repaired and the normal
+task runner succeeds. Never reset versions or delete the migration evidence to
+force a retry. Stage complete matching packages during a maintenance window and
+quiesce old plugin requests/workers before replacing code.
