@@ -659,7 +659,6 @@ var formunsaved = false;
     });
 
     $(document).on('click', '.rg2 .selectallornone', function () {
-      debugger;
       $(this).trigger('rg2.open');
 
       var $children = get_children(this);
