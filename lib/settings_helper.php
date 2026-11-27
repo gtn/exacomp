@@ -709,7 +709,7 @@ class block_exacomp_selfevaluation_configtable extends admin_setting { // admin_
         $result = '';
         foreach ($data as $target => $parameters) {
             foreach ($parameters as $param => $value) {
-                $validated = $this->validate($target, $param, $value, 4, ($param == 'long' ? 20 : 3));
+                $validated = $this->validate($target, $param, $value, BLOCK_EXACOMP_SELF_EVAL_MAX_ENTRIES, ($param == 'long' ? BLOCK_EXACOMP_SELF_EVAL_MAX_LENGTH_LONG : BLOCK_EXACOMP_SELF_EVAL_MAX_LENGTH_SHORT));
                 if ($validated !== true) {
                     return $validated;
                 }
@@ -734,7 +734,7 @@ class block_exacomp_selfevaluation_configtable extends admin_setting { // admin_
         return $result;
     }
 
-    public function validate($level, $type, $value, $limit = 4, $maxlenght = 20) {
+    public function validate($level, $type, $value, $limit = BLOCK_EXACOMP_SELF_EVAL_MAX_ENTRIES, $maxlenght = BLOCK_EXACOMP_SELF_EVAL_MAX_LENGTH_LONG) {
         $allgood = true;
         $params = array_map('trim', explode(';', $value));
         if (count($params) == 1 && $params[0] == $value) { // for checking of delimeter. Must be ;
@@ -743,7 +743,7 @@ class block_exacomp_selfevaluation_configtable extends admin_setting { // admin_
                 $allgood = false;
             }
         }
-        if (count($params) > $limit) { // not more than 4
+        if (count($params) > $limit) { // not more than BLOCK_EXACOMP_SELF_EVAL_MAX_ENTRIES
             $allgood = false;
         }
         if ($allgood) {
@@ -755,8 +755,13 @@ class block_exacomp_selfevaluation_configtable extends admin_setting { // admin_
             }
         }
         if (!$allgood) {
+            $a = (object) [
+                'maxEntries' => BLOCK_EXACOMP_SELF_EVAL_MAX_ENTRIES,
+                'maxLong' => BLOCK_EXACOMP_SELF_EVAL_MAX_LENGTH_LONG,
+                'maxShort' => BLOCK_EXACOMP_SELF_EVAL_MAX_LENGTH_SHORT,
+            ];
             //$this->haserror[$level][$type] = true;
-            return block_exacomp_get_string('settings_assessment_SelfEval_verboses_validate_error_long');/*."\r\n".
+            return block_exacomp_get_string('settings_assessment_SelfEval_verboses_validate_error_long', null, $a);/*."\r\n".
                         block_exacomp_get_string('settings_assessment_SelfEval_verboses_validate_error_short');*/
         }
         return true;
@@ -771,7 +776,7 @@ class block_exacomp_selfevaluation_configtable extends admin_setting { // admin_
             $dataerrors = $errors['s_exacomp_assessment_SelfEval_verboses']->data;
             foreach ($this->targets as $target) {
                 foreach ($this->params as $type) {
-                    if (!($this->validate($target, $type, $dataerrors[$target][$type], 4, ($type == 'long' ? 20 : 3)) === true)) {
+                    if (!($this->validate($target, $type, $dataerrors[$target][$type], BLOCK_EXACOMP_SELF_EVAL_MAX_ENTRIES, ($type == 'long' ? BLOCK_EXACOMP_SELF_EVAL_MAX_LENGTH_LONG : BLOCK_EXACOMP_SELF_EVAL_MAX_LENGTH_SHORT)) === true)) {
                         $inputerrors[$target][$type] = true;
                     }
                 }

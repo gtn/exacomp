@@ -718,8 +718,8 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Edit verboses',
     ],
     'settings_assessment_SelfEval_verboses_validate_error_long' => [
-        'Langformat: bis zu 4 Einträge, Trennzeichen Strichpunkt, max 20 Zeichen je Entrag (4 zum Kurzformat)',
-        'Long titles: up to 4 entries, delimiter ";", maximum 20 characters per entry (4 for short form)',
+        'Langformat: bis zu {$a->maxEntries} Einträge, Trennzeichen Strichpunkt, max {$a->maxLong} Zeichen je Entrag ({$a->maxShort} zum Kurzformat)',
+        'Long titles: up to {$a->maxEntries} entries, delimiter ";", maximum {$a->maxLong} characters per entry ({$a->maxShort} for short form)',
     ],/*
     'settings_assessment_SelfEval_verboses_validate_error_short' => [
         'Short titles: up to 4 entries, delimiter ; maximum 3 characters per entry',
